@@ -235,3 +235,13 @@ void whad_ble_notify_disconnected(Message *message, uint32_t conn_handle, uint32
     message->msg.ble.msg.disconnected.conn_handle = conn_handle;
     message->msg.ble.msg.disconnected.reason = reason;
 }
+
+
+/***
+ * WHAD driver
+ */
+
+void whad_init(void)
+{
+    /* TODO: transport. */
+}
