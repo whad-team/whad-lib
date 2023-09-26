@@ -25,6 +25,18 @@ int whad_ringbuf_get_size(whad_ringbuf_t *p_ringbuf)
 }
 
 /**
+ * @brief   Get ring buffer free size
+ * @param   p_ringbuf   Pointer to a `whad_ringbuf_t` structure.
+ * @return  Number of bytes stored in the ring buffer.
+ */
+
+int whad_ringbuf_get_free_size(whad_ringbuf_t *p_ringbuf)
+{
+    return (WHAD_RINGBUF_MAX_SIZE - whad_ringbuf_get_size(p_ringbuf));
+}
+
+
+/**
  * @brief   Push data into a ring buffer.
  * @param   p_ringbuf   Pointer to a `whad_ringbuf_t` structure.
  * @param   data    Data to save into the ring buffer.
@@ -36,11 +48,11 @@ whad_result_t whad_ringbuf_push(whad_ringbuf_t *p_ringbuf, uint8_t data)
     int new_head;
 
     /* Do we have enough space ? */
-    if (whad_ringbuf_get_size(p_ringbuf) >= 1)
+    if (whad_ringbuf_get_free_size(p_ringbuf) >= 1)
     {
         /* Update head and save data. */
         new_head = (p_ringbuf->head + 1)%WHAD_RINGBUF_MAX_SIZE;
-        p_ringbuf->data[new_head] = data;
+        p_ringbuf->data[p_ringbuf->head] = data;
         p_ringbuf->head = new_head;
 
         /* Success. */
@@ -85,10 +97,10 @@ whad_result_t whad_ringbuf_copy(whad_ringbuf_t *p_ringbuf, uint8_t *p_data, int 
         return WHAD_ERROR;
 
     /* Determine first and second halves. */
-    if ((p_ringbuf->head + size) > WHAD_RINGBUF_MAX_SIZE)
+    if ((p_ringbuf->tail + size) > WHAD_RINGBUF_MAX_SIZE)
     {
-        fh = (WHAD_RINGBUF_MAX_SIZE - p_ringbuf->head);
-        sh = (p_ringbuf->head + size)%WHAD_RINGBUF_MAX_SIZE;
+        fh = (WHAD_RINGBUF_MAX_SIZE - p_ringbuf->tail);
+        sh = (size - fh)%WHAD_RINGBUF_MAX_SIZE;
     }
     else
     {
@@ -98,11 +110,11 @@ whad_result_t whad_ringbuf_copy(whad_ringbuf_t *p_ringbuf, uint8_t *p_data, int 
     /* Copy data. */
     if (fh > 0)
     {
-        memcpy(p_data, &p_ringbuf->data[p_ringbuf->head], fh);
+        memcpy(p_data, &p_ringbuf->data[p_ringbuf->tail], fh);
     }
     if (sh > 0)
     {
-        memcpy(&p_data[fh], p_ringbuf->data[0], sh);
+        memcpy(&p_data[fh], &p_ringbuf->data[0], sh);
     }
 
     /* Success. */
