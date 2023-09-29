@@ -2,7 +2,7 @@
 
 ifdef ARCH_ARM
 	CROSS_COMPILE		?= arm-none-eabi-
-	CFLAGS	     = -Os -mthumb -mhard-float -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -Wall
+	CFLAGS	     		 = -Os -mthumb -mhard-float -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -Wall
 else
 	$(error Architecture not supported.)
 endif
@@ -32,7 +32,7 @@ TARGETS := $(wildcard src/*.c) $(wildcard $(NANOPB_DIR)/*.c) $(wildcard $(WHAD_D
 OBJS=$(TARGETS:.c=.o)
 
 %.o: %.c
-	$(CC) $(INCLUDE) -c $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 libwhad.a: $(OBJS)
 	$(AR) -rc $(LIB_DIR)/libwhad.a $(OBJS)

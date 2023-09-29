@@ -21,8 +21,6 @@ void whad_generic_cmd_result(
  */
 bool whad_verbose_msg_encode_cb(pb_ostream_t *ostream, const pb_field_t *field, void * const *arg)
 {
-    char dbg[1024];
-
     /* Take arg and encode it. */
     char *psz_message = *(char **)arg;
     int message_length = strlen(psz_message);
@@ -275,4 +273,30 @@ void whad_phy_supported_frequencies(
     message->msg.phy.which_msg = phy_Message_supported_freq_tag;
     message->msg.phy.msg.supported_freq.frequency_ranges.arg = p_ranges;
     message->msg.phy.msg.supported_freq.frequency_ranges.funcs.encode = whad_phy_frequency_range_encode_cb;
+}
+
+void whad_phy_packet_received(
+    Message *message,
+    uint32_t frequency,
+    int32_t rssi,
+    uint32_t timestamp,
+    uint8_t *payload,
+    int length)
+{
+    message->which_msg = Message_phy_tag;
+    message->msg.phy.which_msg = phy_Message_packet_tag;
+    message->msg.phy.msg.packet.frequency = frequency;
+    message->msg.phy.msg.packet.rssi = rssi;
+    message->msg.phy.msg.packet.timestamp = timestamp;
+    message->msg.phy.msg.packet.packet.size = length;
+    memcpy(message->msg.phy.msg.packet.packet.bytes, payload, length);
+}
+
+
+void whad_verbose(char *psz_message)
+{
+    Message msg;
+
+    whad_init_verbose_message(&msg, psz_message);
+    whad_send_message(&msg);
 }

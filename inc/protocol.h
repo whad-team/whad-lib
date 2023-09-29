@@ -143,4 +143,13 @@ void whad_phy_supported_frequencies(
     phy_SupportedFrequencyRanges_FrequencyRange *p_ranges,
     int nb_ranges);
 
+void whad_phy_packet_received(
+    Message *message,
+    uint32_t frequency,
+    int32_t rssi,
+    uint32_t timestamp,
+    uint8_t *payload,
+    int length
+);
+
 #endif /* INC_WHAD_PROTOCOL_H */
