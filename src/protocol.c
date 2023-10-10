@@ -286,8 +286,24 @@ void whad_phy_packet_received(
     message->which_msg = Message_phy_tag;
     message->msg.phy.which_msg = phy_Message_packet_tag;
     message->msg.phy.msg.packet.frequency = frequency;
+
+    /* Set timestamp if provided. */
+    if (timestamp > 0)
+    {
+        message->msg.phy.msg.packet.has_timestamp = true;
+        message->msg.phy.msg.packet.timestamp = timestamp;
+    }
+    else
+    {
+        message->msg.phy.msg.packet.has_timestamp = false;
+        message->msg.phy.msg.packet.timestamp = 0;
+    }
+
+    /* Set rssi. */
+    message->msg.phy.msg.packet.has_rssi = true;
     message->msg.phy.msg.packet.rssi = rssi;
-    message->msg.phy.msg.packet.timestamp = timestamp;
+
+    /* Copy packet into our message. */
     message->msg.phy.msg.packet.packet.size = length;
     memcpy(message->msg.phy.msg.packet.packet.bytes, payload, length);
 }

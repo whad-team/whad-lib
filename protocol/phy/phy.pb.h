@@ -189,6 +189,7 @@ typedef struct _phy_RawPacketReceived {
 typedef PB_BYTES_ARRAY_T(255) phy_SendCmd_packet_t;
 typedef struct _phy_SendCmd { 
     phy_SendCmd_packet_t packet;
+    uint32_t timestamp;
 } phy_SendCmd;
 
 /* *
@@ -400,7 +401,7 @@ extern "C" {
 #define phy_SetPacketSizeCmd_init_default        {0}
 #define phy_SetSyncWordCmd_init_default          {{0, {0}}}
 #define phy_SniffCmd_init_default                {false, 0}
-#define phy_SendCmd_init_default                 {{0, {0}}}
+#define phy_SendCmd_init_default                 {{0, {0}}, 0}
 #define phy_SendRawCmd_init_default              {{{NULL}, NULL}}
 #define phy_StartCmd_init_default                {0}
 #define phy_StopCmd_init_default                 {0}
@@ -429,7 +430,7 @@ extern "C" {
 #define phy_SetPacketSizeCmd_init_zero           {0}
 #define phy_SetSyncWordCmd_init_zero             {{0, {0}}}
 #define phy_SniffCmd_init_zero                   {false, 0}
-#define phy_SendCmd_init_zero                    {{0, {0}}}
+#define phy_SendCmd_init_zero                    {{0, {0}}, 0}
 #define phy_SendRawCmd_init_zero                 {{{NULL}, NULL}}
 #define phy_StartCmd_init_zero                   {0}
 #define phy_StopCmd_init_zero                    {0}
@@ -460,6 +461,7 @@ extern "C" {
 #define phy_RawPacketReceived_packet_tag         4
 #define phy_RawPacketReceived_iq_tag             5
 #define phy_SendCmd_packet_tag                   1
+#define phy_SendCmd_timestamp_tag                2
 #define phy_Set4FSKModulationCmd_deviation_tag   1
 #define phy_SetASKModulationCmd_ook_tag          1
 #define phy_SetDataRateCmd_rate_tag              1
@@ -596,7 +598,8 @@ X(a, STATIC,   OPTIONAL, BOOL,     iq_stream,         1)
 #define phy_SniffCmd_DEFAULT NULL
 
 #define phy_SendCmd_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, BYTES,    packet,            1)
+X(a, STATIC,   SINGULAR, BYTES,    packet,            1) \
+X(a, STATIC,   SINGULAR, UINT32,   timestamp,         2)
 #define phy_SendCmd_CALLBACK NULL
 #define phy_SendCmd_DEFAULT NULL
 
@@ -795,7 +798,7 @@ extern const pb_msgdesc_t phy_Message_msg;
 #define phy_Jammed_size                          6
 #define phy_MonitorCmd_size                      0
 #define phy_PacketReceived_size                  281
-#define phy_SendCmd_size                         258
+#define phy_SendCmd_size                         264
 #define phy_Set4FSKModulationCmd_size            6
 #define phy_SetASKModulationCmd_size             2
 #define phy_SetBPSKModulationCmd_size            0
