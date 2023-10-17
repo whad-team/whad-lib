@@ -147,9 +147,12 @@ void whad_phy_packet_received(
     Message *message,
     uint32_t frequency,
     int32_t rssi,
-    uint32_t timestamp,
+    uint32_t ts_sec,
+    uint32_t ts_usec,
     uint8_t *payload,
     int length
 );
+
+void whad_phy_packet_scheduled(Message *p_msg, uint8_t id, bool full);
 
 #endif /* INC_WHAD_PROTOCOL_H */

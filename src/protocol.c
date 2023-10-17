@@ -279,7 +279,8 @@ void whad_phy_packet_received(
     Message *message,
     uint32_t frequency,
     int32_t rssi,
-    uint32_t timestamp,
+    uint32_t ts_sec,
+    uint32_t ts_usec,
     uint8_t *payload,
     int length)
 {
@@ -288,15 +289,17 @@ void whad_phy_packet_received(
     message->msg.phy.msg.packet.frequency = frequency;
 
     /* Set timestamp if provided. */
-    if (timestamp > 0)
+    if ((ts_sec > 0) || (ts_usec > 0))
     {
         message->msg.phy.msg.packet.has_timestamp = true;
-        message->msg.phy.msg.packet.timestamp = timestamp;
+        message->msg.phy.msg.packet.timestamp.sec = ts_sec;
+        message->msg.phy.msg.packet.timestamp.usec = ts_usec;
     }
     else
     {
         message->msg.phy.msg.packet.has_timestamp = false;
-        message->msg.phy.msg.packet.timestamp = 0;
+        message->msg.phy.msg.packet.timestamp.sec = 0;
+        message->msg.phy.msg.packet.timestamp.usec = 0;
     }
 
     /* Set rssi. */
@@ -308,6 +311,21 @@ void whad_phy_packet_received(
     memcpy(message->msg.phy.msg.packet.packet.bytes, payload, length);
 }
 
+void whad_phy_packet_scheduled(Message *p_msg, uint8_t id, bool full)
+{
+    p_msg->which_msg = Message_phy_tag;
+    p_msg->msg.phy.which_msg = phy_Message_sched_pkt_rsp_tag;
+    p_msg->msg.phy.msg.sched_pkt_rsp.id = id;
+    if (full)
+    {
+        p_msg->msg.phy.msg.sched_pkt_rsp.has_full = true;
+        p_msg->msg.phy.msg.sched_pkt_rsp.full = true;
+    }
+    else
+    {
+       p_msg->msg.phy.msg.sched_pkt_rsp.has_full = false; 
+    }
+}
 
 void whad_verbose(char *psz_message)
 {
