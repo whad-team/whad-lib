@@ -71,7 +71,7 @@ void whad_init_error_message(Message *message, generic_ResultCode error)
 
 bool whad_disc_enum_capabilities_cb(pb_ostream_t *ostream, const pb_field_t *field, void * const *arg)
 {
-    DeviceCapability *capabilities = *(DeviceCapability **)arg;
+    WhadDeviceCapability *capabilities = *(WhadDeviceCapability **)arg;
     if (ostream != NULL && field->tag == discovery_DeviceInfoResp_capabilities_tag)
     {
         while ((capabilities->cap != 0) && (capabilities->domain != 0))
@@ -102,7 +102,7 @@ void whad_discovery_device_info_resp(
     uint32_t fw_version_major,
     uint32_t fw_version_minor,
     uint32_t fw_version_rev,
-    DeviceCapability *capabilities)
+    WhadDeviceCapability *capabilities)
 {
     message->which_msg = Message_discovery_tag;
     message->msg.discovery.which_msg = discovery_Message_info_resp_tag;

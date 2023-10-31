@@ -7,6 +7,10 @@
 
 #define WHAD_TRANSPORT_MSG_MAXSIZE  1024
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Define callback function types. */
 typedef void (*whad_transport_data_send_buffer_cb_t)(uint8_t *p_buffer, int size);
 typedef void (*whad_transport_message_cb_t)(Message *p_msg);
@@ -61,5 +65,9 @@ whad_result_t whad_transport_send_message(uint8_t *p_message, int size);
 
 int whad_transport_get_txbuf_size(void);
 int whad_transport_get_rxbuf_size(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __INC_WHAD_TRANSPORT_H */

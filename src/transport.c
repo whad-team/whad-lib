@@ -168,9 +168,11 @@ whad_result_t whad_transport_get_message(uint8_t *p_buffer, int *p_size)
 
 whad_result_t whad_transport_send_message(uint8_t *p_message, int size)
 {
-    whad_result_t result;
     uint8_t header[4];
     int nb_bytes_sent;
+
+    if (size == 0)
+        return WHAD_SUCCESS;
 
     /* Write header. */
     header[0] = '\xAC';

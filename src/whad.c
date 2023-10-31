@@ -15,15 +15,19 @@ void whad_init(whad_transport_cfg_t *p_transport_cfg)
 
 whad_result_t whad_send_message(Message *p_msg)
 {
-    int size;
-    uint8_t header[4];
-
     /* Serialize our message. */
     pb_ostream_t stream = pb_ostream_from_buffer(g_tx_message_buf, 1024);
     if (pb_encode(&stream, Message_fields, p_msg))
     {
-        /* Send our serialized message to transport. */
-        return whad_transport_send_message(g_tx_message_buf, stream.bytes_written);
+        if (stream.bytes_written >0)
+        {
+            /* Send our serialized message to transport. */
+            return whad_transport_send_message(g_tx_message_buf, stream.bytes_written);
+        }
+        else
+        {
+            return WHAD_ERROR;
+        }
     }
     else
         return WHAD_ERROR;

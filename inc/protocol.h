@@ -10,10 +10,14 @@
 #define BAUDRATE_MAX 921600
 //#define BAUDRATE_MAX 115200
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     discovery_Domain domain;
     discovery_Capability cap;
-} DeviceCapability;
+} WhadDeviceCapability;
 
 typedef struct {
     int rssi;
@@ -39,7 +43,7 @@ void whad_discovery_device_info_resp(
     uint32_t fw_version_major,
     uint32_t fw_version_minor,
     uint32_t fw_version_rev,
-    DeviceCapability *capabilities);
+    WhadDeviceCapability *capabilities);
 
 void whad_discovery_domain_info_resp(
     Message *message, discovery_Domain domain,
@@ -95,7 +99,13 @@ void whad_generic_cmd_result(
 
 bool whad_verbose_msg_encode_cb(pb_ostream_t *ostream, const pb_field_t *field, void * const *arg);
 void whad_init_verbose_message(Message *message, char *psz_message);
+bool whad_phy_frequency_range_encode_cb(pb_ostream_t *ostream, const pb_field_t *field, void * const *arg);
 void whad_init_error_message(Message *message, generic_ResultCode error);
+
+/*********************************
+ * Discovery
+ ********************************/
+
 bool whad_disc_enum_capabilities_cb(pb_ostream_t *ostream, const pb_field_t *field, void * const *arg);
 void whad_discovery_device_info_resp(
     Message *message,
@@ -108,12 +118,17 @@ void whad_discovery_device_info_resp(
     uint32_t fw_version_major,
     uint32_t fw_version_minor,
     uint32_t fw_version_rev,
-    DeviceCapability *capabilities);
+    WhadDeviceCapability *capabilities);
 
 void whad_discovery_domain_info_resp(
     Message *message, discovery_Domain domain,
     uint64_t supported_commands);
 void whad_discovery_ready_resp(Message *message);
+
+/*********************************
+ * Bluetooth Low Energy domain
+ ********************************/
+
 void whad_ble_adv_pdu(
     Message *message,
     whad_adv_data_t *args
@@ -138,6 +153,10 @@ void whad_ble_notify_connected(Message *message, uint8_t adv_addr_type, uint8_t 
 void whad_ble_notify_disconnected(Message *message, uint32_t conn_handle, uint32_t reason);
 
 
+/*********************************
+ * PHY domain
+ ********************************/
+
 void whad_phy_supported_frequencies(
     Message *message,
     phy_SupportedFrequencyRanges_FrequencyRange *p_ranges,
@@ -154,5 +173,9 @@ void whad_phy_packet_received(
 );
 
 void whad_phy_packet_scheduled(Message *p_msg, uint8_t id, bool full);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INC_WHAD_PROTOCOL_H */
