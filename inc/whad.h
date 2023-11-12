@@ -14,7 +14,6 @@ extern "C" {
 void whad_init(whad_transport_cfg_t *p_transport_cfg);
 whad_result_t whad_get_message(Message *p_msg);
 whad_result_t whad_send_message(Message *p_msg);
-void whad_verbose(char *psz_message);
 
 
 #ifdef __cplusplus
