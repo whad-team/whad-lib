@@ -21,4 +21,8 @@ whad_result_t whad_send_message(Message *p_msg);
 #endif
 
 
+#ifdef __cplusplus
+#include "whad.hpp"
+#endif
+
 #endif /* __INC_WHAD_H */
