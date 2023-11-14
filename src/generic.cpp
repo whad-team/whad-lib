@@ -6,7 +6,7 @@
  * @param   message Message string to pass to the host.
  **/
 
-whad::generic::VerboseMessage::VerboseMessage(std::string message) : NanoPbMsg()
+whad::generic::Verbose::Verbose(std::string message) : NanoPbMsg()
 {
     whad_generic_verbose_message(this->getRaw(), (char *)message.c_str());
 }
@@ -31,7 +31,7 @@ whad::generic::CommandResult::CommandResult(whad_result_code_t resultCode) : Nan
  * @param   message Message string to pass to the host.
  **/
 
-whad::generic::DebugMessage::DebugMessage(int32_t level, std::string message) : NanoPbMsg()
+whad::generic::Debug::Debug(int32_t level, std::string message) : NanoPbMsg()
 {
     whad_generic_debug_message(this->getRaw(), level, (char *)message.c_str());
 }
@@ -43,7 +43,7 @@ whad::generic::DebugMessage::DebugMessage(int32_t level, std::string message) : 
  * @param   value   Progress value or step.
  **/
 
-whad::generic::ProgressMessage::ProgressMessage(int32_t value) : NanoPbMsg()
+whad::generic::Progress::Progress(int32_t value) : NanoPbMsg()
 {
     whad_generic_progress_message(this->getRaw(), value);
 }

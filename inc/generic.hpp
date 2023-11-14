@@ -8,28 +8,32 @@ namespace whad
 {
     namespace generic
     {
-        class VerboseMessage : public NanoPbMsg
+        /* Verbose message. */
+        class Verbose : public NanoPbMsg
         {
             public:
-                VerboseMessage(std::string message);
+                Verbose(std::string message);
         };
 
+        /* Command result. */
         class CommandResult : public NanoPbMsg
         {
             public:
                 CommandResult(whad_result_code_t result);
         };
 
-        class DebugMessage : public NanoPbMsg
+        /* Debug message and level. */
+        class Debug : public NanoPbMsg
         {
             public:
-                DebugMessage(int32_t level, std::string message);
+                Debug(int32_t level, std::string message);
         };
 
-        class ProgressMessage : public NanoPbMsg
+        /* Progress notification. */
+        class Progress : public NanoPbMsg
         {
             public:
-                ProgressMessage(int32_t value);
+                Progress(int32_t value);
         };
     }
 };

@@ -33,23 +33,26 @@ namespace whad
             VirtualDevice = discovery_DeviceType_VirtualDevice
         };
 
-        class ReadyRespMessage : public NanoPbMsg
+        /* Device ready response. */
+        class ReadyResp : public NanoPbMsg
         {
             public:
-                ReadyRespMessage();
+                ReadyResp();
         };
 
-        class DomainInfoRespMessage : public NanoPbMsg
+        /* Domain information response. */
+        class DomainInfoResp : public NanoPbMsg
         {
             public:
-                DomainInfoRespMessage(Domains domain, DeviceCapability *capabilities);
+                DomainInfoResp(Domains domain, DeviceCapability *capabilities);
         };
 
 
-        class DeviceInfoRespMessage : public NanoPbMsg
+        /* Device information response. */
+        class DeviceInfoResp : public NanoPbMsg
         {
             public:
-                DeviceInfoRespMessage(
+                DeviceInfoResp(
                     Devices deviceType,
                     uint8_t deviceId[16],
                     uint32_t protoMinVer,
