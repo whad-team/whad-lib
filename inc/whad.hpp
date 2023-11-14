@@ -3,6 +3,7 @@
 
 #include "message.hpp"
 #include "generic.hpp"
+#include "discovery.hpp"
 
 namespace whad
 {

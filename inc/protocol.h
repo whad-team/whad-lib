@@ -51,7 +51,8 @@ whad_result_t whad_verbose(char *psz_message);
 typedef struct {
     discovery_Domain domain;
     discovery_Capability cap;
-} WhadDeviceCapability;
+    uint64_t supported_commands;
+} DeviceCapability;
 
 whad_result_t whad_discovery_device_info_resp(
     Message *p_message,
@@ -64,8 +65,8 @@ whad_result_t whad_discovery_device_info_resp(
     uint32_t fw_version_major,
     uint32_t fw_version_minor,
     uint32_t fw_version_rev,
-    WhadDeviceCapability *capabilities);
-whad_result_t whad_discovery_domain_info_resp(Message *p_message, discovery_Domain domain, uint64_t supported_commands); 
+    DeviceCapability *capabilities);
+whad_result_t whad_discovery_domain_info_resp(Message *p_message, discovery_Domain domain, DeviceCapability *p_capabilities);
 whad_result_t whad_discovery_ready_resp(Message *p_message);
 
 /*********************************

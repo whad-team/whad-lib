@@ -12,6 +12,10 @@ whad::NanoPbMsg::NanoPbMsg(void)
 
 whad::NanoPbMsg::~NanoPbMsg(void)
 {
+    if (this->p_nanopbMessage != NULL)
+    {
+        free(this->p_nanopbMessage);
+    }
 }
 
 Message *whad::NanoPbMsg::getRaw()

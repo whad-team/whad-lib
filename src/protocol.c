@@ -212,7 +212,7 @@ whad_result_t whad_generic_progress_message(Message *p_message, uint32_t value)
 
 bool whad_disc_enum_capabilities_cb(pb_ostream_t *ostream, const pb_field_t *field, void * const *arg)
 {
-    WhadDeviceCapability *capabilities = *(WhadDeviceCapability **)arg;
+    DeviceCapability *capabilities = *(DeviceCapability **)arg;
     if (ostream != NULL && field->tag == discovery_DeviceInfoResp_capabilities_tag)
     {
         while ((capabilities->cap != 0) && (capabilities->domain != 0))
@@ -229,6 +229,19 @@ bool whad_disc_enum_capabilities_cb(pb_ostream_t *ostream, const pb_field_t *fie
     }
 
     return true;
+}
+
+uint64_t whad_discovery_get_supported_commands(discovery_Domain domain, DeviceCapability *p_capabilities) {
+  uint64_t supportedCommands = 0x00000000;
+  int index = 0;
+  while (p_capabilities[index].domain != 0) {
+    if (p_capabilities[index].domain == domain) {
+      supportedCommands = p_capabilities[index].supported_commands;
+      break;
+    }
+    index++;
+  }
+  return supportedCommands;
 }
 
 /**
@@ -262,7 +275,7 @@ whad_result_t whad_discovery_device_info_resp(
     uint32_t fw_version_major,
     uint32_t fw_version_minor,
     uint32_t fw_version_rev,
-    WhadDeviceCapability *capabilities)
+    DeviceCapability *capabilities)
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -318,7 +331,7 @@ whad_result_t whad_discovery_device_info_resp(
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_discovery_domain_info_resp(Message *p_message, discovery_Domain domain, uint64_t supported_commands)
+whad_result_t whad_discovery_domain_info_resp(Message *p_message, discovery_Domain domain, DeviceCapability *p_capabilities)
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -330,7 +343,7 @@ whad_result_t whad_discovery_domain_info_resp(Message *p_message, discovery_Doma
     p_message->which_msg = Message_discovery_tag;
     p_message->msg.discovery.which_msg = discovery_Message_domain_resp_tag;
     p_message->msg.discovery.msg.domain_resp.domain = domain;
-    p_message->msg.discovery.msg.domain_resp.supported_commands = supported_commands;
+    p_message->msg.discovery.msg.domain_resp.supported_commands = whad_discovery_get_supported_commands(domain, p_capabilities);
 
     /* Success. */
     return WHAD_SUCCESS;
