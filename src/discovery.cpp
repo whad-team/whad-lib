@@ -1,7 +1,12 @@
 #include "bsp.h"
 #include "discovery.hpp"
 
-/**
+whad::discovery::DeviceReset::DeviceReset() : NanoPbMsg()
+{
+    whad_discovery_device_reset(this->getRaw());
+}
+
+/**fg
  * @brief   Build a discovery ready response message.
  * 
  * This message must be sent in response to a Reset query from the host,
@@ -25,9 +30,9 @@ whad::discovery::ReadyResp::ReadyResp() : NanoPbMsg()
  * @param   capabilities    The device's capabilities structure
  **/
 
-whad::discovery::DomainInfoResp::DomainInfoResp(Domains domain, DeviceCapability *capabilities) : NanoPbMsg()
+whad::discovery::DomainInfoResp::DomainInfoResp(Domains domain, whad_domain_desc_t *capabilities) : NanoPbMsg()
 {
-    whad_discovery_domain_info_resp(this->getRaw(), (discovery_Domain)domain, capabilities);
+    whad_discovery_domain_info_resp(this->getRaw(), (whad_domain_t)domain, capabilities);
 }
 
 
@@ -59,7 +64,7 @@ whad::discovery::DeviceInfoResp::DeviceInfoResp(
     uint32_t fwVersionMajor,
     uint32_t fwVersionMinor,
     uint32_t fwVersionRevision,
-    DeviceCapability *capabilities
+    whad_domain_desc_t *capabilities
 ) : NanoPbMsg()
 {
     whad_discovery_device_info_resp(

@@ -1,41 +1,45 @@
 #ifndef __INC_WHAD_GENERIC_HPP
 #define __INC_WHAD_GENERIC_HPP
 
-#include <string>
-#include "message.hpp"
+#ifdef __cplusplus
 
-namespace whad
-{
-    namespace generic
+    #include <string>
+    #include "message.hpp"
+
+    namespace whad
     {
-        /* Verbose message. */
-        class Verbose : public NanoPbMsg
+        namespace generic
         {
-            public:
-                Verbose(std::string message);
-        };
+            /* Verbose message. */
+            class Verbose : public NanoPbMsg
+            {
+                public:
+                    Verbose(std::string message);
+            };
 
-        /* Command result. */
-        class CommandResult : public NanoPbMsg
-        {
-            public:
-                CommandResult(whad_result_code_t result);
-        };
+            /* Command result. */
+            class CommandResult : public NanoPbMsg
+            {
+                public:
+                    CommandResult(whad_result_code_t result);
+            };
 
-        /* Debug message and level. */
-        class Debug : public NanoPbMsg
-        {
-            public:
-                Debug(int32_t level, std::string message);
-        };
+            /* Debug message and level. */
+            class Debug : public NanoPbMsg
+            {
+                public:
+                    Debug(int32_t level, std::string message);
+            };
 
-        /* Progress notification. */
-        class Progress : public NanoPbMsg
-        {
-            public:
-                Progress(int32_t value);
-        };
-    }
-};
+            /* Progress notification. */
+            class Progress : public NanoPbMsg
+            {
+                public:
+                    Progress(int32_t value);
+            };
+        }
+    };
+
+#endif /* _cplusplus */
 
 #endif /* __INC_WHAD_GENERIC_HPP */

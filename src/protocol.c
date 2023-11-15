@@ -212,7 +212,7 @@ whad_result_t whad_generic_progress_message(Message *p_message, uint32_t value)
 
 bool whad_disc_enum_capabilities_cb(pb_ostream_t *ostream, const pb_field_t *field, void * const *arg)
 {
-    DeviceCapability *capabilities = *(DeviceCapability **)arg;
+    whad_domain_desc_t *capabilities = *(whad_domain_desc_t **)arg;
     if (ostream != NULL && field->tag == discovery_DeviceInfoResp_capabilities_tag)
     {
         while ((capabilities->cap != 0) && (capabilities->domain != 0))
@@ -231,7 +231,7 @@ bool whad_disc_enum_capabilities_cb(pb_ostream_t *ostream, const pb_field_t *fie
     return true;
 }
 
-uint64_t whad_discovery_get_supported_commands(discovery_Domain domain, DeviceCapability *p_capabilities) {
+uint64_t whad_discovery_get_supported_commands(whad_domain_t domain, whad_domain_desc_t *p_capabilities) {
   uint64_t supportedCommands = 0x00000000;
   int index = 0;
   while (p_capabilities[index].domain != 0) {
@@ -243,6 +243,35 @@ uint64_t whad_discovery_get_supported_commands(discovery_Domain domain, DeviceCa
   }
   return supportedCommands;
 }
+
+
+/**
+ * @brief Initialize a discovery device info query.
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       proto_version       Version of the WHAD protocol supported by the sender
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_discovery_device_info_query(Message *p_message, uint32_t proto_version)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate fieds. */
+    p_message->which_msg = Message_discovery_tag;
+    p_message->msg.discovery.which_msg = discovery_Message_info_query_tag;
+    p_message->msg.discovery.msg.info_query.proto_ver = proto_version;
+
+    /* Success. */
+    return WHAD_SUCCESS;    
+}
+
 
 /**
  * @brief Initialize a discovery device information response message.
@@ -275,7 +304,7 @@ whad_result_t whad_discovery_device_info_resp(
     uint32_t fw_version_major,
     uint32_t fw_version_minor,
     uint32_t fw_version_rev,
-    DeviceCapability *capabilities)
+    whad_domain_desc_t *capabilities)
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -321,6 +350,34 @@ whad_result_t whad_discovery_device_info_resp(
 
 
 /**
+ * @brief Initialize a discovery device info query.
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       domain              Domain to query
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_discovery_domain_info_query(Message *p_message, whad_domain_t domain)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate fieds. */
+    p_message->which_msg = Message_discovery_tag;
+    p_message->msg.discovery.which_msg = discovery_Message_domain_query_tag;
+    p_message->msg.discovery.msg.domain_query.domain = domain;
+
+    /* Success. */
+    return WHAD_SUCCESS;    
+}
+
+
+/**
  * @brief Initialize a discovery domain information response message.
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -331,7 +388,7 @@ whad_result_t whad_discovery_device_info_resp(
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_discovery_domain_info_resp(Message *p_message, discovery_Domain domain, DeviceCapability *p_capabilities)
+whad_result_t whad_discovery_domain_info_resp(Message *p_message, whad_domain_t domain, whad_domain_desc_t *p_capabilities)
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -342,11 +399,36 @@ whad_result_t whad_discovery_domain_info_resp(Message *p_message, discovery_Doma
     /* Populate fields. */
     p_message->which_msg = Message_discovery_tag;
     p_message->msg.discovery.which_msg = discovery_Message_domain_resp_tag;
-    p_message->msg.discovery.msg.domain_resp.domain = domain;
+    p_message->msg.discovery.msg.domain_resp.domain = (discovery_Domain)domain;
     p_message->msg.discovery.msg.domain_resp.supported_commands = whad_discovery_get_supported_commands(domain, p_capabilities);
 
     /* Success. */
     return WHAD_SUCCESS;
+}
+
+/**
+ * @brief Initialize a discovery device reset message.
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_discovery_device_reset(Message *p_message)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate fieds. */
+    p_message->which_msg = Message_discovery_tag;
+    p_message->msg.discovery.which_msg = discovery_Message_reset_query_tag;
+
+    /* Success. */
+    return WHAD_SUCCESS;    
 }
 
 
@@ -427,7 +509,7 @@ whad_result_t whad_ble_adv_pdu(Message *p_message, whad_adv_data_t *args)
  * @retval          WHAD_ERROR          Invalid message pointer or PDU pointer.
  **/
 
-whad_result_t whad_ble_data_pdu(Message *p_message, uint8_t *p_pdu, int length, ble_BleDirection direction)
+whad_result_t whad_ble_data_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_ble_direction_t direction)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL) )
@@ -438,7 +520,7 @@ whad_result_t whad_ble_data_pdu(Message *p_message, uint8_t *p_pdu, int length, 
     /* Populate fields. */
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_pdu_tag;
-    p_message->msg.ble.msg.pdu.direction = direction;
+    p_message->msg.ble.msg.pdu.direction = (ble_BleDirection)direction;
     p_message->msg.ble.msg.pdu.pdu.size = length;
     memcpy(p_message->msg.ble.msg.pdu.pdu.bytes, p_pdu, length);
 
@@ -464,7 +546,7 @@ whad_result_t whad_ble_data_pdu(Message *p_message, uint8_t *p_pdu, int length, 
  **/
 
 whad_result_t whad_ble_ll_data_pdu(Message *p_message, uint16_t header, uint8_t *p_pdu, int length,
-                          ble_BleDirection direction, int conn_handle, bool processed, bool decrypted)
+                          whad_ble_direction_t direction, int conn_handle, bool processed, bool decrypted)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL) )
@@ -477,7 +559,7 @@ whad_result_t whad_ble_ll_data_pdu(Message *p_message, uint16_t header, uint8_t 
     p_message->msg.ble.which_msg = ble_Message_pdu_tag;
     p_message->msg.ble.msg.pdu.processed = processed?1:0;
     p_message->msg.ble.msg.pdu.decrypted = decrypted?1:0;
-    p_message->msg.ble.msg.pdu.direction = direction;
+    p_message->msg.ble.msg.pdu.direction = (ble_BleDirection)direction;
     p_message->msg.ble.msg.pdu.conn_handle = conn_handle;
     p_message->msg.ble.msg.pdu.pdu.size = length + 2;
     p_message->msg.ble.msg.pdu.pdu.bytes[0] = (header & 0xff);
@@ -502,7 +584,7 @@ whad_result_t whad_ble_ll_data_pdu(Message *p_message, uint16_t header, uint8_t 
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_notify_connected(Message *p_message, uint8_t adv_addr_type, uint8_t *p_adv_addr, uint8_t init_addr_type, uint8_t *p_init_addr, uint32_t conn_handle)
+whad_result_t whad_ble_notify_connected(Message *p_message, whad_ble_addrtype_t adv_addr_type, uint8_t *p_adv_addr, whad_ble_addrtype_t init_addr_type, uint8_t *p_init_addr, uint32_t conn_handle)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_adv_addr == NULL) || (p_init_addr == NULL) )
@@ -521,11 +603,11 @@ whad_result_t whad_ble_notify_connected(Message *p_message, uint8_t adv_addr_typ
 
     /* Save advertiser address and address type. */
     memcpy(p_message->msg.ble.msg.connected.advertiser, p_adv_addr, 6);
-    p_message->msg.ble.msg.connected.adv_addr_type = adv_addr_type;
+    p_message->msg.ble.msg.connected.adv_addr_type = (ble_BleAddrType)adv_addr_type;
 
     /* Save initiator address and address type. */
     memcpy(p_message->msg.ble.msg.connected.initiator, p_init_addr, 6);
-    p_message->msg.ble.msg.connected.init_addr_type = init_addr_type;
+    p_message->msg.ble.msg.connected.init_addr_type = (ble_BleAddrType)init_addr_type;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -561,6 +643,578 @@ whad_result_t whad_ble_notify_disconnected(Message *p_message, uint32_t conn_han
     return WHAD_SUCCESS;
 }
 
+
+whad_result_t whad_ble_set_bdaddress(Message *p_message, whad_ble_addrtype_t addr_type, uint8_t *p_bdaddr)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_bdaddr == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_set_bd_addr_tag;
+
+    /* Copy BD address. */
+    p_message->msg.ble.msg.set_bd_addr.addr_type = (ble_BleAddrType)addr_type;
+    memcpy(p_message->msg.ble.msg.set_bd_addr.bd_address, p_bdaddr, 6);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_sniff_adv(Message *p_message, bool use_ext_adv, uint32_t channel, uint8_t *p_bdaddr)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_bdaddr == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_sniff_adv_tag;
+    p_message->msg.ble.msg.sniff_adv.use_extended_adv = use_ext_adv;
+    p_message->msg.ble.msg.sniff_adv.channel = channel;
+    memcpy(p_message->msg.ble.msg.sniff_adv.bd_address, p_bdaddr, 6);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_jam_adv(Message *p_message)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_jam_adv_tag;
+
+    /* Success. */
+    return WHAD_SUCCESS;    
+}
+
+
+whad_result_t whad_ble_jam_adv_channel(Message *p_message, uint32_t channel)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_jam_adv_chan_tag;
+    p_message->msg.ble.msg.jam_adv_chan.channel = channel;
+
+    /* Success. */
+    return WHAD_SUCCESS;       
+}
+
+whad_result_t whad_ble_sniff_conn_req(Message *p_message, bool show_empty_packets, bool show_adv,
+                                      uint32_t channel, uint8_t *p_bdaddr)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_bdaddr == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_sniff_connreq_tag;
+    p_message->msg.ble.msg.sniff_connreq.show_empty_packets = show_empty_packets;
+    p_message->msg.ble.msg.sniff_connreq.show_advertisements = show_adv;
+    p_message->msg.ble.msg.sniff_connreq.channel = channel;
+    memcpy(p_message->msg.ble.msg.sniff_connreq.bd_address, p_bdaddr, 6);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_channelmap == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_sniff_aa_tag;
+    memcpy(p_message->msg.ble.msg.sniff_aa.monitored_channels, p_channelmap, 5);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_address, uint32_t crc_init,
+                                         uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
+                                         uint8_t *p_channels)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_channelmap == NULL) || (p_channels == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_sniff_conn_tag;
+    p_message->msg.ble.msg.sniff_conn.access_address = access_address;
+    p_message->msg.ble.msg.sniff_conn.crc_init = crc_init;
+    p_message->msg.ble.msg.sniff_conn.hop_interval = hop_interval;
+    p_message->msg.ble.msg.sniff_conn.hop_increment = hop_increment;
+    memcpy(p_message->msg.ble.msg.sniff_conn.channel_map, p_channelmap, 5);
+    memcpy(p_message->msg.ble.msg.sniff_conn.monitored_channels, p_channels, 5);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_address)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_jam_conn_tag;
+    p_message->msg.ble.msg.jam_conn.access_address = access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS; 
+}
+
+whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_scan_mode_tag;
+    p_message->msg.ble.msg.scan_mode.active_scan = active_scan; 
+
+    /* Success. */
+    return WHAD_SUCCESS;   
+}
+
+whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_scan_data, int scan_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_scan_data == NULL) || (p_scanrsp_data == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_adv_mode_tag;
+
+    /* Set avertising data, if provided. */
+    if (scan_data_length > 0)
+    {
+        /* Cannot send more than 31 bytes in advertisement data. */
+        if (scan_data_length > 31)
+        {
+            scan_data_length = 31;
+        }
+        p_message->msg.ble.msg.adv_mode.scan_data.size = scan_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_scan_data, scan_data_length);
+    }
+
+    /* Set scan response data, if provided. */
+    if (scanrsp_data_length > 0)
+    {
+        /* Cannot send more than 31 bytes in scan response data. */
+        if (scanrsp_data_length > 31)
+        {
+            scanrsp_data_length = 31;
+        }
+
+        p_message->msg.ble.msg.adv_mode.scanrsp_data.size = scanrsp_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;   
+}
+
+/** TODO Not yet supported, need some fix in whad-protocol. */
+whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_scan_data, int scan_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_scan_data == NULL) || (p_scanrsp_data == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_set_adv_data_tag;
+
+    /* Set avertising data, if provided. */
+    if (scan_data_length > 0)
+    {
+        /* Cannot send more than 31 bytes in advertisement data. */
+        if (scan_data_length > 31)
+        {
+            scan_data_length = 31;
+        }
+        //p_message->msg.ble.msg.adv_mode.scan_data.size = scan_data_length;
+        //memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_scan_data, scan_data_length);
+    }
+
+    /* Set scan response data, if provided. */
+    if (scanrsp_data_length > 0)
+    {
+        /* Cannot send more than 31 bytes in scan response data. */
+        if (scanrsp_data_length > 31)
+        {
+            scanrsp_data_length = 31;
+        }
+
+        //p_message->msg.ble.msg.adv_mode.scanrsp_data.size = scanrsp_data_length;
+        //memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;   
+}
+
+
+whad_result_t whad_ble_central_mode(Message *p_message)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_central_mode_tag; 
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_connect_to(Message *p_message, uint8_t *p_bdaddr, whad_ble_addrtype_t addr_type, uint32_t access_address, uint8_t *p_channelmap, uint32_t hop_interval, uint32_t hop_increment, uint32_t crc_init)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_bdaddr == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_connect_tag;
+
+    /* Mandatory fields. */
+    p_message->msg.ble.msg.connect.addr_type = (ble_BleAddrType)addr_type;
+    memcpy(p_message->msg.ble.msg.connect.bd_address, p_bdaddr, 6);
+
+    /* Optional fields. */
+    if (access_address != 0)
+    {
+        p_message->msg.ble.msg.connect.has_access_address = true;
+        p_message->msg.ble.msg.connect.access_address = access_address;
+    }
+
+    if (p_channelmap != NULL)
+    {
+        p_message->msg.ble.msg.connect.has_channel_map = true;
+        memcpy(p_message->msg.ble.msg.connect.channel_map, p_channelmap, 5);
+    }
+
+    if (hop_interval > 0)
+    {
+        p_message->msg.ble.msg.connect.has_hop_interval = true;
+        p_message->msg.ble.msg.connect.hop_interval = hop_interval;
+    }
+    
+    if (hop_increment > 0)
+    {
+        p_message->msg.ble.msg.connect.has_hop_increment = true;
+        p_message->msg.ble.msg.connect.hop_increment = hop_increment;
+    }
+
+    if (crc_init != 0)
+    {
+        p_message->msg.ble.msg.connect.has_crc_init = true;
+        p_message->msg.ble.msg.connect.crc_init = crc_init;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+
+}
+
+whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
+                                    uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc, bool encrypt)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_pdu == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_send_raw_pdu_tag;
+
+    /* Set message parameters. */
+    p_message->msg.ble.msg.send_raw_pdu.direction = (ble_BleDirection)direction;
+    p_message->msg.ble.msg.send_raw_pdu.conn_handle = conn_handle;
+    p_message->msg.ble.msg.send_raw_pdu.access_address = access_address;
+    p_message->msg.ble.msg.send_raw_pdu.crc = crc;
+    p_message->msg.ble.msg.send_raw_pdu.encrypt = encrypt;
+
+    /* Copy PDU in memory. */
+    memcpy(p_message->msg.ble.msg.send_raw_pdu.pdu.bytes, p_pdu, length);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
+                                uint8_t *p_pdu, int length, bool encrypt)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_pdu == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_send_pdu_tag;
+    p_message->msg.ble.msg.send_pdu.direction = (ble_BleDirection)direction;
+    p_message->msg.ble.msg.send_pdu.conn_handle = conn_handle;
+    p_message->msg.ble.msg.send_pdu.encrypt = encrypt;
+
+    /* Copy PDU in memory. */
+    memcpy(p_message->msg.ble.msg.send_raw_pdu.pdu.bytes, p_pdu, length);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_disconnect(Message *p_message, uint32_t conn_handle)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_disconnect_tag;
+    p_message->msg.ble.msg.disconnect.conn_handle = conn_handle;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_scan_data, int scan_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_scan_data == NULL) || (p_scanrsp_data == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_periph_mode_tag;
+
+    /* Set avertising data, if provided. */
+    if (scan_data_length > 0)
+    {
+        /* Cannot send more than 31 bytes in advertisement data. */
+        if (scan_data_length > 31)
+        {
+            scan_data_length = 31;
+        }
+        p_message->msg.ble.msg.adv_mode.scan_data.size = scan_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_scan_data, scan_data_length);
+    }
+
+    /* Set scan response data, if provided. */
+    if (scanrsp_data_length > 0)
+    {
+        /* Cannot send more than 31 bytes in scan response data. */
+        if (scanrsp_data_length > 31)
+        {
+            scanrsp_data_length = 31;
+        }
+
+        p_message->msg.ble.msg.adv_mode.scanrsp_data.size = scanrsp_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;   
+}
+
+
+whad_result_t whad_ble_start(Message *p_message)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_start_tag;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_stop(Message *p_message)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_stop_tag;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_hijack_master(Message *p_message, uint32_t access_address)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_hijack_master_tag;
+    p_message->msg.ble.msg.hijack_master.access_address = access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_hijack_slave(Message *p_message, uint32_t access_address)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_hijack_slave_tag;
+    p_message->msg.ble.msg.hijack_slave.access_address = access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+whad_result_t whad_ble_hijack_both(Message *p_message, uint32_t access_address)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_hijack_both_tag;
+    p_message->msg.ble.msg.hijack_both.access_address = access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_set_encryption(Message *p_message, uint32_t conn_handle, bool enabled, uint8_t *p_ll_key, uint8_t *p_ll_iv, uint8_t *p_key, uint8_t *p_rand, uint8_t *p_ediv)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_ll_key == NULL) || (p_ll_iv == NULL) || (p_key == NULL) || (p_rand == NULL) || (p_ediv == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_encryption_tag;
+    p_message->msg.ble.msg.encryption.conn_handle = conn_handle;
+    p_message->msg.ble.msg.encryption.enabled = enabled;
+
+    /* Copy cryptographic material. */
+    memcpy(p_message->msg.ble.msg.encryption.ll_key, p_ll_key, 16);
+    memcpy(p_message->msg.ble.msg.encryption.ll_iv, p_ll_iv, 8);
+    memcpy(p_message->msg.ble.msg.encryption.key, p_key, 16);
+    memcpy(p_message->msg.ble.msg.encryption.rand, p_rand, 8);
+    memcpy(p_message->msg.ble.msg.encryption.ediv, p_ediv, 2);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_t *pattern, int pattern_length, uint32_t position)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_reactive_jam_tag;
+    p_message->msg.ble.msg.reactive_jam.channel = channel;
+    p_message->msg.ble.msg.reactive_jam.position = position;
+    p_message->msg.ble.msg.reactive_jam.pattern.size = pattern_length;
+    if (pattern_length > 0)
+    {
+        if (pattern_length > 20)
+        {
+            /* Pattern is too long, return error. */
+            return WHAD_ERROR;
+        }
+        else
+        {
+            /* Copy pattern. */
+            memcpy(p_message->msg.ble.msg.reactive_jam.pattern.bytes, pattern, pattern_length);
+        }
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
 
 /********************************
  * PHY layer messages
