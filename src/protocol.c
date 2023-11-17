@@ -644,6 +644,17 @@ whad_result_t whad_ble_notify_disconnected(Message *p_message, uint32_t conn_han
 }
 
 
+/**
+ * @brief Initialize a message setting the BD address of the adapter
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       addr_type           BD address type
+ * @param[in]       p_bdaddr            Pointer to a buffer containing the target BD address (6-byte array)
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_set_bdaddress(Message *p_message, whad_ble_addrtype_t addr_type, uint8_t *p_bdaddr)
 {
     /* Sanity check. */
@@ -664,6 +675,19 @@ whad_result_t whad_ble_set_bdaddress(Message *p_message, whad_ble_addrtype_t add
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Initialize a message enabling sniffing mode for advertisements
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       use_ext_adv         If set to true, sniffer will sniff extended advertisements
+ * @param[in]       channel             The advertising channel on which the sniffing must be performed
+ * @param[in]       p_bdaddr            The target BD address, as a pointer to a 6-byte array
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_sniff_adv(Message *p_message, bool use_ext_adv, uint32_t channel, uint8_t *p_bdaddr)
 {
     /* Sanity check. */
@@ -683,6 +707,16 @@ whad_result_t whad_ble_sniff_adv(Message *p_message, bool use_ext_adv, uint32_t 
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Initialize a message enabling advertisement jamming mode
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_jam_adv(Message *p_message)
 {
     /* Sanity check. */
@@ -700,6 +734,16 @@ whad_result_t whad_ble_jam_adv(Message *p_message)
 }
 
 
+/**
+ * @brief Initialize a message enabling jamming on a specific advertising channel
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       channel             The advertising channel on which the jamming must be performed
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_jam_adv_channel(Message *p_message, uint32_t channel)
 {
     /* Sanity check. */
@@ -716,6 +760,21 @@ whad_result_t whad_ble_jam_adv_channel(Message *p_message, uint32_t channel)
     /* Success. */
     return WHAD_SUCCESS;       
 }
+
+
+/**
+ * @brief Initialize a message enabling connection request sniffing mode
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       show_empty_packets  If set to true, empty packets will also be reported
+ * @param[in]       show_adv            If set to true, advertisements received during the device lookup phase
+ *                                      will be reported
+ * @param[in]       channel             If specified, will listen only on this channel
+ * @param[in]       p_bdaddr            Target BD address
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
 
 whad_result_t whad_ble_sniff_conn_req(Message *p_message, bool show_empty_packets, bool show_adv,
                                       uint32_t channel, uint8_t *p_bdaddr)
@@ -738,6 +797,17 @@ whad_result_t whad_ble_sniff_conn_req(Message *p_message, bool show_empty_packet
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Initialize a message enabling access address sniffing
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       p_channelmap        Channel map to use for sniffing as a 5-byte array (40 bits)
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap)
 {
     /* Sanity check. */
@@ -754,6 +824,23 @@ whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_chann
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+/**
+ * @brief Initialize a message enabling active connection sniffing
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Access address of the active connection to sniff
+ * @param[in]       crc_init            CRC initial value (seed)
+ * @param[in]       hop_interval        Hopping interval
+ * @param[in]       hop_increment       Hopping increment
+ * @param[in]       p_channelmap        Provided channel map to use for synchronization
+ * @param[in]       p_channels          A set of channels to use to dynamically reconstruct the channel map.
+ *                                      This parameter is used when parallelized channel map recovery is enabled.
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
 
 whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_address, uint32_t crc_init,
                                          uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
@@ -779,6 +866,17 @@ whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_add
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Initialize an active connection jamming message
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Access address of the active connection to sniff
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_address)
 {
     /* Sanity check. */
@@ -795,6 +893,17 @@ whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_addre
     /* Success. */
     return WHAD_SUCCESS; 
 }
+
+
+/**
+ * @brief Initialize a message enabling scanning mode
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       active_scan         If set to true, the adapter will send SCAN_REQ PDU to get additional data
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
 
 whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
 {
@@ -813,10 +922,26 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
     return WHAD_SUCCESS;   
 }
 
-whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_scan_data, int scan_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
+
+/**
+ * @brief Initialize a message enabling advertising mode (and only advertising)
+ * 
+ * Advertising data and scan response data buffers cannot exceed 31-byte each.
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       p_adv_data          Pointer to a byte array containing the advertising data
+ * @param[in]       adv_data_length     Length of advertising data
+ * @param[in]       p_scanrsp_data      Pointer to a byte array containing the scan response data
+ * @param[in]       adv_data_length     Length of scan response data
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_scan_data == NULL) || (p_scanrsp_data == NULL))
+    if ((p_message == NULL) || (p_adv_data == NULL) || (p_scanrsp_data == NULL))
     {
         return WHAD_ERROR;
     }
@@ -826,15 +951,15 @@ whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_scan_data, int sc
     p_message->msg.ble.which_msg = ble_Message_adv_mode_tag;
 
     /* Set avertising data, if provided. */
-    if (scan_data_length > 0)
+    if (adv_data_length > 0)
     {
         /* Cannot send more than 31 bytes in advertisement data. */
-        if (scan_data_length > 31)
+        if (adv_data_length > 31)
         {
-            scan_data_length = 31;
+            adv_data_length = 31;
         }
-        p_message->msg.ble.msg.adv_mode.scan_data.size = scan_data_length;
-        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_scan_data, scan_data_length);
+        p_message->msg.ble.msg.adv_mode.scan_data.size = adv_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_adv_data, adv_data_length);
     }
 
     /* Set scan response data, if provided. */
@@ -897,6 +1022,15 @@ whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_scan_data, in
 }
 
 
+/**
+ * @brief Initialize a message enabling central mode.
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_central_mode(Message *p_message)
 {
     /* Sanity check. */
@@ -912,6 +1046,23 @@ whad_result_t whad_ble_central_mode(Message *p_message)
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+/**
+ * @brief Initialize a message to initiate a connection to a specific device identified by its BD address.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       p_bdaddr            Pointer to the BD address of the device to connect to, as a 6-byte array
+ * @param[in]       addr_type           Device address type
+ * @param[in]       access_address      Specify the connection access address, if supported by the adapter
+ * @param[in]       p_channelmap        Channel map to use for the connectionm if supported by the adapter
+ * @param[in]       hop_interval        Hop interval to use for the connection, if supported by the adapter
+ * @param[in]       hop_increment       Hop increment to use for the connection, if supported by the adapter
+ * @param[in]       crc_init            CRC initial value (seed) to use for the connection, if supported by the adapter
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
 
 whad_result_t whad_ble_connect_to(Message *p_message, uint8_t *p_bdaddr, whad_ble_addrtype_t addr_type, uint32_t access_address, uint8_t *p_channelmap, uint32_t hop_interval, uint32_t hop_increment, uint32_t crc_init)
 {
@@ -962,8 +1113,25 @@ whad_result_t whad_ble_connect_to(Message *p_message, uint8_t *p_bdaddr, whad_bl
 
     /* Success. */
     return WHAD_SUCCESS;
-
 }
+
+
+/**
+ * @brief Initialize a message to send a raw PDU to a target device in an established connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       direction           Specify the target device (initiator or advertiser)
+ * @param[in]       conn_handle         Connection handle
+ * @param[in]       access_address      Specify the access address to use when sending the PDU
+ * @param[in]       p_pdu               Pointer to a byte array containing the PDU to send
+ * @param[in]       length              PDU length in bytes
+ * @param[in]       crc                 PDU CRC value
+ * @param[in]       encrypt             If set to true, PDU will be encrypted with the current cryptographic material
+ *                                      associated with the target connection
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
 
 whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
                                     uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc, bool encrypt)
@@ -993,6 +1161,21 @@ whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t dir
 }
 
 
+/**
+ * @brief Initialize a message to send a PDU to a target device in an established connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       direction           Specify the target device (initiator or advertiser)
+ * @param[in]       conn_handle         Connection handle
+ * @param[in]       p_pdu               Pointer to a byte array containing the PDU to send
+ * @param[in]       length              PDU length in bytes
+ * @param[in]       encrypt             If set to true, PDU will be encrypted with the current cryptographic material
+ *                                      associated with the target connection
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
                                 uint8_t *p_pdu, int length, bool encrypt)
 {
@@ -1016,6 +1199,17 @@ whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t directi
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Initialize a message to disconnect from a device
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       conn_handle         Connection handle
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_disconnect(Message *p_message, uint32_t conn_handle)
 {
     /* Sanity check. */
@@ -1033,10 +1227,24 @@ whad_result_t whad_ble_disconnect(Message *p_message, uint32_t conn_handle)
     return WHAD_SUCCESS;
 }
 
-whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_scan_data, int scan_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
+
+/**
+ * @brief Initialize a message to enable Peripheral mode
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       p_adv_data          Pointer to the advertising data to use when advertising this peripheral
+ * @param[in]       adv_data_length     Length of advertising data in bytes (max length: 31)
+ * @param[in]       p_scanrsp_data      Pointer to the scan response data to use when advertising this peripheral
+ * @param[in]       scanrsp_data_length Length of scan response data in bytes (max length: 31)
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_scan_data == NULL) || (p_scanrsp_data == NULL))
+    if ((p_message == NULL) || (p_adv_data == NULL) || (p_scanrsp_data == NULL))
     {
         return WHAD_ERROR;
     }
@@ -1046,15 +1254,15 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_scan_data,
     p_message->msg.ble.which_msg = ble_Message_periph_mode_tag;
 
     /* Set avertising data, if provided. */
-    if (scan_data_length > 0)
+    if (adv_data_length > 0)
     {
         /* Cannot send more than 31 bytes in advertisement data. */
-        if (scan_data_length > 31)
+        if (adv_data_length > 31)
         {
-            scan_data_length = 31;
+            adv_data_length = 31;
         }
-        p_message->msg.ble.msg.adv_mode.scan_data.size = scan_data_length;
-        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_scan_data, scan_data_length);
+        p_message->msg.ble.msg.adv_mode.scan_data.size = adv_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_adv_data, adv_data_length);
     }
 
     /* Set scan response data, if provided. */
@@ -1075,6 +1283,15 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_scan_data,
 }
 
 
+/**
+ * @brief Initialize a message to start the current mode
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_start(Message *p_message)
 {
     /* Sanity check. */
@@ -1090,6 +1307,16 @@ whad_result_t whad_ble_start(Message *p_message)
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+/**
+ * @brief Initialize a message to stop the current mode
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
 
 whad_result_t whad_ble_stop(Message *p_message)
 {
@@ -1107,6 +1334,17 @@ whad_result_t whad_ble_stop(Message *p_message)
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Initialize a message to hijack the master (initiator) of an existing connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Access address of the target connection
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_hijack_master(Message *p_message, uint32_t access_address)
 {
     /* Sanity check. */
@@ -1123,6 +1361,17 @@ whad_result_t whad_ble_hijack_master(Message *p_message, uint32_t access_address
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+/**
+ * @brief Initialize a message to hijack the slave (advertiser) of an existing connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Access address of the target connection
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
 
 whad_result_t whad_ble_hijack_slave(Message *p_message, uint32_t access_address)
 {
@@ -1142,6 +1391,16 @@ whad_result_t whad_ble_hijack_slave(Message *p_message, uint32_t access_address)
 }
 
 
+/**
+ * @brief Initialize a message to hijack both the master (initiator) and the slave (advertiser) of an existing connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Access address of the target connection
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_hijack_both(Message *p_message, uint32_t access_address)
 {
     /* Sanity check. */
@@ -1158,6 +1417,28 @@ whad_result_t whad_ble_hijack_both(Message *p_message, uint32_t access_address)
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+/**
+ * @brief Initialize a message to enable encryption
+ * 
+ * The `p_ll_key` and `p_ll_iv` parameters will be used by WHAD adapters supporting BLE encryption while
+ * `p_key`, `p_rand` and `p_ediv` will be used by adapters that cannot control the link-layer. All these
+ * fields must be set.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       conn_handle         Connection handle
+ * @param[in]       enabled             If set to true, encryption is immediately enabled. If set to false,
+ *                                      cryptographic material is provided but encryption must be started later
+ * @param[in]       p_ll_key            Pointer to a 16-byte array containing the encryption key (LTK)
+ * @param[in]       p_ll_iv             Pointer to a 8-byte array containing the encryption IV
+ * @param[in]       p_key               Pointer to a 16-byte array containing the encryption key
+ * @param[in]       p_rand              Pointer to a 8-byte array containing the randomizer
+ * @param[in]       p_ediv              Pointer to a 2-byte array containing the diversifier
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
 
 whad_result_t whad_ble_set_encryption(Message *p_message, uint32_t conn_handle, bool enabled, uint8_t *p_ll_key, uint8_t *p_ll_iv, uint8_t *p_key, uint8_t *p_rand, uint8_t *p_ediv)
 {
@@ -1183,6 +1464,23 @@ whad_result_t whad_ble_set_encryption(Message *p_message, uint32_t conn_handle, 
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+/**
+ * @brief Initialize a message to enable reactive jamming mode.
+ * 
+ * In reactive jamming, we are waiting for a PDU matching a specific pattern and start jamming right after
+ * having receiving this pattern. This can be done only on a single channel that needs to be specified.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       channel             Channel to listen on
+ * @param[in]       pattern             Pointer to a byte array specifying a matching pattern
+ * @param[in]       pattern_length      Length of the matching pattern in bytes
+ * @param[in]       position            Specify the expected offset in a PDU of the matching pattern
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
 
 whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_t *pattern, int pattern_length, uint32_t position)
 {
@@ -1215,6 +1513,7 @@ whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_
     /* Success. */
     return WHAD_SUCCESS;
 }
+
 
 /********************************
  * PHY layer messages

@@ -177,14 +177,14 @@ whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_add
                                          uint8_t *p_channels);
 whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_address);
 whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan);
-whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_scan_data, int scan_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
 whad_result_t whad_ble_connect_to(Message *p_message, uint8_t *p_bdaddr, whad_ble_addrtype_t addr_type, uint32_t access_address, uint8_t *p_channelmap, uint32_t hop_interval, uint32_t hop_increment, uint32_t crc_init);
 whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
                                     uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc, bool encrypt);
 whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
                                 uint8_t *p_pdu, int length, bool encrypt);
 whad_result_t whad_ble_disconnect(Message *p_message, uint32_t conn_handle);
-whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_scan_data, int scan_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
 whad_result_t whad_ble_start(Message *p_message);
 whad_result_t whad_ble_stop(Message *p_message);
 whad_result_t whad_ble_hijack_master(Message *p_message, uint32_t access_address);
