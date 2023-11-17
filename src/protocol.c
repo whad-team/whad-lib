@@ -980,10 +980,10 @@ whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv
 }
 
 /** TODO Not yet supported, need some fix in whad-protocol. */
-whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_scan_data, int scan_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
+whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_scan_data == NULL) || (p_scanrsp_data == NULL))
+    if ((p_message == NULL) || (p_adv_data == NULL) || (p_scanrsp_data == NULL))
     {
         return WHAD_ERROR;
     }
@@ -993,12 +993,12 @@ whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_scan_data, in
     p_message->msg.ble.which_msg = ble_Message_set_adv_data_tag;
 
     /* Set avertising data, if provided. */
-    if (scan_data_length > 0)
+    if (adv_data_length > 0)
     {
         /* Cannot send more than 31 bytes in advertisement data. */
-        if (scan_data_length > 31)
+        if (adv_data_length > 31)
         {
-            scan_data_length = 31;
+            adv_data_length = 31;
         }
         //p_message->msg.ble.msg.adv_mode.scan_data.size = scan_data_length;
         //memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_scan_data, scan_data_length);
@@ -1474,7 +1474,7 @@ whad_result_t whad_ble_set_encryption(Message *p_message, uint32_t conn_handle, 
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       channel             Channel to listen on
- * @param[in]       pattern             Pointer to a byte array specifying a matching pattern
+ * @param[in]       p_pattern           Pointer to a byte array specifying a matching pattern
  * @param[in]       pattern_length      Length of the matching pattern in bytes
  * @param[in]       position            Specify the expected offset in a PDU of the matching pattern
  * 
@@ -1482,7 +1482,7 @@ whad_result_t whad_ble_set_encryption(Message *p_message, uint32_t conn_handle, 
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_t *pattern, int pattern_length, uint32_t position)
+whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_t *p_pattern, int pattern_length, uint32_t position)
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -1506,9 +1506,271 @@ whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_
         else
         {
             /* Copy pattern. */
-            memcpy(p_message->msg.ble.msg.reactive_jam.pattern.bytes, pattern, pattern_length);
+            memcpy(p_message->msg.ble.msg.reactive_jam.pattern.bytes, p_pattern, pattern_length);
         }
     }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Copy a sequence of prepared packets into a BLE prepared sequence message.
+ * 
+ * @param[in,out]   p_message         Pointer to the target message structure
+ * @param[in]       p_packets         Pointer to an array of prepared packets
+ * @param[in]       pkt_count         Number of packets to copy
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.       
+ */
+
+whad_result_t _whad_ble_sequence_copy_packets(Message *p_message, whad_prepared_packet_t *p_packets, int pkt_count)
+{
+    int i;
+
+    /* Set number of packets in the sequence. */
+    p_message->msg.ble.msg.prepare.sequence_count = pkt_count;
+    
+    /* Copy prepared packets into our structure. */
+    if (pkt_count > 0)
+    {
+        for (i=0; i<pkt_count; i++)
+        {
+            p_message->msg.ble.msg.prepare.sequence[i].packet.size = p_packets[i].length;
+
+            /* If length is not zero and below maximum packet size ... */
+            if ((p_packets[i].length > 0) && (p_packets[i].length <= BLE_PREPSEQ_PACKET_MAX_SIZE))
+            {
+                /* ... then we add this packet to the sequence. */
+                memcpy(p_message->msg.ble.msg.prepare.sequence[i].packet.bytes, p_packets[i].p_bytes,
+                       p_packets[i].length);
+            }
+            else
+            {
+                /* Packet is too big, return error. */
+                return WHAD_ERROR;
+            }
+        }
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to send a sequence of PDU when a matching PDU is received
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       p_pattern           Pointer to a byte array containing the matching pattern
+ * @param[in]       p_mask              Pointer to a byte array specifying the matching mask to apply to the pattern
+ * @param[in]       length              Pattern and mask length
+ * @param[in]       offset              Offset at which the matching pattern must be applied
+ * @param[in]       id                  Prepared sequence identifier
+ * @param[in]       direction           PDU sequence direction
+ * @param[in]       p_packets           Pointer to an array of prepared packets
+ * @param[in]       pkt_count           Number of packets in the prepared packets sequence
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_prepare_sequence_on_recv(Message *p_message, uint8_t *p_pattern, uint8_t *p_mask, int length,
+                                                int offset, uint32_t id, whad_ble_direction_t direction, whad_prepared_packet_t *p_packets, int pkt_count) 
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_pattern == NULL) || (p_mask == NULL) || (p_packets))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_prepare_tag;
+    p_message->msg.ble.msg.prepare.id = id;
+
+    /* Configure reception trigger. */
+    p_message->msg.ble.msg.prepare.has_trigger = true;
+    p_message->msg.ble.msg.prepare.trigger.which_trigger = ble_PrepareSequenceCmd_Trigger_reception_tag;
+    if ((length > 0) && (length < BLE_PREPSEQ_TRIGGER_MAX_SIZE))
+    {
+        p_message->msg.ble.msg.prepare.trigger.trigger.reception.pattern.size = length;
+        p_message->msg.ble.msg.prepare.trigger.trigger.reception.mask.size = length;
+        memcpy(
+            p_message->msg.ble.msg.prepare.trigger.trigger.reception.pattern.bytes,
+            p_pattern,
+            length
+        );
+        memcpy(
+            p_message->msg.ble.msg.prepare.trigger.trigger.reception.mask.bytes,
+            p_mask,
+            length
+        );
+    }
+    else
+    {
+        /* Pattern and mask are too big. */
+        return WHAD_ERROR;
+    }
+
+    p_message->msg.ble.msg.prepare.direction = (ble_BleDirection)direction;
+
+    /* Copy prepared packets into our sequence. */
+    if (_whad_ble_sequence_copy_packets(p_message, p_packets, pkt_count) == WHAD_ERROR)
+    {
+        /* Something went wrong when copying prepared packets. */
+        return WHAD_ERROR;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to send a sequence of PDU all at once on a manual trigger
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       id                  Prepared sequence identifier
+ * @param[in]       direction           PDU sequence direction
+ * @param[in]       p_packets           Pointer to an array of prepared packets
+ * @param[in]       pkt_count           Number of packets in the prepared packets sequence
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_prepare_sequence_manual(Message *p_message, uint32_t id, whad_ble_direction_t direction,
+                                               whad_prepared_packet_t *p_packets, int pkt_count) 
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_packets))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_prepare_tag;
+    p_message->msg.ble.msg.prepare.id = id;
+
+    /* Configure manual trigger. */
+    p_message->msg.ble.msg.prepare.has_trigger = true;
+    p_message->msg.ble.msg.prepare.trigger.which_trigger = ble_PrepareSequenceCmd_Trigger_manual_tag;
+    p_message->msg.ble.msg.prepare.direction = (ble_BleDirection)direction;
+
+    /* Copy prepared packets into our sequence. */
+    if (_whad_ble_sequence_copy_packets(p_message, p_packets, pkt_count) == WHAD_ERROR)
+    {
+        /* Something went wrong when copying prepared packets. */
+        return WHAD_ERROR;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to send a sequence of PDU all at once on a specific connection event
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       connection_event    Connection event value at which the PDUs must be sent
+ * @param[in]       id                  Prepared sequence identifier
+ * @param[in]       direction           PDU sequence direction
+ * @param[in]       p_packets           Pointer to an array of prepared packets
+ * @param[in]       pkt_count           Number of packets in the prepared packets sequence
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_prepare_sequence_conn_evt(Message *p_message, uint32_t connection_event, 
+                                               uint32_t id, whad_ble_direction_t direction,
+                                               whad_prepared_packet_t *p_packets, int pkt_count) 
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_packets))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_prepare_tag;
+    p_message->msg.ble.msg.prepare.id = id;
+
+    /* Configure connection event trigger. */
+    p_message->msg.ble.msg.prepare.has_trigger = true;
+    p_message->msg.ble.msg.prepare.trigger.which_trigger = ble_PrepareSequenceCmd_Trigger_connection_event_tag;
+    p_message->msg.ble.msg.prepare.trigger.trigger.connection_event.connection_event = connection_event;
+
+    p_message->msg.ble.msg.prepare.direction = (ble_BleDirection)direction;
+
+    /* Copy prepared packets into our sequence. */
+    if (_whad_ble_sequence_copy_packets(p_message, p_packets, pkt_count) == WHAD_ERROR)
+    {
+        /* Something went wrong when copying prepared packets. */
+        return WHAD_ERROR;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to manually trigger the sending of a prepared sequence of PDUs
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       id                  Prepared sequence identifier
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_prepare_sequence_trigger(Message *p_message, uint32_t id) 
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_trigger_tag;
+    p_message->msg.ble.msg.trigger.id = id;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to delete a previously registered prepared sequence
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       id                  Prepared sequence identifier
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_prepare_sequence_delete(Message *p_message, uint32_t id) 
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_delete_seq_tag;
+    p_message->msg.ble.msg.delete_seq.id = id;
 
     /* Success. */
     return WHAD_SUCCESS;
