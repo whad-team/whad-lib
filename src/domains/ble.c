@@ -1,4 +1,5 @@
-#include "whad.h"
+#include <whad.h>
+#include <domains/ble.h>
 
 /********************************
  * Bluetooth Low Energy messages
