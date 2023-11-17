@@ -1,4 +1,4 @@
-#include "whad.h"
+#include <whad.h>
 
 using namespace whad;
 

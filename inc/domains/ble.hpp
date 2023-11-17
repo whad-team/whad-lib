@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 
     #include <string>
-    #include "message.hpp"
+    #include "../message.hpp"
 
     namespace whad
     {

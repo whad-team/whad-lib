@@ -1,6 +1,8 @@
 #ifndef __INC_WHAD_DISCOVERY_HPP
 #define __INC_WHAD_DISCOVERY_HPP
 
+#include "../discovery.h"
+
 #ifdef __cplusplus
 
     #include <string>

@@ -1,7 +1,7 @@
 #ifndef __INC_MESSAGE_HPP
 #define __INC_MESSAGE_HPP
 
-#include "protocol.h"
+#include "../generic.h"
 
 namespace whad
 {

@@ -1,5 +1,4 @@
-#include "bsp.h"
-#include "discovery.hpp"
+#include "cpp/discovery.hpp"
 
 whad::discovery::DeviceReset::DeviceReset() : NanoPbMsg()
 {

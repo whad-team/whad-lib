@@ -1,104 +1,14 @@
-#ifndef INC_WHAD_PROTOCOL_H
-#define INC_WHAD_PROTOCOL_H
+#ifndef __INC_WHAD_BLE_H
+#define __INC_WHAD_BLE_H
 
 #include "types.h"
-#include "../nanopb/pb_encode.h"
-#include "../nanopb/pb_decode.h"
-#include "../protocol/whad.pb.h"
 
-
-//460800
-#define BAUDRATE_MAX 921600
-//#define BAUDRATE_MAX 115200
 #define BLE_PREPSEQ_PACKET_MAX_SIZE     255
 #define BLE_PREPSEQ_TRIGGER_MAX_SIZE    255
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/*********************************
- * Generic messages
- ********************************/
-
-typedef enum {
-    WHAD_RESULT_SUCCESS = 0, 
-    WHAD_RESULT_ERROR = 1, 
-    WHAD_RESULT_PARAMETER_ERROR = 2, 
-    WHAD_RESULT_DISCONNECTED = 3, 
-    WHAD_RESULT_WRONG_MODE = 4, 
-    WHAD_RESULT_UNSUPPORTED_DOMAIN = 5, 
-    WHAD_RESULT_BUSY = 6 
-} whad_result_code_t;
-
-/* Populate a generic command result message. */
-whad_result_t whad_generic_cmd_result(Message *p_message, whad_result_code_t result);
-
-/* Populate a generic verbose message. */
-whad_result_t whad_generic_verbose_message(Message *p_message, char *psz_message);
-
-/* Populate a debug message. */
-whad_result_t whad_generic_debug_message(Message *p_message, uint32_t level, char *psz_message);
-
-/* Populate a progress message. */
-whad_result_t whad_generic_progress_message(Message *p_message, uint32_t value);
-
-/* Verbose message helper. */
-whad_result_t whad_verbose(char *psz_message);
-
-/*********************************
- * Discovery
- ********************************/
-typedef enum {
-    DOMAIN_NONE = discovery_Domain__DomainNone,
-    DOMAIN_PHY = discovery_Domain_Phy,
-    DOMAIN_BT_CLASSIC = discovery_Domain_BtClassic,
-    DOMAIN_BTLE = discovery_Domain_BtLE,
-    DOMAIN_ZIGBEE = discovery_Domain_Zigbee,
-    DOMAIN_SIXLOWPAN = discovery_Domain_SixLowPan,
-    DOMAIN_ESB = discovery_Domain_Esb,
-    DOMAIN_LOGITECH_UNIFYING = discovery_Domain_LogitechUnifying,
-    DOMAIN_MOSART = discovery_Domain_Mosart,
-    DOMAIN_ANT = discovery_Domain_ANT,
-    DOMAIN_ANT_PLUS = discovery_Domain_ANT_Plus,
-    DOMAIN_ANT_FS = discovery_Domain_ANT_FS
-} whad_domain_t;
-
-typedef enum {
-    CAP_NONE = discovery_Capability__CapNone,
-    CAP_SCAN = discovery_Capability_Scan,
-    CAP_SNIFF = discovery_Capability_Sniff,
-    CAP_INJECT = discovery_Capability_Inject,
-    CAP_JAM = discovery_Capability_Jam,
-    CAP_HIJACK = discovery_Capability_Hijack,
-    CAP_HOOK = discovery_Capability_Hook,
-    CAP_SIMULATE_ROLE = discovery_Capability_SimulateRole,
-    CAP_NO_RAW_DATA = discovery_Capability_NoRawData
-} whad_capability_t;
-
-typedef struct {
-    whad_domain_t domain;
-    whad_capability_t cap;
-    uint64_t supported_commands;
-} whad_domain_desc_t;
-
-whad_result_t whad_discovery_device_info_query(Message *p_message, uint32_t proto_version);
-whad_result_t whad_discovery_device_info_resp(
-    Message *p_message,
-    discovery_DeviceType device_type,
-    uint8_t *devid,
-    uint32_t proto_min_ver,
-    uint32_t max_speed,
-    char *fw_author,
-    char *fw_url,
-    uint32_t fw_version_major,
-    uint32_t fw_version_minor,
-    uint32_t fw_version_rev,
-    whad_domain_desc_t *capabilities);
-whad_result_t whad_discovery_domain_info_query(Message *p_message, whad_domain_t domain);
-whad_result_t whad_discovery_domain_info_resp(Message *p_message, whad_domain_t domain, whad_domain_desc_t *p_capabilities);
-whad_result_t whad_discovery_device_reset(Message *p_message);
-whad_result_t whad_discovery_ready_resp(Message *p_message);
 
 /*********************************
  * Bluetooth Low Energy domain
@@ -284,18 +194,9 @@ whad_result_t whad_ble_desynchronized(Message *p_message, uint32_t access_addres
 whad_result_t whad_ble_hijacked(Message *p_message, uint32_t access_address, bool success);
 whad_result_t whad_ble_injected(Message *p_message, uint32_t access_address, uint32_t attempts, bool success);
 
-/*********************************
- * PHY domain
- ********************************/
-
-whad_result_t whad_phy_supported_frequencies(Message *p_message, phy_SupportedFrequencyRanges_FrequencyRange *p_ranges,
-                                             int nb_ranges);
-whad_result_t whad_phy_packet_received(Message *p_message, uint32_t frequency, int32_t rssi, uint32_t ts_sec, uint32_t ts_usec,
-                              uint8_t *payload, int length);
-whad_result_t whad_phy_packet_scheduled(Message *p_message, uint8_t id, bool full);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* INC_WHAD_PROTOCOL_H */
+#endif /* __INC_WHAD_BLE_H */

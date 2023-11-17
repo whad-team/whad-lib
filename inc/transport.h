@@ -3,7 +3,6 @@
 
 #include "types.h"
 #include "ringbuf.h"
-#include "protocol.h"
 
 #define WHAD_TRANSPORT_MSG_MAXSIZE  1024
 

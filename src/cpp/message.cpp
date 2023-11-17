@@ -1,5 +1,6 @@
-#include "message.hpp"
 #include <cstdlib>
+#include "cpp/message.hpp"
+
 
 /**
  * @brief   Nanopb message wrapper constructor.

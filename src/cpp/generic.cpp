@@ -1,4 +1,4 @@
-#include "generic.hpp"
+#include "cpp/generic.hpp"
 
 /**
  * @brief   Build a generic verbose message.
