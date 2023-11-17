@@ -465,39 +465,6 @@ whad_result_t whad_discovery_ready_resp(Message *p_message)
  *******************************/
 
 /**
- * @brief Initialize a message reporting a BLE advertisement PDU
- * 
- * @param[in,out]   p_message           Pointer to the message structure to initialize
- * @param[in]       args                Pointer to a whad_adv_data_t structure containing the advertisement details
- * 
- * @retval          WHAD_SUCCESS        Success.
- * @retval          WHAD_ERROR          Invalid message pointer.
- **/
-
-whad_result_t whad_ble_adv_pdu(Message *p_message, whad_adv_data_t *args)
-{
-    /* Sanity check. */
-    if (p_message == NULL)
-    {
-        return WHAD_ERROR;
-    }
-
-    /* Populate fields. */    
-    p_message->which_msg = Message_ble_tag;
-    p_message->msg.ble.which_msg = ble_Message_adv_pdu_tag;
-    memcpy(p_message->msg.ble.msg.adv_pdu.bd_address, args->bd_addr, 6);
-    p_message->msg.ble.msg.adv_pdu.addr_type = args->addr_type;
-    memcpy(p_message->msg.ble.msg.adv_pdu.adv_data.bytes, args->p_adv_data, args->adv_data_length);
-    p_message->msg.ble.msg.adv_pdu.adv_data.size = args->adv_data_length;
-    p_message->msg.ble.msg.adv_pdu.rssi = args->rssi;
-    p_message->msg.ble.msg.adv_pdu.adv_type = args->adv_type;
-
-    /* Success. */
-    return WHAD_SUCCESS;
-}
-
-
-/**
  * @brief Initialize a message reporting a BLE data PDU
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -1771,6 +1738,251 @@ whad_result_t whad_ble_prepare_sequence_delete(Message *p_message, uint32_t id)
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_delete_seq_tag;
     p_message->msg.ble.msg.delete_seq.id = id;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to notify that a prepared sequence has been triggered
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       id                  Prepared sequence identifier
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_triggered(Message *p_message, uint32_t id) 
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_triggered_tag;
+    p_message->msg.ble.msg.triggered.id = id;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief Initialize a message to notify that an access address has been discovered
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Discovered access address
+ * @param[in]       timestamp           Timestamp at which the address was discovered
+ * @param[in]       rssi                Received Signal Strength Indicator
+ * @param[in]       inc_ts              If set to true, the message will include a timestamp.
+ * @param[in]       inc_rssi            If set to true, the message will include the RSSI.
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_access_address_discovered(Message *p_message, uint32_t access_address, uint32_t timestamp, 
+                                                 int32_t rssi, bool inc_ts, bool inc_rssi)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_aa_disc_tag;
+    p_message->msg.ble.msg.aa_disc.access_address = access_address;
+
+    /* Include timestamp if told to. */
+    if (inc_ts)
+    {
+        p_message->msg.ble.msg.aa_disc.has_timestamp = true;
+        p_message->msg.ble.msg.aa_disc.timestamp = timestamp;
+    }
+
+    /* Include RSSI if told to. */
+    if (inc_rssi)
+    {
+        p_message->msg.ble.msg.aa_disc.has_rssi = true;
+        p_message->msg.ble.msg.aa_disc.rssi = rssi;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief Initialize a message to notify an advertising PDU
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       adv_type            Advertisement type
+ * @param[in]       rssi                Received Signal Strength Indicator
+ * @param[in]       p_bdaddr            Pointer to a byte buffer containing the BD address (6 bytes)
+ * @param[in]       addr_type           Specifies the advertiser's BD address type (public/random)
+ * @param[in]       p_adv_data          Pointer to a byte buffer containing the advertising data
+ * @param[in]       adv_data_length     Length of advertising data in bytes
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_adv_pdu(Message *p_message, whad_ble_advtype_t adv_type, int32_t rssi, uint8_t *p_bdaddr,
+                               whad_ble_addrtype_t addr_type, uint8_t *p_adv_data, int adv_data_length)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_bdaddr == NULL) || (p_adv_data == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_adv_pdu_tag;
+    p_message->msg.ble.msg.adv_pdu.addr_type = (ble_BleAddrType)addr_type;
+    p_message->msg.ble.msg.adv_pdu.rssi = rssi;
+    p_message->msg.ble.msg.adv_pdu.adv_type = (ble_BleAdvType)adv_type;
+
+    /* Copy BD address. */
+    memcpy(p_message->msg.ble.msg.adv_pdu.bd_address, p_bdaddr, 6);
+
+    /* Copy advertising data. */
+    if ((adv_data_length > 0) && (adv_data_length < 31))
+    {
+        p_message->msg.ble.msg.adv_pdu.adv_data.size = adv_data_length;
+        memcpy(p_message->msg.ble.msg.adv_pdu.adv_data.bytes, p_adv_data, adv_data_length);
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to notify that the adapter has synchronized with an active connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Access address
+ * @param[in]       crc_init            CRC initial value (seed)
+ * @param[in]       hop_interval        Connection recovered hop interval
+ * @param[in]       hop_increment       Connection recovered hop increment
+ * @param[in]       p_channelmap        Connection channel map
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_synchronized(Message *p_message, uint32_t access_address, uint32_t crc_init,
+                                    uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_channelmap == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_synchronized_tag;
+    p_message->msg.ble.msg.synchronized.access_address = access_address;
+    p_message->msg.ble.msg.synchronized.hop_interval = hop_interval;
+    p_message->msg.ble.msg.synchronized.hop_increment = hop_increment;
+    p_message->msg.ble.msg.synchronized.crc_init = crc_init;
+    memcpy(p_message->msg.ble.msg.synchronized.channel_map, p_channelmap, 5);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to notify that the adapter has been desynchronized from an active connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Access address
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_desynchronized(Message *p_message, uint32_t access_address)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_desynchronized_tag;
+    p_message->msg.ble.msg.desynchronized.access_address = access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to notify that the adapter has successfully (or not) hijacked a connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Access address
+ * @param[in]       success             Set to true to notify a successful hijacking, false otherwise.
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_hijacked(Message *p_message, uint32_t access_address, bool success)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_hijacked_tag;
+    p_message->msg.ble.msg.hijacked.access_address = access_address;
+    p_message->msg.ble.msg.hijacked.success = success;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to notify that the adapter has successfully (or not) hijacked a connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       access_address      Access address
+ * @param[in]       success             Set to true to notify a successful hijacking, false otherwise.
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_injected(Message *p_message, uint32_t access_address, uint32_t attempts, bool success)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_injected_tag;
+    p_message->msg.ble.msg.injected.access_address = access_address;
+    p_message->msg.ble.msg.injected.injection_attempts = attempts;
+    p_message->msg.ble.msg.injected.success = success;
 
     /* Success. */
     return WHAD_SUCCESS;
