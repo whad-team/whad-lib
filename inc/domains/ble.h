@@ -5,6 +5,7 @@
 
 #define BLE_PREPSEQ_PACKET_MAX_SIZE     255
 #define BLE_PREPSEQ_TRIGGER_MAX_SIZE    255
+#define BLE_RSSI_NONE                   (-4096)
 
 #ifdef __cplusplus
 extern "C" {
@@ -180,9 +181,12 @@ whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_
 /* Notifications (Adapter -> Host)*/
 whad_result_t whad_ble_notify_connected(Message *p_message, whad_ble_addrtype_t adv_addr_type, uint8_t *p_adv_addr, whad_ble_addrtype_t init_addr_type, uint8_t *p_init_addr, uint32_t conn_handle);
 whad_result_t whad_ble_notify_disconnected(Message *p_message, uint32_t conn_handle, uint32_t reason);
-whad_result_t whad_ble_data_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_ble_direction_t direction);
-whad_result_t whad_ble_ll_data_pdu(Message *p_message, uint16_t header, uint8_t *p_pdu, int length,
-                          whad_ble_direction_t direction, int conn_handle, bool processed, bool decrypted);
+whad_result_t whad_ble_raw_pdu(Message *p_message, uint32_t channel, int32_t rssi, uint32_t conn_handle,
+                               uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc,
+                               bool crc_validity, uint32_t timestamp, uint32_t relative_timestamp,
+                               whad_ble_direction_t direction, bool processed, bool decrypted, bool use_timestamp);
+whad_result_t whad_ble_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_ble_direction_t direction,
+                           int conn_handle, bool processed, bool decrypted);
 whad_result_t whad_ble_triggered(Message *p_message, uint32_t id);
 whad_result_t whad_ble_access_address_discovered(Message *p_message, uint32_t access_address, uint32_t timestamp, 
                                                  int32_t rssi, bool inc_ts, bool inc_rssi);

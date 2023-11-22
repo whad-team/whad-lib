@@ -6,18 +6,32 @@
  *******************************/
 
 /**
- * @brief Initialize a message reporting a BLE data PDU
+ * @brief Initialize a message reporting a BLE raw PDU
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       channel             Channel on which this PDU has been received
+ * @param[in]       rssi                Received Signal Strength Indicator
+ * @param[in]       conn_handle         Connection handle
+ * @param[in]       access_address      Access Address of the connection
  * @param[in]       p_pdu               Pointer to a byte array containing the PDU
  * @param[in]       length              Length of the data PDU, in bytes
+ * @param[in]       crc                 PDU CRC value
+ * @param[in]       crc_validity        Set to true if CRC matches the expected value, false otherwise
+ * @param[in]       timestamp           PDU timestamp (in micro-seconds)
+ * @param[in]       relative_timestamp  PDU relative timestamp (number of micro-seconds in the last connection event)
  * @param[in]       direction           Direction of the PDU (master -> slave / slave -> master)
+ * @param[in]       processed           Set to true if PDU has been processed by the device, false otherwise
+ * @param[in]       decrypted           Set to true if PDU has been decrypted, false otherwise
+ * @param[in]       use_timestamp       If set to true, message will include timestamp and relative timestamp        
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or PDU pointer.
  **/
 
-whad_result_t whad_ble_data_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_ble_direction_t direction)
+whad_result_t whad_ble_raw_pdu(Message *p_message, uint32_t channel, int32_t rssi, uint32_t conn_handle,
+                               uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc,
+                               bool crc_validity, uint32_t timestamp, uint32_t relative_timestamp,
+                               whad_ble_direction_t direction, bool processed, bool decrypted, bool use_timestamp)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL) )
@@ -27,10 +41,44 @@ whad_result_t whad_ble_data_pdu(Message *p_message, uint8_t *p_pdu, int length, 
 
     /* Populate fields. */
     p_message->which_msg = Message_ble_tag;
-    p_message->msg.ble.which_msg = ble_Message_pdu_tag;
-    p_message->msg.ble.msg.pdu.direction = (ble_BleDirection)direction;
-    p_message->msg.ble.msg.pdu.pdu.size = length;
-    memcpy(p_message->msg.ble.msg.pdu.pdu.bytes, p_pdu, length);
+    p_message->msg.ble.which_msg = ble_Message_raw_pdu_tag;
+
+    /* Set connection handle, access address and direction. */
+    p_message->msg.ble.msg.raw_pdu.access_address = access_address;
+    p_message->msg.ble.msg.raw_pdu.conn_handle = conn_handle;
+    p_message->msg.ble.msg.raw_pdu.direction = (ble_BleDirection)direction;
+
+    /* Copy PDU into our message. */
+    p_message->msg.ble.msg.raw_pdu.pdu.size = length;
+    memcpy(p_message->msg.ble.msg.raw_pdu.pdu.bytes, p_pdu, length);
+
+    /* Insert timestamp if set. */
+    if (use_timestamp)
+    {
+        /* Set timestamp. */
+        p_message->msg.ble.msg.raw_pdu.has_timestamp = true;
+        p_message->msg.ble.msg.raw_pdu.timestamp = timestamp;
+
+        /* Set relative timestamp. */
+        p_message->msg.ble.msg.raw_pdu.has_relative_timestamp = true;
+        p_message->msg.ble.msg.raw_pdu.relative_timestamp = relative_timestamp;
+    }
+
+    /* CRC */
+    p_message->msg.ble.msg.raw_pdu.crc = crc;
+    p_message->msg.ble.msg.raw_pdu.has_crc_validity = true;
+    p_message->msg.ble.msg.raw_pdu.crc_validity = crc_validity;
+
+    /* RSSI */
+    if (rssi != BLE_RSSI_NONE)
+    {
+        p_message->msg.ble.msg.raw_pdu.has_rssi = true;
+        p_message->msg.ble.msg.raw_pdu.rssi = rssi;
+    }
+
+    /* Processed / decrypted. */
+    p_message->msg.ble.msg.raw_pdu.processed = processed;
+    p_message->msg.ble.msg.raw_pdu.decrypted = decrypted;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -41,7 +89,6 @@ whad_result_t whad_ble_data_pdu(Message *p_message, uint8_t *p_pdu, int length, 
  * @brief Initialize a message reporting a BLE link-layer data PDU
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
- * @param[in]       header              16-bit header including LLID and length
  * @param[in]       p_pdu               Pointer to a byte array containing the PDU
  * @param[in]       length              Length of the data PDU, in bytes
  * @param[in]       direction           Direction of the PDU (master -> slave / slave -> master)
@@ -53,8 +100,8 @@ whad_result_t whad_ble_data_pdu(Message *p_message, uint8_t *p_pdu, int length, 
  * @retval          WHAD_ERROR          Invalid message pointer or PDU pointer.
  **/
 
-whad_result_t whad_ble_ll_data_pdu(Message *p_message, uint16_t header, uint8_t *p_pdu, int length,
-                          whad_ble_direction_t direction, int conn_handle, bool processed, bool decrypted)
+whad_result_t whad_ble_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_ble_direction_t direction,
+                          int conn_handle, bool processed, bool decrypted)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL) )
@@ -69,10 +116,8 @@ whad_result_t whad_ble_ll_data_pdu(Message *p_message, uint16_t header, uint8_t 
     p_message->msg.ble.msg.pdu.decrypted = decrypted?1:0;
     p_message->msg.ble.msg.pdu.direction = (ble_BleDirection)direction;
     p_message->msg.ble.msg.pdu.conn_handle = conn_handle;
-    p_message->msg.ble.msg.pdu.pdu.size = length + 2;
-    p_message->msg.ble.msg.pdu.pdu.bytes[0] = (header & 0xff);
-    p_message->msg.ble.msg.pdu.pdu.bytes[1] = (header >> 8) & 0xff;
-    memcpy(&p_message->msg.ble.msg.pdu.pdu.bytes[2], p_pdu, length);
+    p_message->msg.ble.msg.pdu.pdu.size = length;
+    memcpy(&p_message->msg.ble.msg.pdu.pdu.bytes, p_pdu, length);
 
     /* Success. */
     return WHAD_SUCCESS;
