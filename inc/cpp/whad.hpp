@@ -4,6 +4,7 @@
 #include "message.hpp"
 #include "generic.hpp"
 #include "discovery.hpp"
+#include "ble.hpp"
 
 namespace whad
 {
