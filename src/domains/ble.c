@@ -1549,6 +1549,7 @@ whad_result_t whad_ble_hijacked(Message *p_message, uint32_t access_address, boo
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       access_address      Access address
+ * @param[in]       attempts            Number of attempts
  * @param[in]       success             Set to true to notify a successful hijacking, false otherwise.
  * 
  * @retval          WHAD_SUCCESS        Success.

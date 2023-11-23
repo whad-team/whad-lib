@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 
     #include <string>
+    #include <vector>
     #include "message.hpp"
     #include "../domains/ble.h"
 
@@ -23,6 +24,15 @@
             enum AddressType {
                 AddressRandom = BLE_ADDR_RANDOM,
                 AddressPublic = BLE_ADDR_PUBLIC
+            };
+
+            enum AdvType {
+                AdvUnknown = BLE_ADV_UNKNOWN,
+                AdvInd = BLE_ADV_IND,
+                AdvDirectInd = BLE_ADV_DIRECT_IND,
+                AdvNonConnInd = BLE_ADV_NONCONN_IND,
+                AdvScanInd = BLE_ADV_SCAN_IND,
+                AdvScanRsp = BLE_ADV_SCAN_RSP
             };
 
             class BDAddress
@@ -59,21 +69,35 @@
                     uint8_t *getChannelMapBuf(void);
             };
 
-            class Pdu : public NanoPbMsg
+            class PDU
+            {
+                private:
+                    int m_length;
+                    uint8_t *m_buf;
+                
+                public:
+                    PDU(int length);
+                    PDU(uint8_t *bytes, int length);
+                    uint8_t *getBuf();
+                    int getLength();
+                    ~PDU();
+            };
+
+            class LinkLayerPdu : public NanoPbMsg
             {
                 public:
-                    Pdu(uint32_t conn_handle, uint8_t *pdu, int length, Direction direction, bool processed, bool decrypted);
+                    LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted);
             };
 
             class RawPdu : public NanoPbMsg
             {
                 public:
                     RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
-                           uint8_t *p_pdu, int length, uint32_t crc, bool crc_validity, uint32_t timestamp,
+                           PDU pdu, uint32_t crc, bool crc_validity, uint32_t timestamp,
                            uint32_t relative_timestamp, whad_ble_direction_t direction, bool processed,
                            bool decrypted);
                     RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
-                           uint8_t *p_pdu, int length, uint32_t crc, bool crc_validity, whad_ble_direction_t direction,
+                           PDU pdu, uint32_t crc, bool crc_validity, whad_ble_direction_t direction,
                            bool processed, bool decrypted);
                     
             };
@@ -216,6 +240,122 @@
             {
                 public:
                     HijackBoth(uint32_t accessAddress);
+            };
+
+            class SetEncryption : public NanoPbMsg
+            {
+                public:
+                    SetEncryption(uint32_t connHandle, uint8_t pLLKey[16],
+                                  uint8_t llIv[8], uint8_t key[16], uint8_t rand[8],
+                                  uint8_t eDiv[2], bool enabled);
+            };
+
+            class ReactiveJam : public NanoPbMsg
+            {
+                public:
+                    ReactiveJam(uint32_t channel, uint8_t *pPattern, int length, uint32_t position);
+            };
+
+            class PatternTrigger
+            {
+                private:
+                    uint8_t *m_pattern;
+                    uint8_t *m_mask;
+                    uint32_t m_offset;
+                    int m_length;
+
+                public:
+                    PatternTrigger(uint8_t *pPattern, uint8_t *pMask, int length, uint32_t offset);
+                    int getLength(void);
+                    uint8_t *getPattern(void);
+                    uint8_t *getMask(void);
+                    uint32_t getOffset(void);
+            };
+
+            class ConnEventTrigger
+            {
+                private:
+                    uint32_t m_connEvent;
+
+                public:
+                    ConnEventTrigger(uint32_t connEvent);
+                    uint32_t getConnEvent(void);
+            };
+
+            class PrepareSequence : public NanoPbMsg
+            {
+                private:
+                    whad_prepared_packet_t *buildPacketsArray(std::vector<PDU> packets);
+
+                public:
+                    /* Manual trigger */
+                    PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets);
+
+                    /* Pattern trigger */
+                    PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets, PatternTrigger trigger);
+
+                    /* Connection event trigger */
+                    PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets,
+                                    ConnEventTrigger trigger);
+            };
+
+            class ManualTrigger : public NanoPbMsg
+            {
+                public:
+                    ManualTrigger(uint32_t id);
+            };
+
+            class DeleteSequence : public NanoPbMsg
+            {
+                public:
+                    DeleteSequence(uint32_t id);
+            };
+
+            class SequenceTriggered : public NanoPbMsg
+            {
+                public:
+                    SequenceTriggered(uint32_t id);
+            };
+
+            class AccessAddressDiscovered : public NanoPbMsg
+            {
+                public:
+                    AccessAddressDiscovered(uint32_t accessAddress);
+                    AccessAddressDiscovered(uint32_t accessAddress, uint32_t timestamp);
+                    AccessAddressDiscovered(uint32_t accessAddress, int32_t rssi);
+                    AccessAddressDiscovered(uint32_t accessAddress, uint32_t timestamp, int32_t rssi);
+
+            };
+
+            class AdvPdu : public NanoPbMsg
+            {
+                public:
+                    AdvPdu(AdvType advType, int32_t rssi, BDAddress address, uint8_t *pAdvData, int advDataLength);
+            };
+
+            class Synchronized : public NanoPbMsg
+            {
+                public:
+                    Synchronized(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval,
+                                 uint32_t hopIncrement, ChannelMap channelMap);
+            };
+
+            class Desynchronized : public NanoPbMsg
+            {
+                public:
+                    Desynchronized(uint32_t accessAddress);
+            };
+
+            class Hijacked : public NanoPbMsg
+            {
+                public:
+                    Hijacked(uint32_t accessAddress, bool success);
+            };
+
+            class Injected : public NanoPbMsg
+            {
+                public:
+                    Injected(uint32_t accessAddress, uint32_t attempts, bool success);
             };
         }
     }

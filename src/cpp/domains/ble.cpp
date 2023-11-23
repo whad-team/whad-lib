@@ -99,17 +99,17 @@ uint8_t *BDAddress::getAddressBuf(void)
 
 
 /**
- * @brief   Create a DataPdu object from a BLE PDU.
+ * @brief   Create a LinkLayerPdu object from a BLE PDU.
  * 
  * @param[in]   pdu         Pointer to a byte array containing the PDU
  * @param[in]   length      Size in bytes of the PDU
  * @param[in]   direction   Direction of the PDU (host to slave, slave to host, ...)
  **/
 
-Pdu::Pdu(uint32_t conn_handle, uint8_t *pdu, int length, Direction direction, bool processed, bool decrypted) : NanoPbMsg()
+LinkLayerPdu::LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted) : NanoPbMsg()
 {
     /* Initialize our data pdu message. */
-    whad_ble_pdu(this->getRaw(), pdu, length, (whad_ble_direction_t)direction, conn_handle, processed, decrypted);
+    whad_ble_pdu(this->getRaw(), pdu.getBuf(), pdu.getLength(), (whad_ble_direction_t)direction, conn_handle, processed, decrypted);
 }
 
 /**
@@ -131,12 +131,13 @@ Pdu::Pdu(uint32_t conn_handle, uint8_t *pdu, int length, Direction direction, bo
  **/
 
 RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
-                          uint8_t *p_pdu, int length, uint32_t crc, bool crc_validity, uint32_t timestamp,
+                          PDU pdu, uint32_t crc, bool crc_validity, uint32_t timestamp,
                           uint32_t relative_timestamp, whad_ble_direction_t direction, bool processed,
                           bool decrypted) : NanoPbMsg()
 {
-    whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, p_pdu, length, crc, crc_validity,
-                     timestamp, relative_timestamp, (whad_ble_direction_t)direction, processed, decrypted, true);
+    whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBuf(), pdu.getLength(), crc, 
+                     crc_validity, timestamp, relative_timestamp, (whad_ble_direction_t)direction, processed,
+                     decrypted, true);
 }
 
 /**
@@ -156,11 +157,11 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
  **/
 
 RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
-                           uint8_t *p_pdu, int length, uint32_t crc, bool crc_validity, whad_ble_direction_t direction,
+                           PDU pdu, uint32_t crc, bool crc_validity, whad_ble_direction_t direction,
                            bool processed, bool decrypted) : NanoPbMsg()
 {
-    whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, p_pdu, length, crc, crc_validity,
-                     0, 0, (whad_ble_direction_t)direction, processed, decrypted, false);
+    whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBuf(), pdu.getLength(),
+                     crc, crc_validity, 0, 0, (whad_ble_direction_t)direction, processed, decrypted, false);
 }
 
 
@@ -563,4 +564,550 @@ HijackSlave::HijackSlave(uint32_t accessAddress) : NanoPbMsg()
 HijackBoth::HijackBoth(uint32_t accessAddress) : NanoPbMsg()
 {
     whad_ble_hijack_both(this->getRaw(), accessAddress);
+}
+
+
+/**
+ * @brief       SetEncryption message constructor.
+ * 
+ * @param[in]   connHandle      Connection handle
+ * @param[in]   llKey           Link-layer encryption key (16 bytes)
+ * @param[in]   llIv            Link-layer encryption initialization vector (8 bytes)
+ * @param[in]   key             Encryption key
+ * @param[in]   rand            Random buffer used in link-layer key derivation
+ * @param[in]   eDiv            Diversifier used in link-layer key derivation
+ **/
+
+SetEncryption::SetEncryption(uint32_t connHandle, uint8_t llKey[16],
+                                  uint8_t llIv[8], uint8_t key[16], uint8_t rand[8],
+                                  uint8_t eDiv[2], bool enabled) : NanoPbMsg()
+{
+    whad_ble_set_encryption(
+        this->getRaw(),
+        connHandle,
+        enabled,
+        llKey,
+        llIv,
+        key,
+        rand,
+        eDiv
+    );
+}
+
+
+/**
+ * @brief       SetEncryption message constructor.
+ * 
+ * @param[in]   channel         Channel to listen on
+ * @param[in]   pPattern        Byte buffer containing the byte pattern to match
+ * @param[in]   length          Pattern length in bytes
+ * @param[in]   position        Start position for pattern search
+ **/
+
+ReactiveJam::ReactiveJam(uint32_t channel, uint8_t *pPattern, int length, uint32_t position) : NanoPbMsg()
+{
+    whad_ble_reactive_jam(this->getRaw(), channel, pPattern, length, position);
+}
+
+
+/**
+ * @brief       PatternTrigger constructor
+ * 
+ * @param[in]   pPattern        Byte buffer containing the byte pattern to match
+ * @param[in]   pMask           Byte buffer containing a bitmask to apply with the pattern
+ * @param[in]   length          Pattern and mask size in bytes
+ * @param[in]   offset          Offset at which the pattern must be applied
+ **/
+
+PatternTrigger::PatternTrigger(uint8_t *pPattern, uint8_t *pMask, int length, uint32_t offset)
+{
+    this->m_pattern = pPattern;
+    this->m_mask = pMask;
+    this->m_length = length;
+    this->m_offset = offset;
+}
+
+
+/**
+ * @brief       Get pattern and mask length
+ * 
+ * @return      Pattern and mask length in bytes
+ **/
+
+int PatternTrigger::getLength(void)
+{
+    return this->m_length;
+}
+
+
+/**
+ * @brief       Get trigger pattern
+ * 
+ * @return      Pointer to the trigger's pattern byte buffer
+ **/
+
+uint8_t *PatternTrigger::getPattern(void)
+{
+    return this->m_pattern;
+}
+
+
+/**
+ * @brief       Get trigger mask
+ * 
+ * @return      Pointer to the trigger's mask byte buffer
+ **/
+
+uint8_t *PatternTrigger::getMask(void)
+{
+    return this->m_mask;
+}
+
+
+/**
+ * @brief       Get trigger pattern offset
+ * 
+ * @return      Pattern offset
+ **/
+
+uint32_t PatternTrigger::getOffset(void)
+{
+    return this->m_offset;
+}
+
+
+/**
+ * @brief       Connection Event trigger constructor
+ * 
+ * @param[in]   connEvent       Connection event at which a set of packets must be sent
+ **/
+
+ConnEventTrigger::ConnEventTrigger(uint32_t connEvent)
+{
+    this->m_connEvent = connEvent;
+}
+
+
+/**
+ * @brief       Get trigger connection event
+ * 
+ * @return      Connection event
+ **/
+
+uint32_t ConnEventTrigger::getConnEvent(void)
+{
+    return this->m_connEvent;
+}
+
+
+/**
+ * @brief       Build an empty PDU with a specific length
+ * 
+ * @param[in]   length          PDU length
+ **/
+
+PDU::PDU(int length)
+{
+    /* Allocate a new buffer. */
+    this->m_length = length;
+    this->m_buf = new uint8_t[length];
+}
+
+
+/**
+ * @brief       Build a PDU with a specific length and fill with the provided bytes
+ *
+ * @param[in]   bytes           PDU bytes (byte array)
+ * @param[in]   length          PDU length
+ **/
+
+PDU::PDU(uint8_t *bytes, int length) : PDU(length)
+{
+    /* Allocate a new buffer. */
+    //this->m_length = length;
+    //this->m_buf = new uint8_t[length];
+    memcpy(this->m_buf, bytes, length);
+}
+
+
+/**
+ * @brief       PDU destructor
+ *
+ * Free the allocated byte buffer.
+ **/
+
+PDU::~PDU()
+{
+    /* Free our byte buffer. */
+    delete[] this->m_buf;
+}
+
+
+/**
+ * @brief       Get a poiner to the PDU byte buffer
+ *
+ * @return      Pointer to the PDU byte buffer
+ **/
+
+uint8_t *PDU::getBuf(void)
+{
+    return this->m_buf;
+}
+
+
+/**
+ * @brief       Get PDU current length
+ * 
+ * @return      PDU byte buffer length
+ **/
+
+int PDU::getLength(void)
+{
+    return this->m_length;
+}
+
+
+/**
+ * @brief       Convert a vecor of PDU into a WHAD prepared packets array
+ * 
+ * @param[in]   packets     Vector of packets to convert into a WHAD prepared packets array
+ * 
+ * @return      Dynamically allocated packets array
+ **/
+
+whad_prepared_packet_t *buildPacketsArray(std::vector<PDU> packets)
+{
+    whad_prepared_packet_t *packetsArr;
+    int packetCount = packets.size();
+
+    if (packetCount > 0)
+    {
+        /* We need to create an array of packets. */
+        packetsArr = new whad_prepared_packet_t[packetCount];
+
+        /* Then we populate this array with our packets. */
+        for (int i=0; i<packetCount; i++)
+        {
+            memcpy(packetsArr[i].p_bytes, packets[i].getBuf(), packets[i].getLength());
+            packetsArr[i].length = packets[i].getLength();
+        }
+
+        /* Success. */
+        return packetsArr;
+    }
+    else
+    {
+        /* Nothing to allocate. */
+        return NULL;
+    }
+}
+
+
+/**
+ * @brief       Create a manually triggered prepared sequence
+ * 
+ * @param[in]   id          Sequence ID
+ * @param[in]   direction   Sequence direction
+ * @param[in]   packets     Vector of PDU to send (packets list)
+ **/
+
+PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets) : NanoPbMsg()
+{
+    /* Convert our vector into a dynamically allocated array. */
+    whad_prepared_packet_t *packetsArr = buildPacketsArray(packets);
+
+    /* And we initialize our message. */
+    whad_ble_prepare_sequence_manual(
+        this->getRaw(),
+        id,
+        (whad_ble_direction_t)direction,
+        packetsArr,
+        packets.size()
+    );
+
+    /* Free our packets array. */
+    delete[] packetsArr;
+}
+
+
+/**
+ * @brief       Create a pattern-triggered prepared sequence
+ * 
+ * @param[in]   id          Sequence ID
+ * @param[in]   direction   Sequence direction
+ * @param[in]   packets     Vector of PDU to send (packets list)
+ * @param[in]   trigger     Pattern trigger to apply with this sequence
+ **/
+
+PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets, PatternTrigger trigger) : NanoPbMsg()
+{
+    /* Convert our vector into a dynamically allocated array. */
+    whad_prepared_packet_t *packetsArr = buildPacketsArray(packets);
+
+    whad_ble_prepare_sequence_on_recv(
+        this->getRaw(),
+        trigger.getPattern(),
+        trigger.getMask(),
+        trigger.getLength(),
+        trigger.getOffset(),
+        id,
+        (whad_ble_direction_t)direction,
+        packetsArr,
+        packets.size()
+    );
+
+    /* Free our packets array. */
+    delete[] packetsArr;
+}
+
+
+/**
+ * @brief       Create a connection event triggered prepared sequence
+ * 
+ * @param[in]   id          Sequence ID
+ * @param[in]   direction   Sequence direction
+ * @param[in]   packets     Vector of PDU to send (packets list)
+ * @param[in]   trigger     Connection event trigger to apply with this sequence
+ **/
+
+PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets,
+                                    ConnEventTrigger trigger) : NanoPbMsg()
+{
+    /* Convert our vector into a dynamically allocated array. */
+    whad_prepared_packet_t *packetsArr = buildPacketsArray(packets);
+
+    whad_ble_prepare_sequence_conn_evt(
+        this->getRaw(),
+        trigger.getConnEvent(),
+        id,
+        (whad_ble_direction_t)direction,
+        packetsArr,
+        packets.size()
+    );
+
+    /* Free our packets array. */
+    delete[] packetsArr;
+}
+
+
+/**
+ * @brief       Manually triggers a packet sequence
+ * 
+ * @param[in]   id          Sequence ID
+ **/
+
+ManualTrigger::ManualTrigger(uint32_t id) : NanoPbMsg()
+{
+    whad_ble_prepare_sequence_trigger(
+        this->getRaw(),
+        id
+    );
+}
+
+
+/**
+ * @brief       Delete a prepared sequence
+ * 
+ * @param[in]   id          Sequence ID
+ **/
+
+DeleteSequence::DeleteSequence(uint32_t id) : NanoPbMsg()
+{
+    whad_ble_prepare_sequence_delete(
+        this->getRaw(),
+        id
+    );
+}
+
+
+/**
+ * @brief       Prepared sequence has been triggered
+ * 
+ * @param[in]   id          Sequence ID
+ **/
+
+SequenceTriggered::SequenceTriggered(uint32_t id) : NanoPbMsg()
+{
+    whad_ble_triggered(
+        this->getRaw(),
+        id
+    );
+}
+
+
+/**
+ * @brief       Notify the discovery of an access address
+ * 
+ * @param[in]   accessAddress       Discovered access address
+ **/
+
+AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress) : NanoPbMsg()
+{
+    whad_ble_access_address_discovered(
+        this->getRaw(),
+        accessAddress,
+        0,
+        0,
+        false,
+        false
+    );
+}
+
+
+/**
+ * @brief       Notify the discovery of an access address including RSSI
+ * 
+ * @param[in]   accessAddress       Discovered access address
+ * @param[in]   rssi                Received Signal Strength Indicator
+ **/
+
+AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, int32_t rssi) : NanoPbMsg()
+{
+    whad_ble_access_address_discovered(
+        this->getRaw(),
+        accessAddress,
+        0,
+        rssi,
+        false,
+        true
+    );
+}
+
+
+/**
+ * @brief       Notify the discovery of an access address including timestamp
+ * 
+ * @param[in]   accessAddress       Discovered access address
+ * @param[in]   timestamp           Timestamp
+ **/
+
+AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, uint32_t timestamp) : NanoPbMsg()
+{
+    whad_ble_access_address_discovered(
+        this->getRaw(),
+        accessAddress,
+        timestamp,
+        0,
+        true,
+        false
+    );
+}
+
+
+/**
+ * @brief       Notify the discovery of an access address including timestamp and RSSI
+ * 
+ * @param[in]   accessAddress       Discovered access address
+ * @param[in]   timestamp           Timestamp
+ * @param[in]   rssi                Received Signal Strength Indicator
+ **/
+
+AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, uint32_t timestamp, int32_t rssi) : NanoPbMsg()
+{
+    whad_ble_access_address_discovered(
+        this->getRaw(),
+        accessAddress,
+        timestamp,
+        rssi,
+        true,
+        true
+    );
+}
+
+
+/**
+ * @brief       Notify an advertising PDU
+ * 
+ * @param[in]   advType             Advertisement type
+ * @param[in]   address             Advertiser BD address
+ * @param[in]   pAdvData            Pointer to the advertising data byte buffer
+ * @param[in]   advDataLength       Advertising data length in bytes
+ **/
+
+AdvPdu::AdvPdu(AdvType advType, int32_t rssi, BDAddress address, uint8_t *pAdvData, int advDataLength) : NanoPbMsg()
+{
+    whad_ble_adv_pdu(
+        this->getRaw(),
+        (whad_ble_advtype_t)advType,
+        rssi,
+        address.getAddressBuf(),
+        (whad_ble_addrtype_t)address.getType(),
+        pAdvData,
+        advDataLength
+    );
+}
+
+
+/**
+ * @brief       Notify a successful connection synchronization
+ * 
+ * @param[in]   accessAddress       Connection access address
+ * @param[in]   crcInit             Recovered CRC initial value (seed)
+ * @param[in]   hopInterval         Recovered hop interval
+ * @param[in]   hopIncrement        Recovered hop increment
+ * @param[in]   channelMap          Recovered channel map
+ **/
+
+Synchronized::Synchronized(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval,
+                                 uint32_t hopIncrement, ChannelMap channelMap) : NanoPbMsg()
+{
+    whad_ble_synchronized(
+        this->getRaw(),
+        accessAddress,
+        crcInit,
+        hopInterval,
+        hopIncrement,
+        channelMap.getChannelMapBuf()
+    );
+}
+
+
+/**
+ * @brief       Notify a connection desynchronization
+ * 
+ * @param[in]   accessAddress       Connection access address
+ **/
+
+Desynchronized::Desynchronized(uint32_t accessAddress) : NanoPbMsg()
+{
+    whad_ble_desynchronized(
+        this->getRaw(),
+        accessAddress
+    );
+}
+
+
+/**
+ * @brief       Notify a successful/unsuccessful connection hijacking
+ * 
+ * @param[in]   accessAddress       Connection access address
+ * @param[in]   success             If true hijacking was successful, unsuccessful otherwise 
+ **/
+
+Hijacked::Hijacked(uint32_t accessAddress, bool success) : NanoPbMsg()
+{
+    whad_ble_hijacked(
+        this->getRaw(),
+        accessAddress,
+        success
+    );
+}
+
+
+/**
+ * @brief       Notify a successful/unsuccessful PDU injection
+ * 
+ * @param[in]   accessAddress       Connection access address
+ * @param[in]   attempts            Number of attempts
+ * @param[in]   success             If true injection was successful, unsuccessful otherwise 
+ **/
+
+Injected::Injected(uint32_t accessAddress, uint32_t attempts, bool success) : NanoPbMsg()
+{
+    whad_ble_injected(
+        this->getRaw(),
+        accessAddress,
+        attempts,
+        success
+    );
 }

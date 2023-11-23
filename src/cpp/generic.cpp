@@ -21,7 +21,35 @@ whad::generic::Verbose::Verbose(std::string message) : NanoPbMsg()
 whad::generic::CommandResult::CommandResult(whad_result_code_t resultCode) : NanoPbMsg()
 {
     whad_generic_cmd_result(this->getRaw(), resultCode);
-} 
+}
+
+whad::generic::Success::Success(void) : CommandResult(WHAD_RESULT_SUCCESS)
+{
+}
+
+whad::generic::Error::Error(void) : CommandResult(WHAD_RESULT_ERROR)
+{
+}
+
+whad::generic::ParameterError::ParameterError(void) : CommandResult(WHAD_RESULT_PARAMETER_ERROR)
+{
+}
+
+whad::generic::Disconnected::Disconnected(void) : CommandResult(WHAD_RESULT_DISCONNECTED)
+{
+}
+
+whad::generic::WrongMode::WrongMode(void) : CommandResult(WHAD_RESULT_WRONG_MODE)
+{
+}
+
+whad::generic::UnsupportedDomain::UnsupportedDomain(void) : CommandResult(WHAD_RESULT_UNSUPPORTED_DOMAIN)
+{
+}
+
+whad::generic::Busy::Busy(void) : CommandResult(WHAD_RESULT_BUSY)
+{
+}
 
 
 /**
