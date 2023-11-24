@@ -132,7 +132,7 @@ LinkLayerPdu::LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, b
 
 RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
                           PDU pdu, uint32_t crc, bool crc_validity, uint32_t timestamp,
-                          uint32_t relative_timestamp, whad_ble_direction_t direction, bool processed,
+                          uint32_t relative_timestamp, Direction direction, bool processed,
                           bool decrypted) : NanoPbMsg()
 {
     whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBuf(), pdu.getLength(), crc, 
@@ -157,7 +157,7 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
  **/
 
 RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
-                           PDU pdu, uint32_t crc, bool crc_validity, whad_ble_direction_t direction,
+                           PDU pdu, uint32_t crc, bool crc_validity, Direction direction,
                            bool processed, bool decrypted) : NanoPbMsg()
 {
     whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBuf(), pdu.getLength(),
@@ -173,7 +173,7 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
  * @param[in]   initAddr    Initiator BD address
  **/
 
-NotifyConnected::NotifyConnected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr)  : NanoPbMsg()
+Connected::Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr)  : NanoPbMsg()
 {
     whad_ble_notify_connected(
         this->getRaw(),
@@ -197,7 +197,7 @@ NotifyConnected::NotifyConnected(uint32_t connHandle, BDAddress advAddr, BDAddre
  * @param[in]   reason      Disconnection reason (see BLE specs.)
  **/
 
-NotifyDisconnected::NotifyDisconnected(uint32_t connHandle, uint32_t reason) : NanoPbMsg()
+Disconnected::Disconnected(uint32_t connHandle, uint32_t reason) : NanoPbMsg()
 {
     whad_ble_notify_disconnected(this->getRaw(), connHandle, reason);
 }

@@ -94,24 +94,24 @@
                 public:
                     RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
                            PDU pdu, uint32_t crc, bool crc_validity, uint32_t timestamp,
-                           uint32_t relative_timestamp, whad_ble_direction_t direction, bool processed,
+                           uint32_t relative_timestamp, Direction direction, bool processed,
                            bool decrypted);
                     RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
-                           PDU pdu, uint32_t crc, bool crc_validity, whad_ble_direction_t direction,
+                           PDU pdu, uint32_t crc, bool crc_validity, Direction direction,
                            bool processed, bool decrypted);
                     
             };
 
-            class NotifyConnected : public NanoPbMsg
+            class Connected : public NanoPbMsg
             {
                 public:
-                    NotifyConnected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr);
+                    Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr);
             };
 
-            class NotifyDisconnected : public NanoPbMsg
+            class Disconnected : public NanoPbMsg
             {
                 public:
-                    NotifyDisconnected(uint32_t conn_handle, uint32_t reason);
+                    Disconnected(uint32_t conn_handle, uint32_t reason);
             };
 
             class SetBdAddress : public NanoPbMsg

@@ -6,7 +6,27 @@
 namespace whad
 {
     /**
-     * Whad Nanopb message wrapper class.
+     * @brief   Message type enumeration.
+     */
+
+    enum MessageType {
+        UnknownMsg,
+        GenericMsg,
+        DiscoveryMsg,
+        DomainMsg
+    };
+
+    enum MessageDomain {
+        DomainNone,
+        DomainBle,
+        DomainEsb,
+        DomainPhy,
+        DomainUnifying,
+        DomainZigbee
+    };
+
+    /**
+     * @brief   Whad Nanopb message wrapper class.
      **/
 
     class NanoPbMsg
@@ -18,10 +38,13 @@ namespace whad
 
             /* Constructor and destructor. */
             NanoPbMsg();
+            NanoPbMsg(Message *message);
             ~NanoPbMsg();
 
             /* Accessor. */
             Message *getRaw(void);
+            MessageType getType(void);
+            MessageDomain getDomain(void);
     };
 
 };

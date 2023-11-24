@@ -1,5 +1,38 @@
 #include "whad.h"
 
+whad_generic_msgtype_t whad_generic_get_message_type(Message *p_message)
+{
+    whad_generic_msgtype_t msg_type = WHAD_GENERIC_UNKNOWN;
+
+    /* Sanity check. */
+    if (p_message->which_msg != Message_generic_tag)
+        return msg_type;
+
+    switch (p_message->msg.generic.which_msg)
+    {
+        case generic_Message_cmd_result_tag:
+            msg_type = WHAD_GENERIC_CMDRESULT;
+            break;
+
+        case generic_Message_verbose_tag:
+            msg_type = WHAD_GENERIC_VERBOSE;
+            break;
+
+        case generic_Message_debug_tag:
+            msg_type = WHAD_GENERIC_DEBUG;
+            break;
+        
+        case generic_Message_progress_tag:
+            msg_type = WHAD_GENERIC_PROGRESS;
+            break;
+
+        default:
+            break;
+    }
+
+    /* Return message type. */
+    return msg_type;
+}
 
 /**
  * @brief Initialize a generic command result message
@@ -25,6 +58,41 @@ whad_result_t whad_generic_cmd_result(Message *p_message, whad_result_code_t res
 
     /* Success. */
     return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a generic command result message
+ * 
+ * @param[in]       p_message       Pointer to a `Message` structure
+ * @param[in,out]   p_result        Pointer to a result code
+ * 
+ * @retval      WHAD_SUCCESS    Success
+ * @retval      WHAD_ERROR      Wrong message pointer or result code pointer
+ **/
+
+whad_result_t whad_generic_cmd_result_parse(Message *p_message, whad_result_code_t *p_result)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_result == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if (p_message->which_msg == Message_generic_tag)
+    {
+        if (p_message->msg.generic.which_msg == generic_Message_cmd_result_tag)
+        {
+            /* Save result. */
+            *p_result = (whad_result_code_t)p_message->msg.generic.msg.cmd_result.result;
+
+            /* Success. */
+            return WHAD_SUCCESS;
+        }
+    }
+
+    /* Nope. */
+    return WHAD_ERROR;
 }
 
 
@@ -84,6 +152,31 @@ whad_result_t whad_generic_verbose_message(Message *p_message, char *psz_message
 
     /* Success. */
     return WHAD_SUCCESS;
+}
+
+whad_result_t whad_generic_verbose_message_parse(Message *p_message, char **ppsz_message)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (ppsz_message == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if (p_message->which_msg == Message_generic_tag)
+    {
+        if (p_message->msg.generic.which_msg == generic_Message_verbose_tag)
+        {
+            /* Save result. */
+            /* TODO: how to get a pointer to the bytes ?? */
+            *ppsz_message = NULL;
+
+            /* Success. */
+            return WHAD_SUCCESS;
+        }
+    }
+
+    /* Nope. */
+    return WHAD_ERROR;    
 }
 
 

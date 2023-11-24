@@ -21,8 +21,20 @@ typedef enum {
     WHAD_RESULT_BUSY = 6 
 } whad_result_code_t;
 
+typedef enum {
+    WHAD_GENERIC_UNKNOWN,
+    WHAD_GENERIC_CMDRESULT,
+    WHAD_GENERIC_VERBOSE,
+    WHAD_GENERIC_DEBUG,
+    WHAD_GENERIC_PROGRESS
+} whad_generic_msgtype_t;
+
+/* Get generic message type from NanoPb message. */
+whad_generic_msgtype_t whad_generic_get_message_type(Message *p_message);
+
 /* Populate a generic command result message. */
 whad_result_t whad_generic_cmd_result(Message *p_message, whad_result_code_t result);
+whad_result_t whad_generic_cmd_result_parse(Message *p_message, whad_result_code_t *p_result);
 
 /* Populate a generic verbose message. */
 whad_result_t whad_generic_verbose_message(Message *p_message, char *psz_message);

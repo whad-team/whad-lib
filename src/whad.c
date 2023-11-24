@@ -72,3 +72,68 @@ whad_result_t whad_get_message(Message *p_msg)
         return WHAD_ERROR;
     }
 }
+
+
+whad_msgtype_t whad_get_message_type(Message *p_msg)
+{
+    whad_msgtype_t msg_type = WHAD_MSGTYPE_UNKNOWN;
+
+    switch (p_msg->which_msg)
+    {
+        case Message_generic_tag:
+            msg_type = WHAD_MSGTYPE_GENERIC;
+            break;
+
+        case Message_discovery_tag:
+            msg_type = WHAD_MSGTYPE_DISCOVERY;
+            break;
+
+        case Message_ble_tag:
+        case Message_esb_tag:
+        case Message_phy_tag:
+        case Message_unifying_tag:
+        case Message_zigbee_tag:
+            msg_type = WHAD_MSGTYPE_DOMAIN;
+            break;
+
+        default:
+            break;
+    }
+
+    /* Return message type. */
+    return msg_type;
+}
+
+whad_domain_t whad_get_message_domain(Message *p_msg)
+{
+    whad_domain_t domain = DOMAIN_NONE;
+
+    switch (p_msg->which_msg)
+    {
+        case Message_ble_tag:
+            domain = DOMAIN_BTLE;
+            break;
+
+        case Message_esb_tag:
+            domain = DOMAIN_ESB;
+            break;
+
+        case Message_phy_tag:
+            domain = DOMAIN_PHY;
+            break;
+
+        case Message_unifying_tag:
+            domain = DOMAIN_LOGITECH_UNIFYING;
+            break;
+
+        case Message_zigbee_tag:
+            domain = DOMAIN_ZIGBEE;
+            break;
+
+        default:
+            break;
+    }
+
+    /* Return guessed domain. */
+    return domain;
+}

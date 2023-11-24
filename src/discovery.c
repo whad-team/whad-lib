@@ -1,5 +1,48 @@
 #include <whad.h>
 
+
+whad_discovery_msgtype_t whad_discovery_get_message_type(Message *p_message)
+{
+    whad_discovery_msgtype_t msg_type = WHAD_DISCOVERY_UNKNOWN;
+
+    /* Sanity check. */
+    if (p_message->which_msg != Message_discovery_tag)
+        return msg_type;
+
+    switch (p_message->msg.discovery.which_msg)
+    {
+        case discovery_Message_info_query_tag:
+            msg_type = WHAD_DISCOVERY_DEVICE_INFO_QUERY;
+            break;
+
+        case discovery_Message_info_resp_tag:
+            msg_type = WHAD_DISCOVERY_DEVICE_INFO_RESP;
+            break;
+
+        case discovery_Message_domain_query_tag:
+            msg_type = WHAD_DISCOVERY_DOMAIN_INFO_QUERY;
+            break;
+        
+        case discovery_Message_domain_resp_tag:
+            msg_type = WHAD_DISCOVERY_DOMAIN_INFO_RESP;
+            break;
+
+        case discovery_Message_reset_query_tag:
+            msg_type = WHAD_DISCOVERY_DEVICE_RESET;
+            break;
+
+        case discovery_Message_set_speed_tag:
+            msg_type = WHAD_DISCOVERY_SET_SPEED;
+            break;
+
+        default:
+            break;
+    }
+
+    /* Return message type. */
+    return msg_type;
+}
+
 /*****************************
  * Discovery messages
  ****************************/
@@ -64,6 +107,41 @@ whad_result_t whad_discovery_device_info_query(Message *p_message, uint32_t prot
 
     /* Success. */
     return WHAD_SUCCESS;    
+}
+
+
+/**
+ * @brief Parse a discovery device info query.
+ * 
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_proto_version     Pointer to the output protocol version variable
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_discovery_device_info_query_parse(Message *p_message, uint32_t *p_proto_version)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_proto_version == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if (p_message->which_msg == Message_discovery_tag)
+    {
+        if (p_message->msg.discovery.which_msg == discovery_Message_info_query_tag)
+        {
+            /* Return protocol version. */
+            *p_proto_version = p_message->msg.discovery.msg.info_query.proto_ver;
+
+            /* Success. */
+            return WHAD_SUCCESS;
+        }
+    }
+
+    /* Nope. */
+    return WHAD_ERROR;
 }
 
 
@@ -172,6 +250,41 @@ whad_result_t whad_discovery_domain_info_query(Message *p_message, whad_domain_t
 
 
 /**
+ * @brief Parse a domain info query.
+ * 
+ * @param[in]       p_message           Pointer to the message to parse
+ * @param[in,out]   p_domain            Pointer to the domain contained in the query
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or domain pointer.
+ **/
+
+whad_result_t whad_discovery_domain_info_query_parse(Message *p_message, whad_domain_t *p_domain)
+{
+     /* Sanity check. */
+    if ((p_message == NULL) || (p_domain == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if (p_message->which_msg == Message_discovery_tag)
+    {
+        if (p_message->msg.discovery.which_msg == discovery_Message_domain_query_tag)
+        {
+            /* Report selected domain. */
+            *p_domain = p_message->msg.discovery.msg.domain_query.domain;
+
+            /* Success. */
+            return WHAD_SUCCESS;
+        }
+    }
+
+    /* Nope, that's not a Discovery Domain info query :( */
+    return WHAD_ERROR;
+}
+
+
+/**
  * @brief Initialize a discovery domain information response message.
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -199,6 +312,44 @@ whad_result_t whad_discovery_domain_info_resp(Message *p_message, whad_domain_t 
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+/**
+ * @brief Parse a domain info query.
+ * 
+ * @param[in]       p_message           Pointer to the message to parse
+ * @param[in,out]   p_domain            Pointer to the domain contained in the query
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or domain pointer.
+ **/
+
+whad_result_t whad_discovery_domain_info_resp_parse(Message *p_message, whad_domain_t *p_domain,
+                                                    uint64_t *p_supp_commands)
+{
+     /* Sanity check. */
+    if ((p_message == NULL) || (p_domain == NULL) || (p_supp_commands == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if (p_message->which_msg == Message_discovery_tag)
+    {
+        if (p_message->msg.discovery.which_msg == discovery_Message_domain_resp_tag)
+        {
+            /* Report selected domain. */
+            *p_domain = p_message->msg.discovery.msg.domain_resp.domain;
+            *p_supp_commands = p_message->msg.discovery.msg.domain_resp.supported_commands;
+
+            /* Success. */
+            return WHAD_SUCCESS;
+        }
+    }
+
+    /* Nope, that's not a Discovery Domain info query :( */
+    return WHAD_ERROR;
+}
+
 
 /**
  * @brief Initialize a discovery device reset message.
@@ -251,4 +402,67 @@ whad_result_t whad_discovery_ready_resp(Message *p_message)
 
     /* Success. */
     return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a device speed configuration message.
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       speed               Communication speed
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_discovery_set_speed(Message *p_message, uint32_t speed)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate fields. */    
+    p_message->which_msg = Message_discovery_tag;
+    p_message->msg.discovery.which_msg = discovery_Message_set_speed_tag;
+    p_message->msg.discovery.msg.set_speed.speed = speed;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Parse a domain info query.
+ * 
+ * @param[in]       p_message           Pointer to the message to parse
+ * @param[in,out]   p_domain            Pointer to the domain contained in the query
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or domain pointer.
+ **/
+
+whad_result_t whad_discovery_set_speed_parse(Message *p_message, uint32_t *p_speed)
+{
+     /* Sanity check. */
+    if ((p_message == NULL) || (p_speed == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if (p_message->which_msg == Message_discovery_tag)
+    {
+        if (p_message->msg.discovery.which_msg == discovery_Message_set_speed_tag)
+        {
+            /* Report selected domain. */
+            *p_speed = p_message->msg.discovery.msg.set_speed.speed;
+
+            /* Success. */
+            return WHAD_SUCCESS;
+        }
+    }
+
+    /* Nope, that's not a Discovery Domain info query :( */
+    return WHAD_ERROR;
 }

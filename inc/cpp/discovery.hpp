@@ -36,50 +36,84 @@
                 VirtualDevice = discovery_DeviceType_VirtualDevice
             };
 
+            enum MessageType {
+                UnknownMsg = WHAD_DISCOVERY_UNKNOWN,
+                DeviceInfoQueryMsg = WHAD_DISCOVERY_DEVICE_INFO_QUERY,
+                DeviceInfoRespMsg = WHAD_DISCOVERY_DEVICE_INFO_RESP,
+                DeviceResetMsg = WHAD_DISCOVERY_DEVICE_RESET,
+                ReadyRespMsg = WHAD_DISCOVERY_READY_RESP,
+                DomainInfoQueryMsg = WHAD_DISCOVERY_DOMAIN_INFO_QUERY,
+                DomainInfoRespMsg = WHAD_DISCOVERY_DOMAIN_INFO_RESP,
+                SetSpeedMsg = WHAD_DISCOVERY_SET_SPEED
+            };
+
+            /* Default discovery message class. */
+            class DiscoveryMsg : public NanoPbMsg
+            {
+                public:
+
+                    /* Constructor and destructor. */
+                    DiscoveryMsg();
+                    DiscoveryMsg(NanoPbMsg pMessage);
+                    ~DiscoveryMsg();
+
+                    /* Override getType() message. */
+                    MessageType getType(void);
+            };
+
             /* Device reset query. */
-            class DeviceReset : public NanoPbMsg
+            class DeviceReset : public DiscoveryMsg
             {
                 public:
                     DeviceReset();
+                    DeviceReset(NanoPbMsg message);
             };
 
             /* Device ready response. */
-            class ReadyResp : public NanoPbMsg
+            class ReadyResp : public DiscoveryMsg
             {
                 public:
                     ReadyResp();
             };
 
             /* Device reset query. */
-            class SetTransportSpeed : public NanoPbMsg
+            class SetTransportSpeed : public DiscoveryMsg
             {
                 public:
+                    SetTransportSpeed(NanoPbMsg pMessage);
                     SetTransportSpeed(uint32_t speed);
+                    uint32_t getSpeed();
             };        
 
             /* Device domain information query. */
-            class DomainInfoQuery : public NanoPbMsg
+            class DomainInfoQuery : public DiscoveryMsg
             {
                 public:
+                    /* Constructor. */
                     DomainInfoQuery(Domains domain);
+
+                    /* Accessors. */
+                    Domains getDomain();
             };
 
             /* Domain information response. */
-            class DomainInfoResp : public NanoPbMsg
+            class DomainInfoResp : public DiscoveryMsg
             {
                 public:
                     DomainInfoResp(Domains domain, whad_domain_desc_t *capabilities);
             };
 
             /* Device domain information query. */
-            class DeviceInfoQuery : public NanoPbMsg
+            class DeviceInfoQuery : public DiscoveryMsg
             {
                 public:
+                    DeviceInfoQuery(NanoPbMsg message);
                     DeviceInfoQuery(uint32_t protoVersion);
+                    uint32_t getVersion();
             };
 
             /* Device information response. */
-            class DeviceInfoResp : public NanoPbMsg
+            class DeviceInfoResp : public DiscoveryMsg
             {
                 public:
                     DeviceInfoResp(

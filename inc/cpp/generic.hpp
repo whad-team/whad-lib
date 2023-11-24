@@ -10,18 +10,53 @@
     {
         namespace generic
         {
+            enum MessageType {
+                UnknownMsg = WHAD_GENERIC_UNKNOWN,
+                CommandResultMsg = WHAD_GENERIC_CMDRESULT,
+                VerboseMsg = WHAD_GENERIC_VERBOSE,
+                DebugMsg = WHAD_GENERIC_DEBUG,
+                ProgressMsg = WHAD_GENERIC_PROGRESS
+            };
+
+            enum ResultCode {
+                ResultSuccess = WHAD_RESULT_SUCCESS,
+                ResultError = WHAD_RESULT_ERROR,
+                ResultParameterError = WHAD_RESULT_PARAMETER_ERROR,
+                ResultDisconnected = WHAD_RESULT_DISCONNECTED,
+                ResultWrongMode = WHAD_RESULT_WRONG_MODE,
+                ResultUnsupportedDomain = WHAD_RESULT_UNSUPPORTED_DOMAIN,
+                ResultBusy = WHAD_RESULT_BUSY
+            };
+
+            /* Default generic message class. */
+            class GenericMsg : public NanoPbMsg
+            {
+                public:
+
+                    /* Constructor and destructor. */
+                    GenericMsg();
+                    GenericMsg(NanoPbMsg pMessage);
+                    ~GenericMsg();
+
+                    /* Override getType() message. */
+                    MessageType getType(void);
+            };
+
             /* Verbose message. */
-            class Verbose : public NanoPbMsg
+            class Verbose : public GenericMsg
             {
                 public:
                     Verbose(std::string message);
             };
 
             /* Command result. */
-            class CommandResult : public NanoPbMsg
+            class CommandResult : public GenericMsg
             {
                 public:
-                    CommandResult(whad_result_code_t result);
+                    CommandResult(ResultCode result);
+                    CommandResult(NanoPbMsg message);
+
+                    ResultCode getResultCode();
             };
 
             /* Success command result.  */
@@ -74,14 +109,14 @@
             };
 
             /* Debug message and level. */
-            class Debug : public NanoPbMsg
+            class Debug : public GenericMsg
             {
                 public:
                     Debug(int32_t level, std::string message);
             };
 
             /* Progress notification. */
-            class Progress : public NanoPbMsg
+            class Progress : public GenericMsg
             {
                 public:
                     Progress(int32_t value);
