@@ -11,6 +11,10 @@ extern "C" {
  * Generic messages
  ********************************/
 
+/**
+ * @brief Generic command result codes.
+ * 
+ */
 typedef enum {
     WHAD_RESULT_SUCCESS = 0, 
     WHAD_RESULT_ERROR = 1, 
@@ -21,12 +25,19 @@ typedef enum {
     WHAD_RESULT_BUSY = 6 
 } whad_result_code_t;
 
+
+/**
+ * @brief Generic message types
+ * 
+ * This enumeration is an alias for NanoPb generated constants.
+ */
+
 typedef enum {
-    WHAD_GENERIC_UNKNOWN,
-    WHAD_GENERIC_CMDRESULT,
-    WHAD_GENERIC_VERBOSE,
-    WHAD_GENERIC_DEBUG,
-    WHAD_GENERIC_PROGRESS
+    WHAD_GENERIC_UNKNOWN=0,
+    WHAD_GENERIC_CMDRESULT=generic_Message_cmd_result_tag,
+    WHAD_GENERIC_VERBOSE=generic_Message_verbose_tag,
+    WHAD_GENERIC_DEBUG=generic_Message_debug_tag,
+    WHAD_GENERIC_PROGRESS=generic_Message_progress_tag
 } whad_generic_msgtype_t;
 
 /* Get generic message type from NanoPb message. */

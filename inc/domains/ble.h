@@ -127,14 +127,82 @@ typedef struct {
     int length;
 } whad_prepared_packet_t;
 
+typedef enum {
+    WHAD_BLE_UNKNOWN=0,
+    WHAD_BLE_SET_BDADDRESS=ble_Message_set_bd_addr_tag,
+    WHAD_BLE_SET_ADV_DATA=ble_Message_set_adv_data_tag,
+    WHAD_BLE_SET_ENCRYPTION=ble_Message_encryption_tag,
+    WHAD_BLE_SNIFF_ADV=ble_Message_sniff_adv_tag,
+    WHAD_BLE_SNIFF_CONN_REQ=ble_Message_sniff_connreq_tag,
+    WHAD_BLE_SNIFF_ACT_CONN=ble_Message_sniff_conn_tag,
+    WHAD_BLE_SCAN_MODE=ble_Message_scan_mode_tag,
+    WHAD_BLE_ADV_MODE=ble_Message_adv_mode_tag,
+    WHAD_BLE_PERIPH_MODE=ble_Message_periph_mode_tag,
+    WHAD_BLE_CENTRAL_MODE=ble_Message_central_mode_tag,
+    WHAD_BLE_START=ble_Message_start_tag,
+    WHAD_BLE_STOP=ble_Message_stop_tag,
+    WHAD_BLE_CONNECT_TO=ble_Message_connect_tag,
+    WHAD_BLE_SEND_RAW_PDU=ble_Message_send_raw_pdu_tag,
+    WHAD_BLE_SEND_PDU=ble_Message_send_pdu_tag,
+    WHAD_BLE_DISCONNECT=ble_Message_disconnect_tag,
+    WHAD_BLE_PREPARE_SEQ=ble_Message_prepare_tag,
+    WHAD_BLE_PREPARE_SEQ_TRIGGER=ble_Message_trigger_tag,
+    WHAD_BLE_PREPARE_SEQ_DELETE=ble_Message_delete_seq_tag,
+    WHAD_BLE_JAM_ADV=ble_Message_jam_adv_tag,
+    WHAD_BLE_JAM_ADV_CHANNEL=ble_Message_jam_adv_chan_tag,
+    WHAD_BLE_JAM_ACT_CONN=ble_Message_jam_conn_tag,
+    WHAD_BLE_HIJACK_MASTER=ble_Message_hijack_master_tag,
+    WHAD_BLE_HIJACK_SLAVE=ble_Message_hijack_slave_tag,
+    WHAD_BLE_HIJACK_BOTH=ble_Message_hijack_both_tag,
+    WHAD_BLE_REACTIVE_JAM=ble_Message_reactive_jam_tag,
+    WHAD_BLE_NOTIFY_CONNECTED=ble_Message_connected_tag,
+    WHAD_BLE_NOTIFY_DISCONNECTED=ble_Message_disconnected_tag,
+    WHAD_BLE_RAW_PDU=ble_Message_raw_pdu_tag,
+    WHAD_BLE_PDU=ble_Message_pdu_tag,
+    WHAD_BLE_TRIGGERED=ble_Message_triggered_tag,
+    WHAD_BLE_ACCESS_ADDRESS_DISCOVERED=ble_Message_aa_disc_tag,
+    WHAD_BLE_ADV_PDU=ble_Message_adv_pdu_tag,
+    WHAD_BLE_SYNCHRONIZED=ble_Message_synchronized_tag,
+    WHAD_BLE_DESYNCHRONIZED=ble_Message_desynchronized_tag,
+    WHAD_BLE_HIJACKED=ble_Message_hijacked_tag,
+    WHAD_BLE_INJECTED=ble_Message_injected_tag
+} whad_ble_msgtype_t;
+
+/* Get BLE message type from NanoPb message. */
+whad_ble_msgtype_t whad_ble_get_message_type(Message *p_message);
+
 /* Set BLE parameters */
 whad_result_t whad_ble_set_bdaddress(Message *p_message, whad_ble_addrtype_t addr_type, uint8_t *p_bdaddr);
+whad_result_t whad_ble_set_bdaddress_parse(Message *p_message, whad_ble_addrtype_t *p_addr_type, uint8_t *p_bdaddr);
+
 whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_adv_data, int adv_data_length, 
                                     uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_set_adv_data_parse(Message *p_message, uint8_t *p_adv_data, int *p_adv_data_length, 
+                                    uint8_t *p_scanrsp_data, int *p_scanrsp_data_length);
+
+typedef struct {
+    uint32_t conn_handle;
+    bool enabled;
+    uint8_t *p_ll_key;
+    uint8_t *p_ll_iv;
+    uint8_t *p_key;
+    uint8_t *p_rand;
+    uint8_t *p_ediv;
+} whad_ble_encryption_params_t;
+
 whad_result_t whad_ble_set_encryption(Message *p_message, uint32_t conn_handle, bool enabled, uint8_t *p_ll_key, uint8_t *p_ll_iv, uint8_t *p_key, uint8_t *p_rand, uint8_t *p_ediv);
+whad_result_t whad_ble_set_encryption_parse(Message *p_message, whad_ble_encryption_params_t *p_parameters);
 
 /* Sniffing */
+typedef struct {
+    bool use_ext_adv;
+    uint32_t channel;
+    uint8_t *p_bdaddr;
+} whad_ble_sniff_adv_params_t;
+
 whad_result_t whad_ble_sniff_adv(Message *p_message, bool use_ext_adv, uint32_t channel, uint8_t *p_bdaddr);
+whad_result_t whad_ble_sniff_adv_parse(Message *p_message, whad_ble_sniff_adv_params_t *p_parameters);
+
 whad_result_t whad_ble_sniff_conn_req(Message *p_message, bool show_empty_packets, bool show_adv,
                                       uint32_t channel, uint8_t *p_bdaddr);
 whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap);

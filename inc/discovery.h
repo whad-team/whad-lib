@@ -43,14 +43,14 @@ typedef enum {
 } whad_capability_t;
 
 typedef enum {
-    WHAD_DISCOVERY_UNKNOWN,
-    WHAD_DISCOVERY_DEVICE_INFO_QUERY,
-    WHAD_DISCOVERY_DEVICE_INFO_RESP,
-    WHAD_DISCOVERY_DEVICE_RESET,
-    WHAD_DISCOVERY_READY_RESP,
-    WHAD_DISCOVERY_DOMAIN_INFO_QUERY,
-    WHAD_DISCOVERY_DOMAIN_INFO_RESP,
-    WHAD_DISCOVERY_SET_SPEED
+    WHAD_DISCOVERY_UNKNOWN=0,
+    WHAD_DISCOVERY_DEVICE_INFO_QUERY=discovery_Message_info_query_tag,
+    WHAD_DISCOVERY_DEVICE_INFO_RESP=discovery_Message_info_resp_tag,
+    WHAD_DISCOVERY_DEVICE_RESET=discovery_Message_reset_query_tag,
+    WHAD_DISCOVERY_READY_RESP=discovery_Message_ready_resp_tag,
+    WHAD_DISCOVERY_DOMAIN_INFO_QUERY=discovery_Message_domain_query_tag,
+    WHAD_DISCOVERY_DOMAIN_INFO_RESP=discovery_Message_domain_resp_tag,
+    WHAD_DISCOVERY_SET_SPEED=discovery_Message_set_speed_tag
 } whad_discovery_msgtype_t;
 
 typedef struct {

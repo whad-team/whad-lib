@@ -1,9 +1,26 @@
 #include <whad.h>
 #include <domains/ble.h>
 
+whad_ble_msgtype_t whad_ble_get_message_type(Message *p_message)
+{
+    whad_ble_msgtype_t msg_type = WHAD_BLE_UNKNOWN;
+
+    /* Ensure it is a BLE message. */
+    if (whad_get_message_domain(p_message) == DOMAIN_BTLE)
+    {
+        /* Retrieve the message type. */
+        msg_type = (whad_ble_msgtype_t)p_message->msg.ble.which_msg;
+    }
+
+    /* Success. */
+    return msg_type;
+}
+
+
 /********************************
  * Bluetooth Low Energy messages
  *******************************/
+
 
 /**
  * @brief Initialize a message reporting a BLE raw PDU
@@ -230,6 +247,34 @@ whad_result_t whad_ble_set_bdaddress(Message *p_message, whad_ble_addrtype_t add
 
 
 /**
+ * @brief Parse a message setting the BD address of the adapter
+ * 
+ * @param[in]       p_message           Pointer to the message structure to parse
+ * @param[out]      p_addr_type         Pointer to output BD address type
+ * @param[out]      p_bdaddr            Pointer to a buffer where the target BD address will be copied (6-byte array)
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_set_bdaddress_parse(Message *p_message, whad_ble_addrtype_t *p_addr_type, uint8_t *p_bdaddr)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_addr_type == NULL) || (p_bdaddr == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    *p_addr_type = (whad_ble_addrtype_t)p_message->msg.ble.msg.set_bd_addr.addr_type;
+    memcpy(p_bdaddr, p_message->msg.ble.msg.set_bd_addr.bd_address, 6);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief Initialize a message enabling sniffing mode for advertisements
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -260,6 +305,23 @@ whad_result_t whad_ble_sniff_adv(Message *p_message, bool use_ext_adv, uint32_t 
     return WHAD_SUCCESS;
 }
 
+
+whad_result_t whad_ble_sniff_adv_parse(Message *p_message, whad_ble_sniff_adv_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract message info. */
+    p_parameters->channel = p_message->msg.ble.msg.sniff_adv.channel;
+    p_parameters->use_ext_adv = p_message->msg.ble.msg.sniff_adv.use_extended_adv;
+    p_parameters->p_bdaddr = p_message->msg.ble.msg.sniff_adv.bd_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
 
 /**
  * @brief Initialize a message enabling advertisement jamming mode
@@ -572,6 +634,13 @@ whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_adv_data, int
 
     /* Success. */
     return WHAD_SUCCESS;   
+}
+
+/* TODO */
+whad_result_t whad_ble_set_adv_data_parse(Message *p_message, uint8_t *p_adv_data, int *p_adv_data_length, 
+                                    uint8_t *p_scanrsp_data, int *p_scanrsp_data_length)
+{
+    return WHAD_ERROR;
 }
 
 
@@ -1013,6 +1082,37 @@ whad_result_t whad_ble_set_encryption(Message *p_message, uint32_t conn_handle, 
     memcpy(p_message->msg.ble.msg.encryption.key, p_key, 16);
     memcpy(p_message->msg.ble.msg.encryption.rand, p_rand, 8);
     memcpy(p_message->msg.ble.msg.encryption.ediv, p_ediv, 2);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief       Parse a BLE set encryption message and extract encryption parameters.   
+ * 
+ * @param[in]   p_message       Pointer to a `Message` structure
+ * @param[out]  p_parameters    Pointer to a `whad_ble_encryption_params_t` structure
+ * 
+ * @return whad_result_t
+ */
+
+whad_result_t whad_ble_set_encryption_parse(Message *p_message, whad_ble_encryption_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract encryption parameters. */
+    p_parameters->conn_handle = p_message->msg.ble.msg.encryption.conn_handle;
+    p_parameters->enabled = p_message->msg.ble.msg.encryption.enabled;
+    p_parameters->p_ll_key = p_message->msg.ble.msg.encryption.ll_key;
+    p_parameters->p_ll_iv = p_message->msg.ble.msg.encryption.ll_iv;
+    p_parameters->p_key = p_message->msg.ble.msg.encryption.key;
+    p_parameters->p_rand = p_message->msg.ble.msg.encryption.rand;
+    p_parameters->p_ediv = p_message->msg.ble.msg.encryption.ediv;
 
     /* Success. */
     return WHAD_SUCCESS;

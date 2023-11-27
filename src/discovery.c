@@ -9,35 +9,8 @@ whad_discovery_msgtype_t whad_discovery_get_message_type(Message *p_message)
     if (p_message->which_msg != Message_discovery_tag)
         return msg_type;
 
-    switch (p_message->msg.discovery.which_msg)
-    {
-        case discovery_Message_info_query_tag:
-            msg_type = WHAD_DISCOVERY_DEVICE_INFO_QUERY;
-            break;
-
-        case discovery_Message_info_resp_tag:
-            msg_type = WHAD_DISCOVERY_DEVICE_INFO_RESP;
-            break;
-
-        case discovery_Message_domain_query_tag:
-            msg_type = WHAD_DISCOVERY_DOMAIN_INFO_QUERY;
-            break;
-        
-        case discovery_Message_domain_resp_tag:
-            msg_type = WHAD_DISCOVERY_DOMAIN_INFO_RESP;
-            break;
-
-        case discovery_Message_reset_query_tag:
-            msg_type = WHAD_DISCOVERY_DEVICE_RESET;
-            break;
-
-        case discovery_Message_set_speed_tag:
-            msg_type = WHAD_DISCOVERY_SET_SPEED;
-            break;
-
-        default:
-            break;
-    }
+    /* Convert NanoPb message type to whadd_discovery_msgtype_t */
+    msg_type = (whad_discovery_msgtype_t)p_message->msg.discovery.which_msg;
 
     /* Return message type. */
     return msg_type;

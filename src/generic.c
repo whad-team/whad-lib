@@ -1,5 +1,13 @@
 #include "whad.h"
 
+
+/**
+ * @brief       Get generic message type from raw message. 
+ * 
+ * @param[in]   p_message               Pointer to a NanoPb message structure.   
+ * @return      whad_generic_msgtype_t  Generic message type
+ */
+
 whad_generic_msgtype_t whad_generic_get_message_type(Message *p_message)
 {
     whad_generic_msgtype_t msg_type = WHAD_GENERIC_UNKNOWN;
@@ -8,31 +16,12 @@ whad_generic_msgtype_t whad_generic_get_message_type(Message *p_message)
     if (p_message->which_msg != Message_generic_tag)
         return msg_type;
 
-    switch (p_message->msg.generic.which_msg)
-    {
-        case generic_Message_cmd_result_tag:
-            msg_type = WHAD_GENERIC_CMDRESULT;
-            break;
-
-        case generic_Message_verbose_tag:
-            msg_type = WHAD_GENERIC_VERBOSE;
-            break;
-
-        case generic_Message_debug_tag:
-            msg_type = WHAD_GENERIC_DEBUG;
-            break;
-        
-        case generic_Message_progress_tag:
-            msg_type = WHAD_GENERIC_PROGRESS;
-            break;
-
-        default:
-            break;
-    }
+    msg_type = (whad_generic_msgtype_t)p_message->msg.generic.which_msg;
 
     /* Return message type. */
     return msg_type;
 }
+
 
 /**
  * @brief Initialize a generic command result message
