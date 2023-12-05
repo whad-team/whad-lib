@@ -306,6 +306,16 @@ whad_result_t whad_ble_sniff_adv(Message *p_message, bool use_ext_adv, uint32_t 
 }
 
 
+/**
+ * @brief Parse a message enabling sniffing mode for advertisements
+ * 
+ * @param[in]       p_message           Pointer to the message structure to parse
+ * @param[in,out]   p_parameters        Pointer to a `whad_ble_sniff_adv_params_t` structure
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
 whad_result_t whad_ble_sniff_adv_parse(Message *p_message, whad_ble_sniff_adv_params_t *p_parameters)
 {
     /* Sanity check. */
@@ -322,6 +332,7 @@ whad_result_t whad_ble_sniff_adv_parse(Message *p_message, whad_ble_sniff_adv_pa
     /* Success. */
     return WHAD_SUCCESS;
 }
+
 
 /**
  * @brief Initialize a message enabling advertisement jamming mode
@@ -374,6 +385,32 @@ whad_result_t whad_ble_jam_adv_channel(Message *p_message, uint32_t channel)
 
     /* Success. */
     return WHAD_SUCCESS;       
+}
+
+
+/**
+ * @brief Parse a message enabling jamming on a specific advertising channel
+ * 
+ * @param[in]       p_message           Pointer to the message structure to parse
+ * @param[in,out]   p_channel           Pointer to the extracted advertising channel
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_jam_adv_channel_parse(Message *p_message, uint32_t *p_channel)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_channel == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract channel from message. */
+    *p_channel = p_message->msg.ble.msg.jam_adv_chan.channel;
+
+    /* Success. */
+    return WHAD_SUCCESS;
 }
 
 
@@ -591,6 +628,32 @@ whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_addre
 
     /* Success. */
     return WHAD_SUCCESS; 
+}
+
+
+/**
+ * @brief Parse an active connection jamming message
+ * 
+ * @param[in]       p_message           Pointer to the message structure to parse
+ * @param[in, out]  p_access_address    Pointer to the extracted access address
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_access_address)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_access_address == NULL))
+    {
+        return WHAD_ERROR;
+    }   
+
+    /* Extract access address from message. */
+    *p_access_address = p_message->msg.ble.msg.jam_conn.access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
 }
 
 
@@ -889,6 +952,91 @@ whad_result_t whad_ble_connect_to(Message *p_message, uint8_t *p_bdaddr, whad_bl
 
 
 /**
+ * @brief Parse a message to initiate a connection to a specific device identified by its BD address.
+ *  
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_parameters        Pointer to a `whad_ble_connect_params_t` structure that will receive the
+ *                                      extracted information
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer or parameters pointer.
+ **/
+
+whad_result_t whad_ble_connect_to_parse(Message *p_message, whad_ble_connect_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract BD address and type. */
+    memcpy(p_parameters->bdaddr, p_message->msg.ble.msg.connect.bd_address, 6);
+    p_parameters->addr_type = (whad_ble_addrtype_t)p_message->msg.ble.msg.connect.addr_type;
+
+    /* Retrieve connection access address. */
+    if (p_message->msg.ble.msg.connect.has_access_address)
+    {
+        p_parameters->access_address = p_message->msg.ble.msg.connect.access_address;
+    }
+    else
+    {
+        /* Set access address to 0 (invalid value for Bluetooth Spec). */
+        p_parameters->access_address = 0;
+    }
+    
+    /* Retrieve hop interval, if provided. */
+    if (p_message->msg.ble.msg.connect.has_hop_interval)
+    {
+        p_parameters->hop_interval = p_message->msg.ble.msg.connect.hop_interval;
+    }
+    else
+    {
+        /* By default, hop interval cannot be 0. We are using this value to indicate that
+           we don't have this parameter (since it's optional). */
+        p_parameters->hop_interval = 0;
+    }
+
+    /* Retrieve hop increment, if present. */
+    if (p_message->msg.ble.msg.connect.has_hop_increment)
+    {
+        p_parameters->hop_increment = p_message->msg.ble.msg.connect.hop_increment;
+    }
+    else
+    {
+        /* By default, hop increment cannot be 0. We are using this value to indicate that
+           we don't have this parameter (since it's optional). */
+        p_parameters->hop_increment = 0;
+    }
+
+    /* Retrieve CRC Init value, if provided. */
+    if (p_message->msg.ble.msg.connect.has_crc_init)
+    {
+        p_parameters->crc_init = p_message->msg.ble.msg.connect.crc_init;
+    }
+    else
+    {
+        /* CRC Init (seed) is set to 0 by default. */
+        p_parameters->crc_init = 0;
+    }
+
+    /* Retrieve channel map. */
+    if (p_message->msg.ble.msg.connect.has_channel_map)
+    {
+        memcpy(p_parameters->channelmap, p_message->msg.ble.msg.connect.channel_map, 5);
+    }
+    else
+    {
+        /* Set channel map to 0. */
+        memset(p_parameters->channelmap, 0, 5);
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief Initialize a message to send a raw PDU to a target device in an established connection
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -927,6 +1075,39 @@ whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t dir
 
     /* Copy PDU in memory. */
     memcpy(p_message->msg.ble.msg.send_raw_pdu.pdu.bytes, p_pdu, length);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief parse a message to send a raw PDU to a target device in an established connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_parameters        Pointer to a `whad_ble_pdu_params_t` structure that will receive the
+ *                                      extracted information
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_send_raw_pdu_parse(Message *p_message, whad_ble_pdu_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract raw PDU information. */
+    p_parameters->access_address = p_message->msg.ble.msg.send_raw_pdu.access_address;
+    p_parameters->conn_handle = p_message->msg.ble.msg.send_raw_pdu.conn_handle;
+    p_parameters->crc = p_message->msg.ble.msg.send_raw_pdu.crc;
+    p_parameters->direction = (whad_ble_direction_t)p_message->msg.ble.msg.send_raw_pdu.direction;
+    p_parameters->encrypt = p_message->msg.ble.msg.send_raw_pdu.encrypt;
+    p_parameters->length = p_message->msg.ble.msg.send_raw_pdu.pdu.size;
+    p_parameters->p_pdu = p_message->msg.ble.msg.send_raw_pdu.pdu.bytes;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -973,6 +1154,39 @@ whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t directi
 
 
 /**
+ * @brief Parse a message to send a raw PDU to a target device in an established connection
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_parameters        Pointer to a `whad_ble_pdu_params_t` structure that will receive the
+ *                                      extracted information
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_send_pdu_parse(Message *p_message, whad_ble_pdu_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract information. */
+    p_parameters->access_address = 0;
+    p_parameters->crc = 0;
+    p_parameters->conn_handle = p_message->msg.ble.msg.send_pdu.conn_handle;
+    p_parameters->direction = (whad_ble_direction_t)p_message->msg.ble.msg.send_pdu.direction;
+    p_parameters->encrypt = p_message->msg.ble.msg.send_pdu.encrypt;
+    p_parameters->length = p_message->msg.ble.msg.send_pdu.pdu.size;
+    p_parameters->p_pdu = p_message->msg.ble.msg.send_pdu.pdu.bytes;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief Initialize a message to disconnect from a device
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -994,6 +1208,32 @@ whad_result_t whad_ble_disconnect(Message *p_message, uint32_t conn_handle)
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_disconnect_tag;
     p_message->msg.ble.msg.disconnect.conn_handle = conn_handle;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Parse a message to disconnect from a device
+ *  
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_conn_handle       Pointer to the retrieved connection handle
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer or connection handle pointer.
+ **/
+
+whad_result_t whad_ble_disconnect_parse(Message *p_message, uint32_t *p_conn_handle)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_conn_handle == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract connection handle. */
+    *p_conn_handle = p_message->msg.ble.msg.disconnect.conn_handle;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1178,6 +1418,32 @@ whad_result_t whad_ble_hijack_master(Message *p_message, uint32_t access_address
 
 
 /**
+ * @brief Parse a message to hijack the master (initiator) of an existing connection
+ *  
+ * @param[in]       p_message           Pointer to the message structure to parse
+ * @param[in,out]   p_access_address    pointer to the extracted access address
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_hijack_master_parse(Message *p_message, uint32_t *p_access_address)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_access_address == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract access address from message. */
+    *p_access_address = p_message->msg.ble.msg.hijack_master.access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief Initialize a message to hijack the slave (advertiser) of an existing connection
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -1206,6 +1472,32 @@ whad_result_t whad_ble_hijack_slave(Message *p_message, uint32_t access_address)
 
 
 /**
+ * @brief Parse a message to hijack the slave (advertiser) of an existing connection
+ *  
+ * @param[in]       p_message           Pointer to the message structure to parse
+ * @param[in,out]   p_access_address    pointer to the extracted access address
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_hijack_slave_parse(Message *p_message, uint32_t *p_access_address)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_access_address == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract access address from message. */
+    *p_access_address = p_message->msg.ble.msg.hijack_slave.access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief Initialize a message to hijack both the master (initiator) and the slave (advertiser) of an existing connection
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -1227,6 +1519,33 @@ whad_result_t whad_ble_hijack_both(Message *p_message, uint32_t access_address)
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_hijack_both_tag;
     p_message->msg.ble.msg.hijack_both.access_address = access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Parse a message to hijack both the master (initiator) and the slave (advertiser) of
+ *        an existing connection
+ *  
+ * @param[in]       p_message           Pointer to the message structure to parse
+ * @param[in,out]   p_access_address    pointer to the extracted access address
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_hijack_both_parse(Message *p_message, uint32_t *p_access_address)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_access_address == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract access address from message. */
+    *p_access_address = p_message->msg.ble.msg.hijack_both.access_address;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1352,6 +1671,43 @@ whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_
         {
             /* Copy pattern. */
             memcpy(p_message->msg.ble.msg.reactive_jam.pattern.bytes, p_pattern, pattern_length);
+        }
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+whad_result_t whad_ble_reactive_jam_parse(Message *p_message, whad_ble_reactive_jam_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }   
+
+    /* Extract information from message. */
+    p_parameters->channel = p_message->msg.ble.msg.reactive_jam.channel;
+    p_parameters->position = p_message->msg.ble.msg.reactive_jam.position;
+    p_parameters->pattern_length = p_message->msg.ble.msg.reactive_jam.pattern.size;
+
+    if ((p_parameters->pattern_length > 0) && (p_parameters->pattern_length <= 20))
+    {
+        memcpy(p_parameters->pattern, p_message->msg.ble.msg.reactive_jam.pattern.bytes,
+               p_parameters->pattern_length);
+    }
+    else
+    {
+        if (p_parameters->pattern_length > 20)
+        {
+            /* Pattern size exceeds storage capacity. */
+            return WHAD_ERROR;
+        }
+        else
+        {
+            /* Fill pattern with zero bytes. */
+            memset(p_parameters->pattern, 0, 20);
         }
     }
 
