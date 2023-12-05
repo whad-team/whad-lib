@@ -414,6 +414,36 @@ whad_result_t whad_ble_sniff_conn_req(Message *p_message, bool show_empty_packet
 
 
 /**
+ * @brief Parse a connection sniffing request message.
+ * 
+ * @param p_message         Pointer to a `Message` structure.
+ * @param p_parameters      Pointer to a `whad_ble_sniff_connreq_params_t` structure
+ * 
+ * @return whad_result_t 
+ */
+
+whad_result_t whad_ble_sniff_conn_req_parse(Message *p_message, whad_ble_sniff_connreq_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    p_parameters->channel = p_message->msg.ble.msg.sniff_connreq.channel;
+    p_parameters->show_adv = p_message->msg.ble.msg.sniff_connreq.show_advertisements;
+    p_parameters->show_empty_packets = p_message->msg.ble.msg.sniff_connreq.show_empty_packets;
+    memcpy(p_parameters->p_bdaddr, p_message->msg.ble.msg.sniff_connreq.bd_address, 6);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+
+
+/**
  * @brief Initialize a message enabling access address sniffing
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -440,6 +470,30 @@ whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_chann
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Parse an access address sniffing message.
+ * 
+ * @param[in]   p_message       Pointer to the message to parse
+ * @param[out]  p_channelmap    Pointer to a 5-byte array that will contain the extracted channel map
+ * 
+ * @return whad_result_t 
+ */
+
+whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p_channelmap)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_channelmap == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract channel map. */
+    memcpy(p_channelmap, p_message->msg.ble.msg.sniff_aa.monitored_channels, 5);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
 
 /**
  * @brief Initialize a message enabling active connection sniffing
@@ -481,6 +535,36 @@ whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_add
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Parse an active connection sniffing message.
+ * 
+ * @param[in]   p_message       Pointer to the message to parse 
+ * @param[out]  p_parameters    Pointer to a `whad_ble_sniff_conn_params_t` structure that will contain the extracted
+ *                              parameters.
+ * @return whad_result_t 
+ */
+
+
+whad_result_t whad_ble_sniff_active_conn_parse(Message *p_message, whad_ble_sniff_conn_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters from message. */
+    p_parameters->access_address = p_message->msg.ble.msg.sniff_conn.access_address;
+    p_parameters->crc_init = p_message->msg.ble.msg.sniff_conn.crc_init;
+    p_parameters->hop_interval = p_message->msg.ble.msg.sniff_conn.hop_interval;
+    p_parameters->hop_increment = p_message->msg.ble.msg.sniff_conn.hop_increment;
+    memcpy(p_parameters->channelmap, p_message->msg.ble.msg.sniff_conn.channel_map, 5);
+    memcpy(p_parameters->channels, p_message->msg.ble.msg.sniff_conn.monitored_channels, 5);
+
+    /* Success. */
+    return WHAD_SUCCESS; 
+}
 
 /**
  * @brief Initialize an active connection jamming message
@@ -539,6 +623,29 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
 
 
 /**
+ * @brief Parse a scan mode message.
+ * 
+ * @param[in]   p_message         Pointer to the message to parse. 
+ * @param[out]  p_active_scan     Pointer to a boolean value, if true an active scan has to be performed.
+ * @return whad_result_t 
+ */
+
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_active_scan == NULL))
+    {
+        return WHAD_ERROR;
+    }    
+
+    *p_active_scan = p_message->msg.ble.msg.scan_mode.active_scan;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief Initialize a message enabling advertising mode (and only advertising)
  * 
  * Advertising data and scan response data buffers cannot exceed 31-byte each.
@@ -593,6 +700,49 @@ whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv
     /* Success. */
     return WHAD_SUCCESS;   
 }
+
+whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract advertising data from message. */
+    p_parameters->adv_data_length = p_message->msg.ble.msg.adv_mode.scan_data.size;
+    if ((p_parameters->adv_data_length > 0) && (p_parameters->adv_data_length < 31))
+    {
+        memcpy(
+            p_parameters->adv_data,
+            p_message->msg.ble.msg.adv_mode.scan_data.bytes,
+            p_parameters->adv_data_length
+        );
+    }
+    else
+    {
+        memset(p_parameters->adv_data, 0, 31);
+    }
+
+    /* Extract scan response from message. */
+    p_parameters->scanrsp_data_length = p_message->msg.ble.msg.adv_mode.scanrsp_data.size;
+    if ((p_parameters->scanrsp_data_length > 0) && (p_parameters->scanrsp_data_length < 31))
+    {
+        memcpy(
+            p_parameters->scanrsp_data,
+            p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes,
+            p_parameters->scanrsp_data_length
+        );
+    }
+    else
+    {
+        memset(p_parameters->scanrsp_data, 0, 31);
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
 
 /** TODO Not yet supported, need some fix in whad-protocol. */
 whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
@@ -904,6 +1054,48 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, 
     return WHAD_SUCCESS;   
 }
 
+
+whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters ==NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+ /* Extract advertising data from message. */
+    p_parameters->adv_data_length = p_message->msg.ble.msg.periph_mode.scan_data.size;
+    if ((p_parameters->adv_data_length > 0) && (p_parameters->adv_data_length < 31))
+    {
+        memcpy(
+            p_parameters->adv_data,
+            p_message->msg.ble.msg.periph_mode.scan_data.bytes,
+            p_parameters->adv_data_length
+        );
+    }
+    else
+    {
+        memset(p_parameters->adv_data, 0, 31);
+    }
+
+    /* Extract scan response from message. */
+    p_parameters->scanrsp_data_length = p_message->msg.ble.msg.periph_mode.scanrsp_data.size;
+    if ((p_parameters->scanrsp_data_length > 0) && (p_parameters->scanrsp_data_length < 31))
+    {
+        memcpy(
+            p_parameters->scanrsp_data,
+            p_message->msg.ble.msg.periph_mode.scanrsp_data.bytes,
+            p_parameters->scanrsp_data_length
+        );
+    }
+    else
+    {
+        memset(p_parameters->scanrsp_data, 0, 31);
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
 
 /**
  * @brief Initialize a message to start the current mode

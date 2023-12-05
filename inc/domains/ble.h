@@ -203,17 +203,54 @@ typedef struct {
 whad_result_t whad_ble_sniff_adv(Message *p_message, bool use_ext_adv, uint32_t channel, uint8_t *p_bdaddr);
 whad_result_t whad_ble_sniff_adv_parse(Message *p_message, whad_ble_sniff_adv_params_t *p_parameters);
 
+
+typedef struct {
+    bool show_empty_packets;
+    bool show_adv;
+    uint32_t channel;
+    uint8_t p_bdaddr[6];
+} whad_ble_sniff_connreq_params_t;
+
 whad_result_t whad_ble_sniff_conn_req(Message *p_message, bool show_empty_packets, bool show_adv,
                                       uint32_t channel, uint8_t *p_bdaddr);
+whad_result_t whad_ble_sniff_conn_req_parse(Message *p_message, whad_ble_sniff_connreq_params_t *p_parameters);
+
+
 whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap);
+whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p_channelmap);
+
+typedef struct {
+    uint32_t access_address;
+    uint32_t crc_init;
+    uint32_t hop_interval;
+    uint32_t hop_increment;
+    uint8_t channelmap[5];
+    uint8_t channels[5];
+} whad_ble_sniff_conn_params_t;
+
 whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_address, uint32_t crc_init,
                                          uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
                                          uint8_t *p_channels);
+whad_result_t whad_ble_sniff_active_conn_parse(Message *p_message, whad_ble_sniff_conn_params_t *p_parameters);
 
 /* Set BLE mode */
 whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan);
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan);
+
+typedef struct {
+    uint8_t adv_data[31];
+    uint8_t adv_data_length;
+    uint8_t scanrsp_data[31];
+    uint8_t scanrsp_data_length;
+} whad_ble_adv_mode_params_t;
 whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
+
+
 whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
+
+/* No parsing functions for these three messages :) */
 whad_result_t whad_ble_central_mode(Message *p_message);
 whad_result_t whad_ble_start(Message *p_message);
 whad_result_t whad_ble_stop(Message *p_message);
