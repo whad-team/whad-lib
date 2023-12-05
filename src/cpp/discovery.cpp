@@ -99,6 +99,10 @@ whad::discovery::DomainInfoQuery::DomainInfoQuery(Domains domain) : DiscoveryMsg
     whad_discovery_domain_info_query(this->getRaw(), (whad_domain_t)domain);
 }
 
+whad::discovery::DomainInfoQuery::DomainInfoQuery(NanoPbMsg message) : DiscoveryMsg(message)
+{
+}
+
 /* TODO: add doc */
 whad::discovery::Domains whad::discovery::DomainInfoQuery::getDomain()
 {
@@ -196,11 +200,24 @@ uint32_t whad::discovery::SetTransportSpeed::getSpeed()
     return 0;
 }
 
+whad::discovery::DeviceInfoQuery::DeviceInfoQuery(NanoPbMsg message) : DiscoveryMsg(message)
+{
+}
+
 whad::discovery::DeviceInfoQuery::DeviceInfoQuery(uint32_t protoVersion) : DiscoveryMsg()
 {
     whad_discovery_device_info_query(this->getRaw(), protoVersion);
 }
 
-whad::discovery::DeviceInfoQuery::DeviceInfoQuery(NanoPbMsg message) : DiscoveryMsg(message)
+uint32_t whad::discovery::DeviceInfoQuery::getVersion(void)
 {
+    uint32_t version;
+
+    if (whad_discovery_device_info_query_parse(this->getRaw(), &version) == WHAD_SUCCESS)
+    {
+        return version;
+    }
+
+    /* Error. */
+    return 0;
 }

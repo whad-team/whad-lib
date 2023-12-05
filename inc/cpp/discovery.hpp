@@ -58,7 +58,7 @@
                     ~DiscoveryMsg();
 
                     /* Override getType() message. */
-                    MessageType getType(void);
+                    whad::discovery::MessageType getType(void);
             };
 
             /* Device reset query. */
@@ -90,6 +90,7 @@
             {
                 public:
                     /* Constructor. */
+                    DomainInfoQuery(NanoPbMsg message);
                     DomainInfoQuery(Domains domain);
 
                     /* Accessors. */
