@@ -2,6 +2,21 @@
 
 using namespace whad::ble;
 
+/********************************
+ * BLE basic information elements
+ *******************************/
+
+/**
+ * @brief   BD Address default constructor.
+ **/
+
+BDAddress::BDAddress(void)
+{
+    this->m_type = whad::ble::AddressType::AddressPublic;
+    memset(this->m_address, 0, 6);
+}
+
+
 /**
  * @brief   BD Address constructor.
  * 
@@ -26,6 +41,43 @@ BDAddress::BDAddress(AddressType type, uint8_t *p_bdaddr)
 AddressType BDAddress::getType(void)
 {
     return this->m_type;
+}
+
+
+/**
+ * @brief   Set address type.
+ * 
+ * @param[in]   type    Address type to set
+ **/
+
+void BDAddress::setType(AddressType type)
+{
+    this->m_type = type;
+}
+
+
+/**
+ * @brief   Get address buffer.
+ * 
+ * @return  Pointer to the BD address byte buffer (6 bytes)
+ **/
+
+uint8_t *BDAddress::getAddressBuf(void)
+{
+    return this->m_address;
+}
+
+
+/**
+ * @brief   Set BD address.
+ * 
+ * @param[in]   pBdAddress    Pointer to a 6-byte BD address buffer
+ **/
+
+void BDAddress::setAddress(uint8_t *pBdAddress)
+{
+    /* Copy BD address. */
+    memcpy(this->m_address, pBdAddress, 6);
 }
 
 
@@ -86,16 +138,62 @@ uint8_t *ChannelMap::getChannelMapBuf(void)
 }
 
 
+/********************************
+ * BLE message base class
+ *******************************/
+
 /**
- * @brief   Get a pointer onto the underlying Bluetooth Device address buffer.
- * 
- * @return  Pointer to the byte-buffer containing the device BD address (6 bytes) 
+ * @brief   BLE message base class.
  **/
 
-uint8_t *BDAddress::getAddressBuf(void)
+whad::ble::BleMsg::BleMsg() : NanoPbMsg()
 {
-    return this->m_address;
 }
+
+
+/**
+ * @brief       BLE message base class.
+ * 
+ * @param[in]   pMessage    NanoPbMsg object containing a discovery domain message 
+ **/
+
+whad::ble::BleMsg::BleMsg(NanoPbMsg pMessage) : NanoPbMsg(pMessage.getRaw())
+{
+}
+
+
+/**
+ * @brief   BLE message base class destructor.
+ **/
+
+whad::ble::BleMsg::~BleMsg()
+{
+}
+
+
+/**
+ * @brief       Identify the underlying discovery message.
+ *
+ * This method can be used when parsing incoming Discovery domain message to identify
+ * the type of message it contains and process it later.
+ * 
+ * @return      Discovery message type.
+ **/
+
+whad::ble::MessageType whad::ble::BleMsg::getType(void)
+{
+    whad::ble::MessageType msgType = (whad::ble::MessageType)whad_ble_get_message_type(
+        this->getRaw()
+    );
+
+    /* Return message type. */
+    return msgType;
+}
+
+
+/********************************
+ * BLE messages classes
+ *******************************/
 
 
 /**
@@ -106,7 +204,7 @@ uint8_t *BDAddress::getAddressBuf(void)
  * @param[in]   direction   Direction of the PDU (host to slave, slave to host, ...)
  **/
 
-LinkLayerPdu::LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted) : NanoPbMsg()
+LinkLayerPdu::LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted) : BleMsg()
 {
     /* Initialize our data pdu message. */
     whad_ble_pdu(this->getRaw(), pdu.getBuf(), pdu.getLength(), (whad_ble_direction_t)direction, conn_handle, processed, decrypted);
@@ -133,7 +231,7 @@ LinkLayerPdu::LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, b
 RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
                           PDU pdu, uint32_t crc, bool crc_validity, uint32_t timestamp,
                           uint32_t relative_timestamp, Direction direction, bool processed,
-                          bool decrypted) : NanoPbMsg()
+                          bool decrypted) : BleMsg()
 {
     whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBuf(), pdu.getLength(), crc, 
                      crc_validity, timestamp, relative_timestamp, (whad_ble_direction_t)direction, processed,
@@ -158,7 +256,7 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
 
 RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
                            PDU pdu, uint32_t crc, bool crc_validity, Direction direction,
-                           bool processed, bool decrypted) : NanoPbMsg()
+                           bool processed, bool decrypted) : BleMsg()
 {
     whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBuf(), pdu.getLength(),
                      crc, crc_validity, 0, 0, (whad_ble_direction_t)direction, processed, decrypted, false);
@@ -173,7 +271,7 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
  * @param[in]   initAddr    Initiator BD address
  **/
 
-Connected::Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr)  : NanoPbMsg()
+Connected::Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr)  : BleMsg()
 {
     whad_ble_notify_connected(
         this->getRaw(),
@@ -197,7 +295,7 @@ Connected::Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr)
  * @param[in]   reason      Disconnection reason (see BLE specs.)
  **/
 
-Disconnected::Disconnected(uint32_t connHandle, uint32_t reason) : NanoPbMsg()
+Disconnected::Disconnected(uint32_t connHandle, uint32_t reason) : BleMsg()
 {
     whad_ble_notify_disconnected(this->getRaw(), connHandle, reason);
 }
@@ -209,12 +307,64 @@ Disconnected::Disconnected(uint32_t connHandle, uint32_t reason) : NanoPbMsg()
  * @param[in]   address     BD address to use
  **/
 
-SetBdAddress::SetBdAddress(BDAddress address) : NanoPbMsg()
+SetBdAddress::SetBdAddress(BDAddress address) : BleMsg()
 {
     whad_ble_set_bdaddress(
         this->getRaw(),
         (whad_ble_addrtype_t)address.getType(),
         address.getAddressBuf()
+    );
+}
+
+
+/**
+ * @brief       parse a BD address message constructor.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
+
+SetBdAddress::SetBdAddress(NanoPbMsg message) : BleMsg(message)
+{
+}
+
+
+/**
+ * @brief   Retrieve the BD address.
+ * 
+ * @return  An instance of BDAddress on success, NULL otherwise.
+ **/
+
+BDAddress *SetBdAddress::getAddress()
+{
+    whad_ble_addrtype_t addrType;
+    uint8_t bdAddress[6];
+
+    /* Parse the underlying message to extract BD address. */
+    if (whad_ble_set_bdaddress_parse(this->getRaw(), &addrType, bdAddress) == WHAD_SUCCESS)
+    {
+        /* Parsing ok, return BD address. */
+        return new BDAddress((whad::ble::AddressType)addrType, (uint8_t *)bdAddress);
+    }
+
+    /* Fail. */
+    return NULL;
+}
+
+/**
+ * @brief       SniffAdv message constructor.
+ * 
+ * @param[in]   channel     Channel to use for sniffing
+ * @param[in]   targetAddr  Target device BD address
+ * @param[in]   useExtAdv   If set to true, use extended advertising (BLE 5.x)
+ **/
+
+SniffAdv::SniffAdv(uint32_t channel, BDAddress targetAddr, bool useExtAdv) : BleMsg()
+{
+    whad_ble_sniff_adv(
+        this->getRaw(),
+        useExtAdv,
+        channel,
+        targetAddr.getAddressBuf()
     );
 }
 
@@ -227,14 +377,54 @@ SetBdAddress::SetBdAddress(BDAddress address) : NanoPbMsg()
  * @param[in]   useExtAdv   If set to true, use extended advertising (BLE 5.x)
  **/
 
-SniffAdv::SniffAdv(uint32_t channel, BDAddress targetAddr, bool useExtAdv) : NanoPbMsg()
+SniffAdv::SniffAdv(NanoPbMsg message) : BleMsg(message)
 {
-    whad_ble_sniff_adv(
-        this->getRaw(),
-        useExtAdv,
-        channel,
-        targetAddr.getAddressBuf()
-    );
+    whad_ble_sniff_adv_params_t params;
+    this->m_channel = 0;
+    this->m_useExtAdv = false;
+
+    if (whad_ble_sniff_adv_parse(this->getRaw(), &params) == WHAD_SUCCESS)
+    {
+        this->m_channel = params.channel;
+        this->m_useExtAdv = params.use_ext_adv;
+        this->m_targetAddr.setAddress(params.p_bdaddr);
+    }
+}
+
+
+/**
+ * @brief   Get advertising channel.
+ * 
+ * @return  Advertising channel number. 
+ **/
+
+uint32_t SniffAdv::getChannel(void)
+{
+    return this->m_channel;
+}
+
+
+/**
+ * @brief   Determine if we must use extended advertisements.
+ * 
+ * @return  True if extended advertisements must be used, false otherwise. 
+ **/
+
+bool SniffAdv::mustUseExtAdv(void)
+{
+    return this->m_useExtAdv;
+}
+
+
+/**
+ * @brief   Get the target BD address.
+ * 
+ * @return  BD address of the target device to sniff.
+ **/
+
+BDAddress SniffAdv::getAddress(void)
+{
+    return this->m_targetAddr;
 }
 
 
@@ -243,10 +433,11 @@ SniffAdv::SniffAdv(uint32_t channel, BDAddress targetAddr, bool useExtAdv) : Nan
  * 
  **/
 
-JamAdv::JamAdv(void) : NanoPbMsg()
+JamAdv::JamAdv(void) : BleMsg()
 {
     whad_ble_jam_adv(this->getRaw());
 }
+
 
 /**
  * @brief       JamAdv message constructor.
@@ -254,7 +445,7 @@ JamAdv::JamAdv(void) : NanoPbMsg()
  * @param[in]   channel     Channel to jam.
  **/
 
-JamAdv::JamAdv(uint32_t channel) : NanoPbMsg()
+JamAdv::JamAdv(uint32_t channel) : BleMsg()
 {
     whad_ble_jam_adv_channel(this->getRaw(), channel);
 }
@@ -269,7 +460,7 @@ JamAdv::JamAdv(uint32_t channel) : NanoPbMsg()
  * @param[in]   showEmpty   If set to true, adapter will report empty PDUs
  **/
 
-SniffConnReq::SniffConnReq(uint32_t channel, BDAddress targetAddr, bool showAdv, bool showEmpty) : NanoPbMsg()
+SniffConnReq::SniffConnReq(uint32_t channel, BDAddress targetAddr, bool showAdv, bool showEmpty) : BleMsg()
 {
     whad_ble_sniff_conn_req(
         this->getRaw(),
@@ -288,7 +479,7 @@ SniffConnReq::SniffConnReq(uint32_t channel, BDAddress targetAddr, bool showAdv,
  *                          sniffing
  **/
 
-SniffAccessAddress::SniffAccessAddress(ChannelMap channelMap) : NanoPbMsg()
+SniffAccessAddress::SniffAccessAddress(ChannelMap channelMap) : BleMsg()
 {
     whad_ble_sniff_access_address(this->getRaw(), channelMap.getChannelMapBuf());
 }
@@ -307,7 +498,7 @@ SniffAccessAddress::SniffAccessAddress(ChannelMap channelMap) : NanoPbMsg()
  *                              channel map recovery).
  **/
 
-SniffActiveConn::SniffActiveConn(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval, uint32_t hopIncrement, ChannelMap channelMap, ChannelMap channels) : NanoPbMsg()
+SniffActiveConn::SniffActiveConn(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval, uint32_t hopIncrement, ChannelMap channelMap, ChannelMap channels) : BleMsg()
 {
     whad_ble_sniff_active_conn(
         this->getRaw(),
@@ -327,7 +518,7 @@ SniffActiveConn::SniffActiveConn(uint32_t accessAddress, uint32_t crcInit, uint3
  * @param[in]   accessAddress   Connection access address
  **/
 
-JamActiveConn::JamActiveConn(uint32_t accessAddress) : NanoPbMsg()
+JamActiveConn::JamActiveConn(uint32_t accessAddress) : BleMsg()
 {
     whad_ble_jam_active_conn(this->getRaw(), accessAddress);
 }
@@ -339,7 +530,7 @@ JamActiveConn::JamActiveConn(uint32_t accessAddress) : NanoPbMsg()
  * @param[in]   active      If set to true, adapter will perform an active scan
  **/
 
-ScanMode::ScanMode(bool active) : NanoPbMsg()
+ScanMode::ScanMode(bool active) : BleMsg()
 {
     whad_ble_scan_mode(this->getRaw(), active);
 }
@@ -354,7 +545,7 @@ ScanMode::ScanMode(bool active) : NanoPbMsg()
  * @param[in]   scanRspLength   Size in bytes of the scan response data
  **/
 
-AdvMode::AdvMode(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, int scanRspLength) : NanoPbMsg()
+AdvMode::AdvMode(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, int scanRspLength) : BleMsg()
 {
     whad_ble_adv_mode(
         this->getRaw(),
@@ -375,7 +566,7 @@ AdvMode::AdvMode(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, int sc
  * @param[in]   scanRspLength   Size in bytes of the scan response data
  **/
 
-SetAdvData::SetAdvData(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, int scanRspLength) : NanoPbMsg()
+SetAdvData::SetAdvData(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, int scanRspLength) : BleMsg()
 {
     whad_ble_set_adv_data(
         this->getRaw(),
@@ -392,7 +583,7 @@ SetAdvData::SetAdvData(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, 
  * @brief       CentralMode message constructor.
  **/
 
-CentralMode::CentralMode(void) : NanoPbMsg()
+CentralMode::CentralMode(void) : BleMsg()
 {
     whad_ble_central_mode(this->getRaw());
 }
@@ -412,7 +603,7 @@ CentralMode::CentralMode(void) : NanoPbMsg()
  **/
 
 ConnectTo::ConnectTo(BDAddress targetAddr, uint32_t accessAddress, ChannelMap channelMap,
-                              uint32_t hopInterval, uint32_t hopIncrement, uint32_t crcInit) : NanoPbMsg()
+                              uint32_t hopInterval, uint32_t hopIncrement, uint32_t crcInit) : BleMsg()
 {
     whad_ble_connect_to(
         this->getRaw(),
@@ -440,7 +631,7 @@ ConnectTo::ConnectTo(BDAddress targetAddr, uint32_t accessAddress, ChannelMap ch
  **/
 
 SendRawPdu::SendRawPdu(Direction direction, uint32_t connHandle, uint32_t accessAddress, uint8_t *pPdu,
-                       int length, uint32_t crc, bool encrypt) : NanoPbMsg()
+                       int length, uint32_t crc, bool encrypt) : BleMsg()
 {
     whad_ble_send_raw_pdu(
         this->getRaw(),
@@ -465,7 +656,7 @@ SendRawPdu::SendRawPdu(Direction direction, uint32_t connHandle, uint32_t access
  * @param[in]   encrypt         If set to true and encryption enabled, adapter will encrypt the PDU
  **/
 
-SendPdu::SendPdu(Direction direction, uint32_t connHandle, uint8_t *pPdu, int length, bool encrypt) : NanoPbMsg()
+SendPdu::SendPdu(Direction direction, uint32_t connHandle, uint8_t *pPdu, int length, bool encrypt) : BleMsg()
 {
     whad_ble_send_pdu(
         this->getRaw(),
@@ -484,7 +675,7 @@ SendPdu::SendPdu(Direction direction, uint32_t connHandle, uint8_t *pPdu, int le
  * @param[in]   connHandle      Connection handle
  **/
 
-Disconnect::Disconnect(uint32_t connHandle) : NanoPbMsg()
+Disconnect::Disconnect(uint32_t connHandle) : BleMsg()
 {
     whad_ble_disconnect(this->getRaw(), connHandle);
 }
@@ -499,7 +690,7 @@ Disconnect::Disconnect(uint32_t connHandle) : NanoPbMsg()
  * @param[in]   scanRspLength   Size in bytes of the scan response data
  **/
 
-PeripheralMode::PeripheralMode(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, int scanRspLength) : NanoPbMsg()
+PeripheralMode::PeripheralMode(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, int scanRspLength) : BleMsg()
 {
     whad_ble_peripheral_mode(
         this->getRaw(),
@@ -515,7 +706,7 @@ PeripheralMode::PeripheralMode(uint8_t *pAdvData, int advDataLength, uint8_t *pS
  * @brief       Start message constructor.
  **/
 
-Start::Start(void) : NanoPbMsg()
+Start::Start(void) : BleMsg()
 {
     whad_ble_start(this->getRaw());
 }
@@ -525,7 +716,7 @@ Start::Start(void) : NanoPbMsg()
  * @brief       Stop message constructor.
  **/
 
-Stop::Stop(void) : NanoPbMsg()
+Stop::Stop(void) : BleMsg()
 {
     whad_ble_stop(this->getRaw());
 }
@@ -537,7 +728,7 @@ Stop::Stop(void) : NanoPbMsg()
  * @param[in]   accessAddress   Target connection access address
  **/
 
-HijackMaster::HijackMaster(uint32_t accessAddress) : NanoPbMsg()
+HijackMaster::HijackMaster(uint32_t accessAddress) : BleMsg()
 {
     whad_ble_hijack_master(this->getRaw(), accessAddress);
 }
@@ -549,7 +740,7 @@ HijackMaster::HijackMaster(uint32_t accessAddress) : NanoPbMsg()
  * @param[in]   accessAddress   Target connection access address
  **/
 
-HijackSlave::HijackSlave(uint32_t accessAddress) : NanoPbMsg()
+HijackSlave::HijackSlave(uint32_t accessAddress) : BleMsg()
 {
     whad_ble_hijack_slave(this->getRaw(), accessAddress);
 }
@@ -561,7 +752,7 @@ HijackSlave::HijackSlave(uint32_t accessAddress) : NanoPbMsg()
  * @param[in]   accessAddress   Target connection access address
  **/
 
-HijackBoth::HijackBoth(uint32_t accessAddress) : NanoPbMsg()
+HijackBoth::HijackBoth(uint32_t accessAddress) : BleMsg()
 {
     whad_ble_hijack_both(this->getRaw(), accessAddress);
 }
@@ -580,8 +771,18 @@ HijackBoth::HijackBoth(uint32_t accessAddress) : NanoPbMsg()
 
 SetEncryption::SetEncryption(uint32_t connHandle, uint8_t llKey[16],
                                   uint8_t llIv[8], uint8_t key[16], uint8_t rand[8],
-                                  uint8_t eDiv[2], bool enabled) : NanoPbMsg()
+                                  uint8_t eDiv[2], bool enabled) : BleMsg()
 {
+    /* Save properties. */
+    this->m_connHandle = connHandle;
+    this->m_enabled = enabled;
+    memcpy(this->m_LLKey, llKey, 16);
+    memcpy(this->m_llIv, llIv, 8);
+    memcpy(this->m_key, key, 16);
+    memcpy(this->m_rand, rand, 8);
+    memcpy(this->m_eDiv, eDiv, 2);
+
+    /* Fill the NanoPb message with the correct values. */
     whad_ble_set_encryption(
         this->getRaw(),
         connHandle,
@@ -598,13 +799,132 @@ SetEncryption::SetEncryption(uint32_t connHandle, uint8_t llKey[16],
 /**
  * @brief       SetEncryption message constructor.
  * 
+ * @param[in]   message         NanoPb message to use
+ **/
+
+SetEncryption::SetEncryption(NanoPbMsg message) : BleMsg(message)
+{
+    whad_ble_encryption_params_t params;
+
+    /* Set our properties to default values. */
+    this->m_connHandle = 0;
+    this->m_enabled = false;
+    memset(this->m_LLKey, 0, 16);
+    memset(this->m_llIv, 0, 8);
+    memset(this->m_key, 0, 16);
+    memset(this->m_rand, 0, 8);
+    memset(this->m_eDiv, 0, 2);
+
+    /* Parse SetEncryption message. */
+    if (whad_ble_set_encryption_parse(this->getRaw(), &params) == WHAD_SUCCESS)
+    {
+        this->m_connHandle = params.conn_handle;
+        this->m_enabled = params.enabled;
+        memcpy(this->m_LLKey, params.p_ll_key, 16);
+        memcpy(this->m_llIv, params.p_ll_iv, 8);
+        memcpy(this->m_key, params.p_key, 16);
+        memcpy(this->m_rand, params.p_rand, 8);
+        memcpy(this->m_eDiv, params.p_ediv, 2);
+    }
+
+    /* TODO: trigger an exception if parsing fails. */
+}
+
+
+/**
+ * @brief   Get connection handle
+ * 
+ * @return  Connection handle value.
+ **/
+
+uint32_t SetEncryption::getConnHandle()
+{
+    return this->m_connHandle;
+}
+
+
+/**
+ * @brief   Determine if encryption must be enabled or not.
+ * 
+ * @return  True if encryption must be enabled, false otherwise.
+ **/
+
+bool SetEncryption::isEnabled()
+{
+    return this->m_enabled;
+}
+
+
+/**
+ * @brief   Get the key 16-byte buffer
+ * 
+ * @return  Pointer to the key buffer.
+ **/
+
+uint8_t *SetEncryption::getKey()
+{
+    return this->m_key;
+}
+
+
+/**
+ * @brief   Get the key 8-byte Rand buffer
+ * 
+ * @return  Pointer to the Rand buffer.
+ **/
+
+uint8_t *SetEncryption::getRand()
+{
+    return this->m_rand;
+}
+
+
+/**
+ * @brief   Get the link-layer 16-byte encryption key buffer
+ * 
+ * @return  Pointer to the link-layer encryption key buffer.
+ **/
+
+uint8_t *SetEncryption::getLLKey()
+{
+    return this->m_LLKey;
+}
+
+
+/**
+ * @brief   Get the link-layer 8-byte IV buffer
+ * 
+ * @return  Pointer to the link-layer encryption IV buffer.
+ **/
+
+uint8_t *SetEncryption::getLLIv()
+{
+    return this->m_llIv;
+}
+
+
+/**
+ * @brief   Get the encryption diversifier.
+ * 
+ * @return  Pointer to the encryption diversifier buffer.
+ **/
+
+uint8_t *SetEncryption::getEDiv()
+{
+    return this->m_eDiv;
+}
+
+
+/**
+ * @brief       ReactiveJam message constructor.
+ * 
  * @param[in]   channel         Channel to listen on
  * @param[in]   pPattern        Byte buffer containing the byte pattern to match
  * @param[in]   length          Pattern length in bytes
  * @param[in]   position        Start position for pattern search
  **/
 
-ReactiveJam::ReactiveJam(uint32_t channel, uint8_t *pPattern, int length, uint32_t position) : NanoPbMsg()
+ReactiveJam::ReactiveJam(uint32_t channel, uint8_t *pPattern, int length, uint32_t position) : BleMsg()
 {
     whad_ble_reactive_jam(this->getRaw(), channel, pPattern, length, position);
 }
@@ -811,7 +1131,7 @@ whad_prepared_packet_t *buildPacketsArray(std::vector<PDU> packets)
  * @param[in]   packets     Vector of PDU to send (packets list)
  **/
 
-PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets) : NanoPbMsg()
+PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets) : BleMsg()
 {
     /* Convert our vector into a dynamically allocated array. */
     whad_prepared_packet_t *packetsArr = buildPacketsArray(packets);
@@ -839,7 +1159,7 @@ PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<P
  * @param[in]   trigger     Pattern trigger to apply with this sequence
  **/
 
-PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets, PatternTrigger trigger) : NanoPbMsg()
+PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets, PatternTrigger trigger) : BleMsg()
 {
     /* Convert our vector into a dynamically allocated array. */
     whad_prepared_packet_t *packetsArr = buildPacketsArray(packets);
@@ -871,7 +1191,7 @@ PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<P
  **/
 
 PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<PDU> packets,
-                                    ConnEventTrigger trigger) : NanoPbMsg()
+                                    ConnEventTrigger trigger) : BleMsg()
 {
     /* Convert our vector into a dynamically allocated array. */
     whad_prepared_packet_t *packetsArr = buildPacketsArray(packets);
@@ -896,7 +1216,7 @@ PrepareSequence::PrepareSequence(uint32_t id, Direction direction, std::vector<P
  * @param[in]   id          Sequence ID
  **/
 
-ManualTrigger::ManualTrigger(uint32_t id) : NanoPbMsg()
+ManualTrigger::ManualTrigger(uint32_t id) : BleMsg()
 {
     whad_ble_prepare_sequence_trigger(
         this->getRaw(),
@@ -911,7 +1231,7 @@ ManualTrigger::ManualTrigger(uint32_t id) : NanoPbMsg()
  * @param[in]   id          Sequence ID
  **/
 
-DeleteSequence::DeleteSequence(uint32_t id) : NanoPbMsg()
+DeleteSequence::DeleteSequence(uint32_t id) : BleMsg()
 {
     whad_ble_prepare_sequence_delete(
         this->getRaw(),
@@ -926,7 +1246,7 @@ DeleteSequence::DeleteSequence(uint32_t id) : NanoPbMsg()
  * @param[in]   id          Sequence ID
  **/
 
-SequenceTriggered::SequenceTriggered(uint32_t id) : NanoPbMsg()
+SequenceTriggered::SequenceTriggered(uint32_t id) : BleMsg()
 {
     whad_ble_triggered(
         this->getRaw(),
@@ -941,7 +1261,7 @@ SequenceTriggered::SequenceTriggered(uint32_t id) : NanoPbMsg()
  * @param[in]   accessAddress       Discovered access address
  **/
 
-AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress) : NanoPbMsg()
+AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress) : BleMsg()
 {
     whad_ble_access_address_discovered(
         this->getRaw(),
@@ -961,7 +1281,7 @@ AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress) : NanoP
  * @param[in]   rssi                Received Signal Strength Indicator
  **/
 
-AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, int32_t rssi) : NanoPbMsg()
+AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, int32_t rssi) : BleMsg()
 {
     whad_ble_access_address_discovered(
         this->getRaw(),
@@ -981,7 +1301,7 @@ AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, int32_t
  * @param[in]   timestamp           Timestamp
  **/
 
-AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, uint32_t timestamp) : NanoPbMsg()
+AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, uint32_t timestamp) : BleMsg()
 {
     whad_ble_access_address_discovered(
         this->getRaw(),
@@ -1002,7 +1322,7 @@ AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, uint32_
  * @param[in]   rssi                Received Signal Strength Indicator
  **/
 
-AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, uint32_t timestamp, int32_t rssi) : NanoPbMsg()
+AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, uint32_t timestamp, int32_t rssi) : BleMsg()
 {
     whad_ble_access_address_discovered(
         this->getRaw(),
@@ -1024,7 +1344,7 @@ AccessAddressDiscovered::AccessAddressDiscovered(uint32_t accessAddress, uint32_
  * @param[in]   advDataLength       Advertising data length in bytes
  **/
 
-AdvPdu::AdvPdu(AdvType advType, int32_t rssi, BDAddress address, uint8_t *pAdvData, int advDataLength) : NanoPbMsg()
+AdvPdu::AdvPdu(AdvType advType, int32_t rssi, BDAddress address, uint8_t *pAdvData, int advDataLength) : BleMsg()
 {
     whad_ble_adv_pdu(
         this->getRaw(),
@@ -1049,7 +1369,7 @@ AdvPdu::AdvPdu(AdvType advType, int32_t rssi, BDAddress address, uint8_t *pAdvDa
  **/
 
 Synchronized::Synchronized(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval,
-                                 uint32_t hopIncrement, ChannelMap channelMap) : NanoPbMsg()
+                                 uint32_t hopIncrement, ChannelMap channelMap) : BleMsg()
 {
     whad_ble_synchronized(
         this->getRaw(),
@@ -1068,7 +1388,7 @@ Synchronized::Synchronized(uint32_t accessAddress, uint32_t crcInit, uint32_t ho
  * @param[in]   accessAddress       Connection access address
  **/
 
-Desynchronized::Desynchronized(uint32_t accessAddress) : NanoPbMsg()
+Desynchronized::Desynchronized(uint32_t accessAddress) : BleMsg()
 {
     whad_ble_desynchronized(
         this->getRaw(),
@@ -1084,7 +1404,7 @@ Desynchronized::Desynchronized(uint32_t accessAddress) : NanoPbMsg()
  * @param[in]   success             If true hijacking was successful, unsuccessful otherwise 
  **/
 
-Hijacked::Hijacked(uint32_t accessAddress, bool success) : NanoPbMsg()
+Hijacked::Hijacked(uint32_t accessAddress, bool success) : BleMsg()
 {
     whad_ble_hijacked(
         this->getRaw(),
@@ -1102,7 +1422,7 @@ Hijacked::Hijacked(uint32_t accessAddress, bool success) : NanoPbMsg()
  * @param[in]   success             If true injection was successful, unsuccessful otherwise 
  **/
 
-Injected::Injected(uint32_t accessAddress, uint32_t attempts, bool success) : NanoPbMsg()
+Injected::Injected(uint32_t accessAddress, uint32_t attempts, bool success) : BleMsg()
 {
     whad_ble_injected(
         this->getRaw(),
