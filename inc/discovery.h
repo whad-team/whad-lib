@@ -59,6 +59,9 @@ typedef struct {
     uint64_t supported_commands;
 } whad_domain_desc_t;
 
+/* Determine if a given domain is supported. */
+bool whad_discovery_is_domain_supported(const whad_domain_desc_t *p_capabilities, whad_domain_t domain);
+
 /* Get discovery message type from NanoPb message. */
 whad_discovery_msgtype_t whad_discovery_get_message_type(Message *p_message);
 

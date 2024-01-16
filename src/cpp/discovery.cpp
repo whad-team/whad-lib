@@ -221,3 +221,12 @@ uint32_t whad::discovery::DeviceInfoQuery::getVersion(void)
     /* Error. */
     return 0;
 }
+
+/***********************
+ * Domain helper
+ ***********************/
+
+bool whad::discovery::isDomainSupported(const whad_domain_desc_t *capabilities, Domains domain)
+{
+    return whad_discovery_is_domain_supported(capabilities, (whad_domain_t)domain);
+}

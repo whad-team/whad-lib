@@ -130,6 +130,8 @@
                         whad_domain_desc_t *capabilities
                     );
             };
+
+            bool isDomainSupported(const whad_domain_desc_t *capabilities, Domains domain);
         };
     };
 

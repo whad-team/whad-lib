@@ -17,6 +17,28 @@ whad_discovery_msgtype_t whad_discovery_get_message_type(Message *p_message)
 }
 
 /*****************************
+ * Domain helpers
+ ****************************/
+
+bool whad_discovery_is_domain_supported(const whad_domain_desc_t *p_capabilities, whad_domain_t domain)
+{
+    /* Loop on defined domains. */
+    while (p_capabilities->domain != DOMAIN_NONE)
+    {
+        /* If domain found, return true. */
+        if (p_capabilities->domain == domain)
+            return true;
+
+        /* Go to next domain description. */
+        p_capabilities++;
+    }
+
+    /* Domain not found. */
+    return false;
+}
+
+
+/*****************************
  * Discovery messages
  ****************************/
 
