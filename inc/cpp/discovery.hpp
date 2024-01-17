@@ -18,7 +18,7 @@
                 DomainPhy = DOMAIN_PHY,
                 DomainBtClassic = DOMAIN_BT_CLASSIC,
                 DomainBtLE = DOMAIN_BTLE,
-                DomainZigbee = DOMAIN_ZIGBEE,
+                DomainDot15d4 = DOMAIN_DOT15D4,
                 DomainSixLowPan = DOMAIN_SIXLOWPAN,
                 DomainEsb = DOMAIN_ESB,
                 DomainLogitechUnifying = DOMAIN_LOGITECH_UNIFYING,
@@ -83,7 +83,7 @@
                     SetTransportSpeed(NanoPbMsg pMessage);
                     SetTransportSpeed(uint32_t speed);
                     uint32_t getSpeed();
-            };        
+            };
 
             /* Device domain information query. */
             class DomainInfoQuery : public DiscoveryMsg

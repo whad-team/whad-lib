@@ -20,7 +20,7 @@ typedef enum {
     DOMAIN_PHY = discovery_Domain_Phy,
     DOMAIN_BT_CLASSIC = discovery_Domain_BtClassic,
     DOMAIN_BTLE = discovery_Domain_BtLE,
-    DOMAIN_ZIGBEE = discovery_Domain_Zigbee,
+    DOMAIN_DOT15D4 = discovery_Domain_Dot15d4,
     DOMAIN_SIXLOWPAN = discovery_Domain_SixLowPan,
     DOMAIN_ESB = discovery_Domain_Esb,
     DOMAIN_LOGITECH_UNIFYING = discovery_Domain_LogitechUnifying,

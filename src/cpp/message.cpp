@@ -35,8 +35,8 @@ whad::NanoPbMsg::~NanoPbMsg(void)
 
 /**
  * @brief   Retrieve a pointer on the underlying (wrapped) Nanopb message.
- * 
- * @return  Pointer to a Nanopb Message structure 
+ *
+ * @return  Pointer to a Nanopb Message structure
  **/
 
 Message *whad::NanoPbMsg::getRaw(void)
@@ -47,7 +47,7 @@ Message *whad::NanoPbMsg::getRaw(void)
 
 /**
  * @brief   Get message type.
- * 
+ *
  * @return  Message type.
  **/
 
@@ -80,7 +80,7 @@ whad::MessageType whad::NanoPbMsg::getType(void)
 
 /**
  * @brief   Get message domain.
- * 
+ *
  * @return  Message domain.
  **/
 
@@ -108,8 +108,8 @@ whad::MessageDomain whad::NanoPbMsg::getDomain(void)
                 domain = DomainUnifying;
                 break;
 
-            case DOMAIN_ZIGBEE:
-                domain = DomainZigbee;
+            case DOMAIN_DOT15D4:
+                domain = DomainDot15d4;
                 break;
 
             default:
