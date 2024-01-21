@@ -13,6 +13,33 @@ void whad_init(whad_transport_cfg_t *p_transport_cfg)
     whad_transport_init(p_transport_cfg);
 }
 
+/**
+ * @brief   Free a WHAD message's dynamically allocated resources.
+ * 
+ * @param[in]   p_msg   Pointer to a WHAD message
+ */
+
+void whad_free_message_resources(Message *p_msg)
+{
+    switch (whad_get_message_type(p_msg))
+    {
+        case WHAD_MSGTYPE_DOMAIN:
+            switch (whad_get_message_domain(p_msg))
+            {
+                case DOMAIN_PHY:
+                    whad_phy_message_free(p_msg);
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+        default:
+            break;
+    }
+}
+
 whad_result_t whad_send_message(Message *p_msg)
 {
     /* Serialize our message. */
@@ -21,6 +48,9 @@ whad_result_t whad_send_message(Message *p_msg)
     {
         if (stream.bytes_written >0)
         {
+            /* Free any dynamically allocated resources.*/
+            whad_free_message_resources(p_msg);
+
             /* Send our serialized message to transport. */
             return whad_transport_send_message(g_tx_message_buf, stream.bytes_written);
         }

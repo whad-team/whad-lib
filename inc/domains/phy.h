@@ -85,9 +85,52 @@ typedef struct {
     bool full;
 } whad_phy_scheduled_packet_t;
 
+typedef struct {
+    uint32_t start;
+    uint32_t end;
+} whad_phy_frequency_range_t;
+
+typedef enum {
+    WHAD_PHY_UNKNOWN=0,
+    WHAD_PHY_SET_ASK_MOD=phy_Message_mod_ask_tag,
+    WHAD_PHY_SET_FSK_MOD=phy_Message_mod_fsk_tag,
+    WHAD_PHY_SET_GFSK_MOD=phy_Message_mod_gfsk_tag,
+    WHAD_PHY_SET_BPSK_MOD=phy_Message_mod_bpsk_tag,
+    WHAD_PHY_SET_QPSK_MOD=phy_Message_mod_qpsk_tag,
+    WHAD_PHY_SET_4FSK_MOD=phy_Message_mod_4fsk_tag,
+    WHAD_PHY_SET_MSK_MOD=phy_Message_mod_msk_tag,
+    WHAD_PHY_SET_LORA_MOD=phy_Message_mod_lora_tag,
+    WHAD_PHY_GET_SUPPORTED_FREQS=phy_Message_get_supported_freq_tag,
+    WHAD_PHY_SET_FREQ=phy_Message_set_freq_tag,
+    WHAD_PHY_SET_DATARATE=phy_Message_datarate_tag,
+    WHAD_PHY_SET_ENDIANNESS=phy_Message_endianness_tag,
+    WHAD_PHY_SET_TX_POWER=phy_Message_tx_power_tag,
+    WHAD_PHY_SET_PACKET_SIZE=phy_Message_packet_size_tag,
+    WHAD_PHY_SET_SYNC_WORD=phy_Message_sync_word_tag,
+    WHAD_PHY_SET_SNIFF_MODE=phy_Message_sniff_tag,
+    WHAD_PHY_SEND=phy_Message_send_tag,
+    WHAD_PHY_SEND_RAW=phy_Message_send_raw_tag,
+    WHAD_PHY_START=phy_Message_start_tag,
+    WHAD_PHY_STOP=phy_Message_stop_tag,
+    WHAD_PHY_SET_JAM_MODE=phy_Message_jam_tag,
+    WHAD_PHY_SET_MONITOR_MODE=phy_Message_monitor_tag,
+    WHAD_PHY_PACKET_RECEIVED=phy_Message_packet_tag,
+    WHAD_PHY_RAW_PACKET_RECEIVED=phy_Message_raw_packet_tag,
+    WHAD_PHY_JAMMED=phy_Message_jammed_tag,
+    WHAD_PHY_MONITOR_REPORT=phy_Message_monitor_report_tag,
+    WHAD_PHY_SUPPORTED_FREQS=phy_Message_supported_freq_tag,
+    WHAD_PHY_SEND_SCHED_PACKET=phy_Message_sched_send_tag,
+    WHAD_PHY_SCHED_PACKET_RESP=phy_Message_sched_pkt_rsp_tag,
+    WHAD_PHY_SCHED_PACKET_SENT=phy_Message_sched_pkt_sent_tag
+} whad_phy_msgtype_t;
+
 /*********************************
  * PHY domain
  ********************************/
+
+/* Get PHY message type from NanoPb message. */
+whad_phy_msgtype_t whad_phy_get_message_type(Message *p_message);
+void whad_phy_message_free(Message *p_message);
 
 /* Modulation selection. */
 whad_result_t whad_phy_set_ask_mod(Message *p_message, bool on_off_keying);
@@ -100,7 +143,7 @@ whad_result_t whad_phy_set_gfsk_mod(Message *p_message, uint32_t deviation);
 whad_result_t whad_phy_set_gfsk_mod_parse(Message *p_message, uint32_t *p_deviation);
 whad_result_t whad_phy_set_bpsk_mod(Message *p_message);
 whad_result_t whad_phy_set_qpsk_mod(Message *p_message, bool b_offset);
-whad_result_t whad_phy_set_qpsk_mod_parse(Message *p_message, uint32_t *p_offset);
+whad_result_t whad_phy_set_qpsk_mod_parse(Message *p_message, bool *p_offset);
 whad_result_t whad_phy_set_msk_mod(Message *p_message, uint32_t deviation);
 whad_result_t whad_phy_set_msk_mod_parse(Message *p_message, uint32_t *p_deviation);
 whad_result_t whad_phy_set_lora_mod(Message *p_message, uint32_t bandwidth, whad_phy_lora_sf_t spreading_factor,
@@ -121,7 +164,7 @@ whad_result_t whad_phy_set_packet_size(Message *p_message, uint32_t size);
 whad_result_t whad_phy_set_packet_size_parse(Message *p_message, uint32_t *p_packet_size);
 whad_result_t whad_phy_set_sync_word(Message *p_message, uint8_t *p_syncword, int length);
 whad_result_t whad_phy_set_sync_word_parse(Message *p_message, whad_phy_syncword_t *p_syncword);
-whad_result_t whad_phy_supported_frequencies(Message *p_message, phy_SupportedFrequencyRanges_FrequencyRange *p_ranges,
+whad_result_t whad_phy_supported_frequencies(Message *p_message, whad_phy_frequency_range_t *p_ranges,
                                              int nb_ranges);
 
 /* Modes */

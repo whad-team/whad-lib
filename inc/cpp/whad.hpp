@@ -5,6 +5,7 @@
 #include "generic.hpp"
 #include "discovery.hpp"
 #include "ble.hpp"
+#include "phy.hpp"
 
 namespace whad
 {

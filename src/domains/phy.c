@@ -1,6 +1,37 @@
 #include <whad.h>
 #include <domains/phy.h>
 
+whad_phy_msgtype_t whad_phy_get_message_type(Message *p_message)
+{
+    whad_phy_msgtype_t msg_type = WHAD_BLE_UNKNOWN;
+
+    /* Ensure it is a BLE message. */
+    if (whad_get_message_domain(p_message) == DOMAIN_PHY)
+    {
+        /* Retrieve the message type. */
+        msg_type = (whad_phy_msgtype_t)p_message->msg.ble.which_msg;
+    }
+
+    /* Success. */
+    return msg_type;
+}
+
+void whad_phy_message_free(Message *p_message)
+{
+    switch (whad_phy_get_message_type(p_message))
+    {
+        case WHAD_PHY_SUPPORTED_FREQS:
+            if (p_message->msg.phy.msg.supported_freq.frequency_ranges.arg != NULL)
+            {
+                free(p_message->msg.phy.msg.supported_freq.frequency_ranges.arg);
+            }
+            break;
+
+        default:
+            break;
+    }
+}
+
 bool whad_phy_frequency_range_encode_cb(pb_ostream_t *ostream, const pb_field_t *field, void * const *arg)
 {
   phy_SupportedFrequencyRanges_FrequencyRange *frequency_range = *(phy_SupportedFrequencyRanges_FrequencyRange **)arg;
@@ -308,7 +339,7 @@ whad_result_t whad_phy_set_qpsk_mod(Message *p_message, bool b_offset)
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
 
-whad_result_t whad_phy_set_qpsk_mod_parse(Message *p_message, uint32_t *p_offset)
+whad_result_t whad_phy_set_qpsk_mod_parse(Message *p_message, bool *p_offset)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_offset == NULL))
@@ -572,7 +603,7 @@ whad_result_t whad_phy_set_datarate_parse(Message *p_message, uint32_t *p_datara
 
 whad_result_t whad_phy_set_endianness(Message *p_message, whad_phy_endian_t endianness)
 {
-     /* Sanity check. */
+    /* Sanity check. */
     if (p_message == NULL)
     {
         return WHAD_ERROR;
@@ -1093,23 +1124,42 @@ whad_result_t whad_phy_send_raw_iq(Message *p_message, uint8_t *p_iq_stream, int
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
 
-whad_result_t whad_phy_supported_frequencies(Message *p_message, phy_SupportedFrequencyRanges_FrequencyRange *p_ranges,
+whad_result_t whad_phy_supported_frequencies(Message *p_message, whad_phy_frequency_range_t *p_ranges,
                                              int nb_ranges)
 {
+    int i;
+    phy_SupportedFrequencyRanges_FrequencyRange *p_freq_ranges = NULL;
+
     /* Sanity check. */
     if ((p_message == NULL) || (p_ranges == NULL))
     {
         return WHAD_ERROR;
     }
 
-    /* Populate field. */
-    p_message->which_msg = Message_phy_tag;
-    p_message->msg.phy.which_msg = phy_Message_supported_freq_tag;
-    p_message->msg.phy.msg.supported_freq.frequency_ranges.arg = p_ranges;
-    p_message->msg.phy.msg.supported_freq.frequency_ranges.funcs.encode = whad_phy_frequency_range_encode_cb;
+    /* Convert WHAD freq ranges to protobuf freq ranges. */
+    p_freq_ranges = malloc(sizeof(phy_SupportedFrequencyRanges_FrequencyRange) * nb_ranges);
+    if (p_freq_ranges != NULL)
+    {
+        for (i=0; i < nb_ranges; i++)
+        {
+            p_freq_ranges[i].start = p_ranges[i].start;
+            p_freq_ranges[i].end = p_ranges[i].end; 
+        }
 
-    /* Success. */
-    return WHAD_SUCCESS;
+        /* Populate field. */
+        p_message->which_msg = Message_phy_tag;
+        p_message->msg.phy.which_msg = phy_Message_supported_freq_tag;
+        p_message->msg.phy.msg.supported_freq.frequency_ranges.arg = p_freq_ranges;
+        p_message->msg.phy.msg.supported_freq.frequency_ranges.funcs.encode = whad_phy_frequency_range_encode_cb;
+
+        /* Success. */
+        return WHAD_SUCCESS;
+    }
+    else
+    {
+        /* Memory error. */
+        return WHAD_ERROR;
+    }
 }
 
 

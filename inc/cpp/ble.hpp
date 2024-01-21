@@ -131,7 +131,7 @@
                     ~PDU();
             };
 
-            /* Default discovery message class. */
+            /* Default BLE message class. */
             class BleMsg : public NanoPbMsg
             {
                 public:
