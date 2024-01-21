@@ -38,10 +38,10 @@ whad::phy::PhyMsg::~PhyMsg()
 /**
  * @brief       Identify the underlying discovery message.
  *
- * This method can be used when parsing incoming Discovery domain message to identify
+ * This method can be used when parsing incoming PHY domain message to identify
  * the type of message it contains and process it later.
  * 
- * @return      Discovery message type.
+ * @return      PHY message type.
  **/
 
 whad::phy::MessageType whad::phy::PhyMsg::getType(void)
@@ -149,16 +149,37 @@ int Packet::getLength(void)
     return this->m_length;
 }
 
+/**
+ * @brief       Create a timestamp with a precision to the microsecond
+ * 
+ * @param[in]   sec     Number of seconds
+ * @param[in]   usec    Number of microseconds
+ */
+
 Timestamp::Timestamp(uint32_t sec, uint32_t usec)
 {
     this->m_sec = sec;
     this->m_usec = usec;
 }
 
+
+/**
+ * @brief   Get the number of seconds from a timestamp.
+ * 
+ * @retval  Number of seconds
+ */
+
 uint32_t Timestamp::getSeconds()
 {
     return this->m_sec;
 }
+
+
+/**
+ * @brief   Get the number of microseconds from a timestamp.
+ * 
+ * @retval  Number of microseconds
+ */
 
 uint32_t Timestamp::getMicroseconds()
 {
@@ -248,9 +269,22 @@ bool SetAskMod::isOok()
 
 /** FSK modulation **/
 
+/**
+ * @brief   Create a SetFskMod message from a NanoPbMessage.
+ * 
+ * @param[in]   message     NanoPb message
+ */
+
 SetFskMod::SetFskMod(NanoPbMsg message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief   Create a SetFskMod message with a specific deviation
+ * 
+ * @param[in]   deviation   Deviation in Hz
+ */
 
 SetFskMod::SetFskMod(uint32_t deviation) : PhyMsg()
 {
@@ -259,6 +293,13 @@ SetFskMod::SetFskMod(uint32_t deviation) : PhyMsg()
         deviation
     );
 }
+
+
+/**
+ * @brief   Get the current deviation from a SetFskMod message.
+ * 
+ * @retval  Deviation in Hz.
+ */
 
 uint32_t SetFskMod::getDeviation()
 {
@@ -275,9 +316,22 @@ uint32_t SetFskMod::getDeviation()
 
 /** 4FSK modulation **/
 
+/**
+ * @brief   Create a Set4FskMod message from a NanoPbMessage.
+ * 
+ * @param[in]   message     NanoPb message
+ */
+
 Set4FskMod::Set4FskMod(NanoPbMsg message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief   Create a Set4FskMod message with a specific deviation
+ * 
+ * @param[in]   deviation   Deviation in Hz
+ */
 
 Set4FskMod::Set4FskMod(uint32_t deviation) : PhyMsg()
 {
@@ -286,6 +340,13 @@ Set4FskMod::Set4FskMod(uint32_t deviation) : PhyMsg()
         deviation
     );
 }
+
+
+/**
+ * @brief   Get the current deviation from a Set4FskMod message.
+ * 
+ * @retval  Deviation in Hz.
+ */
 
 uint32_t Set4FskMod::getDeviation()
 {
