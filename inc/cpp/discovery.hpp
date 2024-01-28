@@ -54,7 +54,7 @@
 
                     /* Constructor and destructor. */
                     DiscoveryMsg();
-                    DiscoveryMsg(NanoPbMsg pMessage);
+                    DiscoveryMsg(NanoPbMsg &pMessage);
                     ~DiscoveryMsg();
 
                     /* Override getType() message. */
@@ -66,7 +66,7 @@
             {
                 public:
                     DeviceReset();
-                    DeviceReset(NanoPbMsg message);
+                    DeviceReset(NanoPbMsg &message);
             };
 
             /* Device ready response. */
@@ -80,7 +80,7 @@
             class SetTransportSpeed : public DiscoveryMsg
             {
                 public:
-                    SetTransportSpeed(NanoPbMsg pMessage);
+                    SetTransportSpeed(NanoPbMsg &pMessage);
                     SetTransportSpeed(uint32_t speed);
                     uint32_t getSpeed();
             };        
@@ -90,7 +90,7 @@
             {
                 public:
                     /* Constructor. */
-                    DomainInfoQuery(NanoPbMsg message);
+                    DomainInfoQuery(NanoPbMsg &message);
                     DomainInfoQuery(Domains domain);
 
                     /* Accessors. */
@@ -108,7 +108,7 @@
             class DeviceInfoQuery : public DiscoveryMsg
             {
                 public:
-                    DeviceInfoQuery(NanoPbMsg message);
+                    DeviceInfoQuery(NanoPbMsg &message);
                     DeviceInfoQuery(uint32_t protoVersion);
                     uint32_t getVersion();
             };

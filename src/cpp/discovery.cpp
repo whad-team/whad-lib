@@ -19,7 +19,7 @@ whad::discovery::DiscoveryMsg::DiscoveryMsg() : NanoPbMsg()
  * @param[in]   pMessage    NanoPbMsg object containing a discovery domain message 
  **/
 
-whad::discovery::DiscoveryMsg::DiscoveryMsg(NanoPbMsg pMessage) : NanoPbMsg(pMessage.getRaw())
+whad::discovery::DiscoveryMsg::DiscoveryMsg(NanoPbMsg &pMessage) : NanoPbMsg(pMessage.getRaw())
 {
 }
 
@@ -74,7 +74,7 @@ whad::discovery::DeviceReset::DeviceReset() : DiscoveryMsg()
  * @param[in]   NanoPb message to wrap as a DeviceReset message
  **/
 
-whad::discovery::DeviceReset::DeviceReset(NanoPbMsg message) : DiscoveryMsg(message)
+whad::discovery::DeviceReset::DeviceReset(NanoPbMsg &message) : DiscoveryMsg(message)
 {
 }
 
@@ -99,7 +99,7 @@ whad::discovery::DomainInfoQuery::DomainInfoQuery(Domains domain) : DiscoveryMsg
     whad_discovery_domain_info_query(this->getRaw(), (whad_domain_t)domain);
 }
 
-whad::discovery::DomainInfoQuery::DomainInfoQuery(NanoPbMsg message) : DiscoveryMsg(message)
+whad::discovery::DomainInfoQuery::DomainInfoQuery(NanoPbMsg &message) : DiscoveryMsg(message)
 {
 }
 
@@ -183,7 +183,7 @@ whad::discovery::SetTransportSpeed::SetTransportSpeed(uint32_t speed)
     whad_discovery_set_speed(this->getRaw(), speed);
 }
 
-whad::discovery::SetTransportSpeed::SetTransportSpeed(NanoPbMsg message) : DiscoveryMsg(message)
+whad::discovery::SetTransportSpeed::SetTransportSpeed(NanoPbMsg &message) : DiscoveryMsg(message)
 {
 }
 
@@ -200,7 +200,7 @@ uint32_t whad::discovery::SetTransportSpeed::getSpeed()
     return 0;
 }
 
-whad::discovery::DeviceInfoQuery::DeviceInfoQuery(NanoPbMsg message) : DiscoveryMsg(message)
+whad::discovery::DeviceInfoQuery::DeviceInfoQuery(NanoPbMsg &message) : DiscoveryMsg(message)
 {
 }
 

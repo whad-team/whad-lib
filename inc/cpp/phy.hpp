@@ -130,7 +130,7 @@
 
                     /* Constructor and destructor. */
                     PhyMsg();
-                    PhyMsg(NanoPbMsg pMessage);
+                    PhyMsg(NanoPbMsg &pMessage);
                     ~PhyMsg();
 
                     /* Override getType() message. */
@@ -140,7 +140,7 @@
             class SupportedFreqsResp : public PhyMsg
             {
                 public:
-                    SupportedFreqsResp(NanoPbMsg message);
+                    SupportedFreqsResp(NanoPbMsg &message);
                     SupportedFreqsResp(const whad_phy_frequency_range_t *pFreqRanges);
 
                     //whad_phy_frequency_range_t *getFreqRanges();
@@ -149,7 +149,7 @@
             class SetAskMod : public PhyMsg
             {
                 public:
-                    SetAskMod(NanoPbMsg message);
+                    SetAskMod(NanoPbMsg &message);
                     SetAskMod(bool ook);
 
                     bool isOok();
@@ -158,7 +158,7 @@
             class SetFskMod : public PhyMsg
             {
                 public:
-                    SetFskMod(NanoPbMsg message);
+                    SetFskMod(NanoPbMsg &message);
                     SetFskMod(uint32_t deviation);
 
                     uint32_t getDeviation();
@@ -167,7 +167,7 @@
             class Set4FskMod : public PhyMsg
             {
                 public:
-                    Set4FskMod(NanoPbMsg message);
+                    Set4FskMod(NanoPbMsg &message);
                     Set4FskMod(uint32_t deviation);
 
                     uint32_t getDeviation();
@@ -176,7 +176,7 @@
             class SetGfskMod : public PhyMsg
             {
                 public:
-                    SetGfskMod(NanoPbMsg message);
+                    SetGfskMod(NanoPbMsg &message);
                     SetGfskMod(uint32_t deviation);
 
                     uint32_t getDeviation();
@@ -185,14 +185,14 @@
             class SetBpskMod : public PhyMsg
             {
                 public:
-                    SetBpskMod(NanoPbMsg message);
+                    SetBpskMod(NanoPbMsg &message);
                     SetBpskMod();
             };
 
             class SetQpskMod : public PhyMsg
             {
                 public:
-                    SetQpskMod(NanoPbMsg message);
+                    SetQpskMod(NanoPbMsg &message);
                     SetQpskMod(bool offset);
 
                     bool getOffset();
@@ -201,7 +201,7 @@
             class SetMskMod : public PhyMsg
             {
                 public:
-                    SetMskMod(NanoPbMsg message);
+                    SetMskMod(NanoPbMsg &message);
                     SetMskMod(uint32_t deviation);
 
                     uint32_t getDeviation();
@@ -210,7 +210,7 @@
             class SetLoraMod : public PhyMsg
             {
                 public:
-                    SetLoraMod(NanoPbMsg message);
+                    SetLoraMod(NanoPbMsg &message);
                     SetLoraMod(uint32_t bandwidth, LoRaSpreadingFactor sf,
                                LoRaCodingRate cr, uint32_t preambleLength,
                                bool enableCrc, bool explicitMode, bool invertIq);
@@ -231,7 +231,7 @@
             class SetFreq : public PhyMsg
             {
                 public:
-                    SetFreq(NanoPbMsg message);
+                    SetFreq(NanoPbMsg &message);
                     SetFreq(uint32_t frequency);
 
                     uint32_t getFrequency();
@@ -240,7 +240,7 @@
             class SetDatarate : public PhyMsg
             {
                 public:
-                    SetDatarate(NanoPbMsg message);
+                    SetDatarate(NanoPbMsg &message);
                     SetDatarate(uint32_t datarate);
 
                     uint32_t getDatarate();
@@ -249,7 +249,7 @@
             class SetEndianness : public PhyMsg
             {
                 public:
-                    SetEndianness(NanoPbMsg message);
+                    SetEndianness(NanoPbMsg &message);
                     SetEndianness(Endianness endian);
 
                     Endianness getEndianness();
@@ -258,7 +258,7 @@
             class SetTxPower : public PhyMsg
             {
                 public:
-                    SetTxPower(NanoPbMsg message);
+                    SetTxPower(NanoPbMsg &message);
                     SetTxPower(TxPower power);
 
                     TxPower getPower();
@@ -267,7 +267,7 @@
             class SetPacketSize : public PhyMsg
             {
                 public:
-                    SetPacketSize(NanoPbMsg message);
+                    SetPacketSize(NanoPbMsg &message);
                     SetPacketSize(uint32_t size);
 
                     uint32_t getSize();
@@ -277,8 +277,8 @@
             {
                 public:
 
-                    SetSyncWord(NanoPbMsg message);
-                    SetSyncWord(SyncWord syncWord);
+                    SetSyncWord(NanoPbMsg &message);
+                    SetSyncWord(SyncWord &syncWord);
 
                     SyncWord get();
             };
@@ -287,7 +287,7 @@
             {
                 public:
 
-                    SniffMode(NanoPbMsg message);
+                    SniffMode(NanoPbMsg &message);
                     SniffMode(bool iqMode);
 
                     bool isIqModeEnabled();
@@ -296,7 +296,7 @@
             class JamMode : public PhyMsg
             {
                 public:
-                    JamMode(NanoPbMsg message);
+                    JamMode(NanoPbMsg &message);
                     JamMode(JammingMode);
 
                     JammingMode getMode();
@@ -305,29 +305,29 @@
             class MonitorMode : public PhyMsg
             {
                 public:
-                    MonitorMode(NanoPbMsg message);
+                    MonitorMode(NanoPbMsg &message);
                     MonitorMode();
             };
 
             class Start : public PhyMsg
             {
                 public:
-                    Start(NanoPbMsg message);
+                    Start(NanoPbMsg &message);
                     Start();
             };
 
             class Stop : public PhyMsg
             {
                 public:
-                    Stop(NanoPbMsg message);
+                    Stop(NanoPbMsg &message);
                     Stop();
             };
 
             class SendPacket : public PhyMsg
             {
                 public:
-                    SendPacket(NanoPbMsg message);
-                    SendPacket(Packet packet);
+                    SendPacket(NanoPbMsg &message);
+                    SendPacket(Packet &packet);
 
                     Packet getPacket();
                 
@@ -338,8 +338,8 @@
             class SchedulePacket : public PhyMsg
             {
                 public:
-                    SchedulePacket(NanoPbMsg message);
-                    SchedulePacket(Packet packet, Timestamp timestamp);
+                    SchedulePacket(NanoPbMsg &message);
+                    SchedulePacket(Packet &packet, Timestamp &timestamp);
 
                     Packet getPacket();
                     Timestamp getTimestamp();
@@ -348,8 +348,8 @@
             class Jammed : public PhyMsg
             {
                 public:
-                    Jammed(NanoPbMsg message);
-                    Jammed(Timestamp timestamp);
+                    Jammed(NanoPbMsg &message);
+                    Jammed(Timestamp &timestamp);
 
                     Timestamp getTimestamp();
             };
@@ -357,8 +357,8 @@
             class PacketReceived : public PhyMsg
             {
                 public:
-                    PacketReceived(NanoPbMsg message);
-                    PacketReceived(uint32_t frequency, int32_t rssi, Timestamp ts, Packet packet);
+                    PacketReceived(NanoPbMsg &message);
+                    PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts, Packet &packet);
 
                     uint32_t getFrequency();
                     int32_t getRssi();
@@ -373,7 +373,7 @@
             class PacketScheduled : public PhyMsg
             {
                 public:
-                    PacketScheduled(NanoPbMsg message);
+                    PacketScheduled(NanoPbMsg &message);
                     PacketScheduled(uint8_t packetId, bool full);
 
                     uint8_t getPacketId();
@@ -387,7 +387,7 @@
             class ScheduledPacketSent : public PhyMsg
             {
                 public:
-                    ScheduledPacketSent(NanoPbMsg message);
+                    ScheduledPacketSent(NanoPbMsg &message);
                     ScheduledPacketSent(uint32_t packetId);
 
                     uint32_t getPacketId();

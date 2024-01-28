@@ -21,7 +21,7 @@ whad::phy::PhyMsg::PhyMsg() : NanoPbMsg()
  * @param[in]   pMessage    NanoPbMsg object containing a PHY domain message 
  **/
 
-whad::phy::PhyMsg::PhyMsg(NanoPbMsg pMessage) : NanoPbMsg(pMessage.getRaw())
+whad::phy::PhyMsg::PhyMsg(NanoPbMsg &pMessage) : NanoPbMsg(pMessage.getRaw())
 {
 }
 
@@ -219,7 +219,7 @@ SupportedFreqsResp::SupportedFreqsResp(const whad_phy_frequency_range_t *pFreqRa
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-SupportedFreqsResp::SupportedFreqsResp(NanoPbMsg message) : PhyMsg(message)
+SupportedFreqsResp::SupportedFreqsResp(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -232,7 +232,7 @@ SupportedFreqsResp::SupportedFreqsResp(NanoPbMsg message) : PhyMsg(message)
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-SetAskMod::SetAskMod(whad::NanoPbMsg message) : PhyMsg(message)
+SetAskMod::SetAskMod(whad::NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -275,7 +275,7 @@ bool SetAskMod::isOok()
  * @param[in]   message     NanoPb message
  */
 
-SetFskMod::SetFskMod(NanoPbMsg message) : PhyMsg(message)
+SetFskMod::SetFskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -322,7 +322,7 @@ uint32_t SetFskMod::getDeviation()
  * @param[in]   message     NanoPb message
  */
 
-Set4FskMod::Set4FskMod(NanoPbMsg message) : PhyMsg(message)
+Set4FskMod::Set4FskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -363,7 +363,7 @@ uint32_t Set4FskMod::getDeviation()
 
 /** GFSK modulation **/
 
-SetGfskMod::SetGfskMod(NanoPbMsg message) : PhyMsg(message)
+SetGfskMod::SetGfskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -391,7 +391,7 @@ uint32_t SetGfskMod::getDeviation()
 
 /** BPSK modulation **/
 
-SetBpskMod::SetBpskMod(NanoPbMsg message) : PhyMsg(message)
+SetBpskMod::SetBpskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -401,7 +401,7 @@ SetBpskMod::SetBpskMod()
 
 /** QPSK modulation **/
 
-SetQpskMod::SetQpskMod(NanoPbMsg message) : PhyMsg(message)
+SetQpskMod::SetQpskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -427,7 +427,7 @@ bool SetQpskMod::getOffset()
 
 /** MSK modulation **/
 
-SetMskMod::SetMskMod(NanoPbMsg message) : PhyMsg(message)
+SetMskMod::SetMskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -454,7 +454,7 @@ uint32_t SetMskMod::getDeviation()
 
 /** LoRa modulation **/
 
-SetLoraMod::SetLoraMod(NanoPbMsg message) : PhyMsg(message)
+SetLoraMod::SetLoraMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -563,7 +563,7 @@ bool SetLoraMod::isIqInverted()
 
 /** Set frequency **/
 
-SetFreq::SetFreq(NanoPbMsg message) : PhyMsg(message)
+SetFreq::SetFreq(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -589,7 +589,7 @@ uint32_t SetFreq::getFrequency()
 
 /** Set datarate **/
 
-SetDatarate::SetDatarate(NanoPbMsg message) : PhyMsg(message)
+SetDatarate::SetDatarate(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -615,7 +615,7 @@ uint32_t SetDatarate::getDatarate()
 
 /** Set endianness **/
 
-SetEndianness::SetEndianness(NanoPbMsg message) : PhyMsg(message)
+SetEndianness::SetEndianness(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -641,7 +641,7 @@ Endianness SetEndianness::getEndianness()
 
 /** Set Tx power **/
 
-SetTxPower::SetTxPower(NanoPbMsg message) : PhyMsg(message)
+SetTxPower::SetTxPower(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -667,7 +667,7 @@ TxPower SetTxPower::getPower()
 
 /** Set Packet size **/
 
-SetPacketSize::SetPacketSize(NanoPbMsg message) : PhyMsg(message)
+SetPacketSize::SetPacketSize(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -693,11 +693,11 @@ uint32_t SetPacketSize::getSize()
 
 /** Set Sync word **/
 
-SetSyncWord::SetSyncWord(NanoPbMsg message) : PhyMsg(message)
+SetSyncWord::SetSyncWord(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
-SetSyncWord::SetSyncWord(SyncWord syncWord) : PhyMsg()
+SetSyncWord::SetSyncWord(SyncWord &syncWord) : PhyMsg()
 {
     whad_phy_set_sync_word(
         this->getRaw(),
@@ -720,7 +720,7 @@ SyncWord SetSyncWord::get()
 
 /** Sniff mode **/
 
-SniffMode::SniffMode(NanoPbMsg message) : PhyMsg(message)
+SniffMode::SniffMode(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -746,7 +746,7 @@ bool SniffMode::isIqModeEnabled()
 
 /** jam mode **/
 
-JamMode::JamMode(NanoPbMsg message) : PhyMsg(message)
+JamMode::JamMode(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -772,7 +772,7 @@ JammingMode JamMode::getMode()
 
 /** Monitor mode **/
 
-MonitorMode::MonitorMode(NanoPbMsg message) : PhyMsg(message)
+MonitorMode::MonitorMode(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -785,7 +785,7 @@ MonitorMode::MonitorMode() : PhyMsg()
 
 /** Start **/
 
-Start::Start(NanoPbMsg message) : PhyMsg(message)
+Start::Start(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -796,7 +796,7 @@ Start::Start() : PhyMsg()
 
 /** Stop **/
 
-Stop::Stop(NanoPbMsg message) : PhyMsg(message)
+Stop::Stop(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -807,11 +807,11 @@ Stop::Stop() : PhyMsg()
 
 /** Send Packet **/
 
-SendPacket::SendPacket(NanoPbMsg message) : PhyMsg(message)
+SendPacket::SendPacket(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
-SendPacket::SendPacket(Packet packet) : PhyMsg()
+SendPacket::SendPacket(Packet &packet) : PhyMsg()
 {
     whad_phy_send(
         this->getRaw(),
@@ -835,11 +835,11 @@ Packet SendPacket::getPacket()
 
 /** Schedule Packet **/
 
-SchedulePacket::SchedulePacket(NanoPbMsg message) : PhyMsg(message)
+SchedulePacket::SchedulePacket(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
-SchedulePacket::SchedulePacket(Packet packet, Timestamp timestamp) : PhyMsg()
+SchedulePacket::SchedulePacket(Packet &packet, Timestamp &timestamp) : PhyMsg()
 {
     whad_phy_sched_packet(
         this->getRaw(),
@@ -876,11 +876,11 @@ Timestamp SchedulePacket::getTimestamp()
 
 /** Jammed notification **/
 
-Jammed::Jammed(NanoPbMsg message) : PhyMsg(message)
+Jammed::Jammed(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
-Jammed::Jammed(Timestamp timestamp) : PhyMsg()
+Jammed::Jammed(Timestamp &timestamp) : PhyMsg()
 {
     whad_phy_jammed(
         this->getRaw(),
@@ -903,11 +903,11 @@ Timestamp Jammed::getTimestamp()
 
 /** Received packet notification **/
 
-PacketReceived::PacketReceived(NanoPbMsg message) : PhyMsg(message)
+PacketReceived::PacketReceived(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
-PacketReceived::PacketReceived(uint32_t frequency, int32_t rssi, Timestamp ts, Packet packet)
+PacketReceived::PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts, Packet &packet)
 {
     whad_phy_packet_received(
         this->getRaw(),
@@ -968,7 +968,7 @@ Packet PacketReceived::getPacket()
 
 /** Scheduled packet notification **/
 
-PacketScheduled::PacketScheduled(NanoPbMsg message) : PhyMsg(message)
+PacketScheduled::PacketScheduled(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
@@ -1006,7 +1006,7 @@ bool PacketScheduled::isFull()
 
 /** Scheduled packet sent notification **/
 
-ScheduledPacketSent::ScheduledPacketSent(NanoPbMsg message) : PhyMsg(message)
+ScheduledPacketSent::ScheduledPacketSent(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
