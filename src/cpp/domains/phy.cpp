@@ -822,16 +822,14 @@ SendPacket::SendPacket(Packet packet) : PhyMsg()
 
 Packet SendPacket::getPacket()
 {
-    whad_phy_packet_t packet;
-
-    memset(packet.payload, 0, sizeof(packet.payload));
+    memset(this->m_packet.payload, 0, sizeof(this->m_packet.payload));
 
     whad_phy_send_parse(
         this->getRaw(),
-        &packet
+        &this->m_packet
     );
 
-    return Packet(packet.payload, packet.length);
+    return Packet(this->m_packet.payload, this->m_packet.length);
 }
 
 

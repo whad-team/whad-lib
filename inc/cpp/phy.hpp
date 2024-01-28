@@ -330,6 +330,9 @@
                     SendPacket(Packet packet);
 
                     Packet getPacket();
+                
+                private:
+                    whad_phy_packet_t m_packet;
             };
 
             class SchedulePacket : public PhyMsg
