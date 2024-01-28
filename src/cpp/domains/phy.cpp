@@ -361,11 +361,26 @@ uint32_t Set4FskMod::getDeviation()
     return deviation;
 }
 
+
 /** GFSK modulation **/
+
+
+/**
+ * @brief   Create a SetGfskMod message from a NanoPbMsg message.
+ * 
+ * @param[in]   message NanoPbMsg instance
+ **/
 
 SetGfskMod::SetGfskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetGfskMod message with a specific deviation
+ * 
+ * @param[in]   deviation   Deviation in Hz
+ **/
 
 SetGfskMod::SetGfskMod(uint32_t deviation) : PhyMsg()
 {
@@ -374,6 +389,13 @@ SetGfskMod::SetGfskMod(uint32_t deviation) : PhyMsg()
         deviation
     );
 }
+
+
+/**
+ * @brief       Get the deviation
+ * 
+ * @retval      GFSK deviation in Hz
+ **/
 
 uint32_t SetGfskMod::getDeviation()
 {
@@ -391,19 +413,46 @@ uint32_t SetGfskMod::getDeviation()
 
 /** BPSK modulation **/
 
+
+/**
+ * @brief   Create a SetBpskMod message from a NanoPbMsg message.
+ * 
+ * @param[in]   message NanoPbMsg instance
+ **/
+
 SetBpskMod::SetBpskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief   Create a SetBpskMod message.
+ **/
 
 SetBpskMod::SetBpskMod()
 {
 }
 
+
 /** QPSK modulation **/
+
+
+/**
+ * @brief   Create a SetQpskMod message from a NanoPbMsg message.
+ * 
+ * @param[in]   message NanoPbMsg instance
+ **/
 
 SetQpskMod::SetQpskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetQpskMod message with a specific offset.
+ * 
+ * @param[in]   offset  Modulation offset
+ **/
 
 SetQpskMod::SetQpskMod(bool offset) : PhyMsg()
 {
@@ -412,6 +461,13 @@ SetQpskMod::SetQpskMod(bool offset) : PhyMsg()
         offset
     );
 }
+
+
+/**
+ * @brief       Get modulation offset.
+ * 
+ * @retval      Modulation offset
+ **/
 
 bool SetQpskMod::getOffset()
 {
@@ -425,11 +481,26 @@ bool SetQpskMod::getOffset()
     return offset;
 }
 
+
 /** MSK modulation **/
+
+
+/**
+ * @brief       Create a SetMskMod message from a NanoPbMsg message.
+ * 
+ * @param[in]   message NanoPbMsg instance
+ **/
 
 SetMskMod::SetMskMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetMskMod message with a specific deviation.
+ * 
+ * @param[in]   deviation   Deviation in Hz
+ **/
 
 SetMskMod::SetMskMod(uint32_t deviation) : PhyMsg()
 {
@@ -438,6 +509,13 @@ SetMskMod::SetMskMod(uint32_t deviation) : PhyMsg()
         deviation
     );
 }
+
+
+/**
+ * @brief       Get current deviation.
+ * 
+ * @retval      Deviation in Hz
+ **/
 
 uint32_t SetMskMod::getDeviation()
 {
@@ -452,11 +530,32 @@ uint32_t SetMskMod::getDeviation()
     return deviation;
 }
 
+
 /** LoRa modulation **/
+
+
+/**
+ * @brief       Create a SetLoraMod message from a NanoPbMsg message.
+ * 
+ * @param[in]   message NanoPbMsg instance
+ **/
 
 SetLoraMod::SetLoraMod(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetLoraMod message with specific parameters.
+ * 
+ * @param[in]   bandwidth       Modulation bandwidth in Hz
+ * @param[in]   sf              Spreading factor
+ * @param[in]   cr              Coding rate
+ * @param[in]   enableCrc       If true, CRC will be enabled and checked by the hardware
+ * @param[in]   preambleLength  Length of preamble, in number of symbols
+ * @param[in]   explicitMode    If true, set explicit mode
+ * @param[in]   invertIq        If true, invert I/Q (used in downstream channels)
+ **/
 
 SetLoraMod::SetLoraMod(uint32_t bandwidth, LoRaSpreadingFactor sf,
                                LoRaCodingRate cr, uint32_t preambleLength,
@@ -472,6 +571,13 @@ SetLoraMod::SetLoraMod(uint32_t bandwidth, LoRaSpreadingFactor sf,
     );
 }
 
+
+/**
+ * @brief       Parse the current message and extract its parameters.
+ * 
+ * @retval      True if parsing has been correctly performed, false otherwise.
+ **/
+
 bool SetLoraMod::parse()
 {
     if (whad_phy_set_lora_mod_parse(this->getRaw(), &this->m_params) == WHAD_SUCCESS)
@@ -484,6 +590,13 @@ bool SetLoraMod::parse()
     }
 }
 
+
+/**
+ * @brief       Get the message bandwidth modulation parameter
+ * 
+ * @retval      Bandwidth in Hz.
+ **/
+
 uint32_t SetLoraMod::getBandwidth()
 {
     if (this->parse())
@@ -494,6 +607,13 @@ uint32_t SetLoraMod::getBandwidth()
     /* Error. */
     return 0;
 }
+
+
+/**
+ * @brief       Get the message preamble length parameter.
+ * 
+ * @retval      Preamble length in number of symbols.
+ **/
 
 uint32_t SetLoraMod::getPreambleLength()
 {
@@ -506,6 +626,13 @@ uint32_t SetLoraMod::getPreambleLength()
     return 0;
 }
 
+
+/**
+ * @brief       Get the message spreading factor parameter.
+ * 
+ * @retval      Spreading factor
+ **/
+
 LoRaSpreadingFactor SetLoraMod::getSpreadingFactor()
 {
     if (this->parse())
@@ -516,6 +643,13 @@ LoRaSpreadingFactor SetLoraMod::getSpreadingFactor()
     /* Error. */
     return LoraSfError;
 }
+
+
+/**
+ * @brief       Get the message coding rate parameter.
+ * 
+ * @retval      Coding rate
+ **/
 
 LoRaCodingRate SetLoraMod::getCodingRate()
 {
@@ -528,6 +662,13 @@ LoRaCodingRate SetLoraMod::getCodingRate()
     return LoraCrError; 
 }
 
+
+/**
+ * @brief       Determine if CRC is enabled.
+ * 
+ * @retval      True if CRC should be enabled, false otherwise.
+ **/
+
 bool SetLoraMod::isCrcEnabled()
 {
     if (this->parse())
@@ -538,6 +679,13 @@ bool SetLoraMod::isCrcEnabled()
     /* Error. */
     return false;
 }
+
+
+/**
+ * @brief       Determine if explicit mode is enabled.
+ * 
+ * @retval      True if explicit mode should be enabled, false otherwise.
+ **/
 
 bool SetLoraMod::isExplicitMode()
 {
@@ -550,6 +698,13 @@ bool SetLoraMod::isExplicitMode()
     return false;
 }
 
+
+/**
+ * @brief       Determine if IQ inversion is enabled.
+ * 
+ * @retval      True if IQ inversion should be enabled, false otherwise.
+ **/
+
 bool SetLoraMod::isIqInverted()
 {
     if (this->parse())
@@ -561,11 +716,26 @@ bool SetLoraMod::isIqInverted()
     return false;
 }
 
+
+
 /** Set frequency **/
+
+/**
+ * @brief       Create a SetFreq message from a NanoPbMsg message.
+ * 
+ * @param[in]   message NanoPbMsg instance
+ **/
 
 SetFreq::SetFreq(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetFreq message with a specific frequency
+ * 
+ * @param[in]   frequency   Frequency in Hz
+ **/
 
 SetFreq::SetFreq(uint32_t frequency) : PhyMsg()
 {
@@ -574,6 +744,13 @@ SetFreq::SetFreq(uint32_t frequency) : PhyMsg()
         frequency
     );
 }
+
+
+/**
+ * @brief       Get the frequency specified in this message
+ * 
+ * @retval      Frequency in Hz
+ **/
 
 uint32_t SetFreq::getFrequency()
 {
@@ -587,11 +764,25 @@ uint32_t SetFreq::getFrequency()
     return freq;
 }
 
+
 /** Set datarate **/
+
+/**
+ * @brief       Create a SetDatarate message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 SetDatarate::SetDatarate(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetDatarate message with specific data rate
+ * 
+ * @param[in]   datarate    Data rate to use in bits/second
+ **/
 
 SetDatarate::SetDatarate(uint32_t datarate)
 {
@@ -600,6 +791,13 @@ SetDatarate::SetDatarate(uint32_t datarate)
         datarate
     );
 }
+
+
+/**
+ * @brief       Get the data rate specified in this message
+ * 
+ * @retval      Datarate in bits/second
+ **/
 
 uint32_t SetDatarate::getDatarate()
 {
@@ -613,11 +811,25 @@ uint32_t SetDatarate::getDatarate()
     return datarate;
 }
 
+
 /** Set endianness **/
+
+/**
+ * @brief       Create a SetEndianness message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 SetEndianness::SetEndianness(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetEndianness message with specific endianness
+ * 
+ * @param[in]   endian  Endianness to use
+ **/
 
 SetEndianness::SetEndianness(Endianness endian) : PhyMsg()
 {
@@ -626,6 +838,13 @@ SetEndianness::SetEndianness(Endianness endian) : PhyMsg()
         (whad_phy_endian_t)endian
     );
 }
+
+
+/**
+ * @brief       Get the endianness specified in this message
+ * 
+ * @retval      Endianness to use
+ **/
 
 Endianness SetEndianness::getEndianness()
 {
@@ -639,11 +858,25 @@ Endianness SetEndianness::getEndianness()
     return (Endianness)endian;
 }
 
+
 /** Set Tx power **/
+
+/**
+ * @brief       Create a SetTxPower message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 SetTxPower::SetTxPower(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetTxPower message with a specific power level.
+ * 
+ * @param[in]   power   Power level to use
+ **/
 
 SetTxPower::SetTxPower(TxPower power) : PhyMsg()
 {
@@ -652,6 +885,13 @@ SetTxPower::SetTxPower(TxPower power) : PhyMsg()
         (whad_phy_txpower_t)power
     );
 }
+
+
+/**
+ * @brief       Get the specified power level
+ * 
+ * @retval      Power level specified in this message
+ **/
 
 TxPower SetTxPower::getPower()
 {
@@ -665,11 +905,25 @@ TxPower SetTxPower::getPower()
     return (TxPower)power;
 }
 
+
 /** Set Packet size **/
+
+/**
+ * @brief       Create a SetPacketSize message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 SetPacketSize::SetPacketSize(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetPacketSize message with a specific size
+ * 
+ * @param[in]   size     Packet size to use, in bytes
+ **/
 
 SetPacketSize::SetPacketSize(uint32_t size) : PhyMsg()
 {
@@ -678,6 +932,13 @@ SetPacketSize::SetPacketSize(uint32_t size) : PhyMsg()
         size
     );
 }
+
+
+/**
+ * @brief       Get the specified packet size
+ * 
+ * @retval      Packet size specified, in bytes
+ **/
 
 uint32_t SetPacketSize::getSize()
 {
@@ -691,11 +952,25 @@ uint32_t SetPacketSize::getSize()
     return size;
 }
 
+
 /** Set Sync word **/
+
+/**
+ * @brief       Create a SetSyncWord message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 SetSyncWord::SetSyncWord(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SetSyncWord message from a specified synchronization word.
+ * 
+ * @param[in]   syncWord    Synchronization word to use
+ **/
 
 SetSyncWord::SetSyncWord(SyncWord &syncWord) : PhyMsg()
 {
@@ -705,6 +980,13 @@ SetSyncWord::SetSyncWord(SyncWord &syncWord) : PhyMsg()
         syncWord.getSize()
     );
 }
+
+
+/**
+ * @brief       Get the specified synchronization word
+ * 
+ * @retval      Synchronization word in use
+ **/
 
 SyncWord SetSyncWord::get()
 {
@@ -718,11 +1000,25 @@ SyncWord SetSyncWord::get()
     return SyncWord(syncword.syncword, syncword.length);
 }
 
+
 /** Sniff mode **/
+
+/**
+ * @brief       Create a SniffMode message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 SniffMode::SniffMode(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SniffMode message.
+ * 
+ * @param[in]   iqMode  If set to true, will sniff IQ samples otherwise will sniff packets.
+ **/
 
 SniffMode::SniffMode(bool iqMode) : PhyMsg()
 {
@@ -731,6 +1027,12 @@ SniffMode::SniffMode(bool iqMode) : PhyMsg()
         iqMode
     );
 }
+
+/**
+ * @brief       Determine if IQ sniffing mode is enabled.
+ * 
+ * @retval      True if IQ sniffing is enabled, false otherwise.
+ **/
 
 bool SniffMode::isIqModeEnabled()
 {
@@ -744,11 +1046,25 @@ bool SniffMode::isIqModeEnabled()
     return enabled;
 }
 
+
 /** jam mode **/
+
+/**
+ * @brief       Create a JamMode message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 JamMode::JamMode(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a JamMode message with specified mode.
+ * 
+ * @param[in]   mode    Jamming mode to use
+ **/
 
 JamMode::JamMode(JammingMode mode) : PhyMsg()
 {
@@ -757,6 +1073,13 @@ JamMode::JamMode(JammingMode mode) : PhyMsg()
         (whad_phy_jam_mode_t)mode
     );
 }
+
+
+/**
+ * @brief       Get the specified jamming mode
+ * 
+ * @param[in]   mode    Jamming mode to use
+ **/
 
 JammingMode JamMode::getMode()
 {
@@ -770,11 +1093,25 @@ JammingMode JamMode::getMode()
     return (JammingMode)mode;
 }
 
+
 /** Monitor mode **/
+
+/**
+ * @brief       Create a MonitorMode message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 MonitorMode::MonitorMode(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a MonitorMode message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 MonitorMode::MonitorMode() : PhyMsg()
 {
@@ -783,11 +1120,23 @@ MonitorMode::MonitorMode() : PhyMsg()
     );
 }
 
+
 /** Start **/
+
+/**
+ * @brief       Create a Start message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 Start::Start(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a Start message.
+ **/
 
 Start::Start() : PhyMsg()
 {
@@ -796,20 +1145,45 @@ Start::Start() : PhyMsg()
 
 /** Stop **/
 
+/**
+ * @brief       Create a Stop message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
+
 Stop::Stop(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a Stop message.
+ **/
 
 Stop::Stop() : PhyMsg()
 {
     whad_phy_stop(this->getRaw());
 }
 
+
 /** Send Packet **/
+
+/**
+ * @brief       Create a SendPacket message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 SendPacket::SendPacket(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SendPacket message from a packet
+ * 
+ * @param[in]   packet  Packet to send
+ **/
 
 SendPacket::SendPacket(Packet &packet) : PhyMsg()
 {
@@ -819,6 +1193,13 @@ SendPacket::SendPacket(Packet &packet) : PhyMsg()
         packet.getLength()
     );
 }
+
+
+/**
+ * @brief       Get the packet to send
+ * 
+ * @retval      Packet object to send
+ **/
 
 Packet SendPacket::getPacket()
 {
@@ -835,9 +1216,23 @@ Packet SendPacket::getPacket()
 
 /** Schedule Packet **/
 
+/**
+ * @brief       Create a SchedulePacket message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
+
 SchedulePacket::SchedulePacket(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a SchedulePacket message from timestamp and packet.
+ * 
+ * @param[in]   packet      Packet to schedule
+ * @param[in]   timestamp   Timerstamp at which the provided packet must be sent
+ **/
 
 SchedulePacket::SchedulePacket(Packet &packet, Timestamp &timestamp) : PhyMsg()
 {
@@ -849,6 +1244,13 @@ SchedulePacket::SchedulePacket(Packet &packet, Timestamp &timestamp) : PhyMsg()
         timestamp.getMicroseconds()
     );
 }
+
+
+/**
+ * @brief       Get the scheduled packet object
+ * 
+ * @retval      Scheduled packet
+ **/
 
 Packet SchedulePacket::getPacket()
 {
@@ -862,6 +1264,13 @@ Packet SchedulePacket::getPacket()
     return Packet(sched_packet.packet.payload, sched_packet.packet.length);
 }
 
+
+/**
+ * @brief       Get the scheduled packet timestamp object
+ * 
+ * @retval      Scheduled packet timestamp
+ **/
+
 Timestamp SchedulePacket::getTimestamp()
 {
     whad_phy_sched_packet_t sched_packet;
@@ -874,11 +1283,25 @@ Timestamp SchedulePacket::getTimestamp()
     return Timestamp(sched_packet.ts.ts_sec, sched_packet.ts.ts_usec);    
 }
 
+
 /** Jammed notification **/
+
+/**
+ * @brief       Create a Jammed message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 Jammed::Jammed(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a Jammed message with its associated timestamp.
+ * 
+ * @param[in]   timestamp   Timestamp at which the target has been successfully jammed
+ **/
 
 Jammed::Jammed(Timestamp &timestamp) : PhyMsg()
 {
@@ -888,6 +1311,13 @@ Jammed::Jammed(Timestamp &timestamp) : PhyMsg()
         timestamp.getMicroseconds()
     );
 }
+
+
+/**
+ * @brief       Get message timestamp.
+ * 
+ * @param[in]   timestamp   Timestamp at which the target has been successfully jammed
+ **/
 
 Timestamp Jammed::getTimestamp()
 {
@@ -901,11 +1331,28 @@ Timestamp Jammed::getTimestamp()
     return Timestamp(timestamp.ts_sec, timestamp.ts_usec);
 }
 
+
 /** Received packet notification **/
+
+/**
+ * @brief       Create a PacketReceived message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 PacketReceived::PacketReceived(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a PacketReceived message with corresponding parameters.
+ * 
+ * @param[in]   frequency   Frequency on which this packet has been received
+ * @param[in]   rssi        Received signal strength indicator
+ * @param[in]   ts          Timestamp at which the packet has been received
+ * @param[in]   packet      Packet received
+ **/
 
 PacketReceived::PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts, Packet &packet)
 {
@@ -920,10 +1367,24 @@ PacketReceived::PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts, 
     );
 }
 
+
+/**
+ * @brief       Parse the current message.
+ * 
+ * @retval      True if parsing is OK, false otherwise.
+ **/
+
 bool PacketReceived::parse()
 {
     return (whad_phy_packet_received_parse(this->getRaw(), &this->m_packet) == WHAD_SUCCESS);
 }
+
+
+/**
+ * @brief       Get the frequency parameter
+ * 
+ * @retval      Frequency in Hz
+ **/
 
 uint32_t PacketReceived::getFrequency()
 {
@@ -935,6 +1396,13 @@ uint32_t PacketReceived::getFrequency()
     return 0;
 }
 
+
+/**
+ * @brief       Get the RSSI parameter
+ * 
+ * @retval      Received signal strength indicator
+ **/
+
 int32_t PacketReceived::getRssi()
 {
     if (this->parse())
@@ -945,6 +1413,13 @@ int32_t PacketReceived::getRssi()
     return 0;   
 }
 
+
+/**
+ * @brief       Get the timetamp parameter
+ * 
+ * @retval      Timestamp at which the packet has been received
+ **/
+
 Timestamp PacketReceived::getTimestamp()
 {
     if (this->parse())
@@ -952,8 +1427,15 @@ Timestamp PacketReceived::getTimestamp()
         return Timestamp(this->m_packet.ts.ts_sec, this->m_packet.ts.ts_usec);
     }
 
-    return Timestamp(0,0);       
+    return Timestamp(0,0);
 }
+
+
+/**
+ * @brief       Get the received packet
+ * 
+ * @retval      Instance of Packet representing the received packet
+ **/
 
 Packet PacketReceived::getPacket()
 {
@@ -966,11 +1448,26 @@ Packet PacketReceived::getPacket()
     return Packet(0);
 }
 
+
 /** Scheduled packet notification **/
+
+/**
+ * @brief       Create a PacketScheduled message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 PacketScheduled::PacketScheduled(NanoPbMsg &message) : PhyMsg(message)
 {
 }
+
+
+/**
+ * @brief       Create a PacketScheduled message with specific packet ID.
+ * 
+ * @param[in]   packetId    Packet identifier
+ * @param[in]   full        Set to true to indicate the scheduled packets list is full.
+ **/
 
 PacketScheduled::PacketScheduled(uint8_t packetId, bool full) : PhyMsg()
 {
@@ -979,10 +1476,24 @@ PacketScheduled::PacketScheduled(uint8_t packetId, bool full) : PhyMsg()
     );
 }
 
+
+/**
+ * @brief       Parse the current message.
+ * 
+ * @retval      True if parsing is OK, false otherwise.
+ **/
+
 bool PacketScheduled::parse()
 {
     return (whad_phy_packet_scheduled_parse(this->getRaw(), &this->m_packet) == WHAD_SUCCESS);
 }
+
+
+/**
+ * @brief       Get the packet identifier.
+ * 
+ * @retval      Packet identifier
+ **/
 
 uint8_t PacketScheduled::getPacketId()
 {
@@ -994,6 +1505,13 @@ uint8_t PacketScheduled::getPacketId()
     return 0;
 }
 
+
+/**
+ * @brief       Determine if the scheduled packets list is full.
+ * 
+ * @retval      True if list is full, false otherwise.
+ **/
+
 bool PacketScheduled::isFull()
 {
     if (this->parse())
@@ -1004,16 +1522,38 @@ bool PacketScheduled::isFull()
     return false;
 }
 
+
 /** Scheduled packet sent notification **/
+
+
+/**
+ * @brief       Create a ScheduledPacketSent message based on raw PHY message.
+ * 
+ * @param[in]   message     Base NanoPb message to use.
+ **/
 
 ScheduledPacketSent::ScheduledPacketSent(NanoPbMsg &message) : PhyMsg(message)
 {
 }
 
+
+/**
+ * @brief       Create a ScheduledPacketSent message with a specific packet ID.
+ * 
+ * @param[in]   packetId    Packet identifier.
+ **/
+
 ScheduledPacketSent::ScheduledPacketSent(uint32_t packetId) : PhyMsg()
 {
     whad_phy_sched_packet_sent(this->getRaw(), packetId);
 }
+
+
+/**
+ * @brief       Get message packet ID.
+ * 
+ * @retval      Packet ID
+ **/
 
 uint32_t ScheduledPacketSent::getPacketId()
 {
