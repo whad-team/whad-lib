@@ -6,12 +6,15 @@
     #include <string>
     #include <vector>
     #include "message.hpp"
+    #include "common.hpp"
     #include "../domains/ble.h"
 
     namespace whad
     {
         namespace ble
         {
+            typedef whad::Packet<255> PDU;
+
             /* BLE direction. */
             enum Direction {
                 DirectionUnknown = BLE_DIR_UNKNOWN,
@@ -115,20 +118,6 @@
 
                     /* Channel map accessor. */
                     uint8_t *getChannelMapBuf(void);
-            };
-
-            class PDU
-            {
-                private:
-                    int m_length;
-                    uint8_t *m_buf;
-                
-                public:
-                    PDU(int length);
-                    PDU(uint8_t *bytes, int length);
-                    uint8_t *getBuf();
-                    int getLength();
-                    ~PDU();
             };
 
             /* Default BLE message class. */

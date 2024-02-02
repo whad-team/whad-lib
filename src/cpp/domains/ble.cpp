@@ -207,7 +207,7 @@ whad::ble::MessageType whad::ble::BleMsg::getType(void)
 LinkLayerPdu::LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted) : BleMsg()
 {
     /* Initialize our data pdu message. */
-    whad_ble_pdu(this->getRaw(), pdu.getBuf(), pdu.getLength(), (whad_ble_direction_t)direction, conn_handle, processed, decrypted);
+    whad_ble_pdu(this->getRaw(), pdu.getBytes(), pdu.getSize(), (whad_ble_direction_t)direction, conn_handle, processed, decrypted);
 }
 
 /**
@@ -233,7 +233,7 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
                           uint32_t relative_timestamp, Direction direction, bool processed,
                           bool decrypted) : BleMsg()
 {
-    whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBuf(), pdu.getLength(), crc, 
+    whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBytes(), pdu.getSize(), crc, 
                      crc_validity, timestamp, relative_timestamp, (whad_ble_direction_t)direction, processed,
                      decrypted, true);
 }
@@ -258,7 +258,7 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
                            PDU pdu, uint32_t crc, bool crc_validity, Direction direction,
                            bool processed, bool decrypted) : BleMsg()
 {
-    whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBuf(), pdu.getLength(),
+    whad_ble_raw_pdu(this->getRaw(), channel, rssi, conn_handle, access_address, pdu.getBytes(), pdu.getSize(),
                      crc, crc_validity, 0, 0, (whad_ble_direction_t)direction, processed, decrypted, false);
 }
 
@@ -1021,73 +1021,6 @@ uint32_t ConnEventTrigger::getConnEvent(void)
 
 
 /**
- * @brief       Build an empty PDU with a specific length
- * 
- * @param[in]   length          PDU length
- **/
-
-PDU::PDU(int length)
-{
-    /* Allocate a new buffer. */
-    this->m_length = length;
-    this->m_buf = new uint8_t[length];
-}
-
-
-/**
- * @brief       Build a PDU with a specific length and fill with the provided bytes
- *
- * @param[in]   bytes           PDU bytes (byte array)
- * @param[in]   length          PDU length
- **/
-
-PDU::PDU(uint8_t *bytes, int length) : PDU(length)
-{
-    /* Allocate a new buffer. */
-    //this->m_length = length;
-    //this->m_buf = new uint8_t[length];
-    memcpy(this->m_buf, bytes, length);
-}
-
-
-/**
- * @brief       PDU destructor
- *
- * Free the allocated byte buffer.
- **/
-
-PDU::~PDU()
-{
-    /* Free our byte buffer. */
-    delete[] this->m_buf;
-}
-
-
-/**
- * @brief       Get a poiner to the PDU byte buffer
- *
- * @return      Pointer to the PDU byte buffer
- **/
-
-uint8_t *PDU::getBuf(void)
-{
-    return this->m_buf;
-}
-
-
-/**
- * @brief       Get PDU current length
- * 
- * @return      PDU byte buffer length
- **/
-
-int PDU::getLength(void)
-{
-    return this->m_length;
-}
-
-
-/**
  * @brief       Convert a vecor of PDU into a WHAD prepared packets array
  * 
  * @param[in]   packets     Vector of packets to convert into a WHAD prepared packets array
@@ -1108,8 +1041,8 @@ whad_prepared_packet_t *buildPacketsArray(std::vector<PDU> packets)
         /* Then we populate this array with our packets. */
         for (int i=0; i<packetCount; i++)
         {
-            memcpy(packetsArr[i].p_bytes, packets[i].getBuf(), packets[i].getLength());
-            packetsArr[i].length = packets[i].getLength();
+            memcpy(packetsArr[i].p_bytes, packets[i].getBytes(), packets[i].getSize());
+            packetsArr[i].length = packets[i].getSize();
         }
 
         /* Success. */
