@@ -78,76 +78,6 @@ uint8_t SyncWord::getSize()
     return this->m_size;
 }
 
-/**
- * @brief       Build an empty packet with a specific length
- * 
- * @param[in]   length          PDU length
- **/
-
-Packet::Packet(int length)
-{
-    /* Allocate a new buffer. */
-    this->m_length = length;
-    if (this->m_length > 0)
-    {
-        this->m_buf = new uint8_t[length];
-    }
-    else
-    {
-        this->m_buf = NULL;
-    }
-}
-
-
-/**
- * @brief       Build a packet with a specific length and fill with the provided bytes
- *
- * @param[in]   bytes           PDU bytes (byte array)
- * @param[in]   length          PDU length
- **/
-
-Packet::Packet(uint8_t *bytes, int length) : Packet(length)
-{
-    /* Allocate a new buffer. */
-    memcpy(this->m_buf, bytes, length);
-}
-
-
-/**
- * @brief       Packet destructor
- *
- * Free the allocated byte buffer.
- **/
-
-Packet::~Packet()
-{
-    /* Free our byte buffer. */
-    delete[] this->m_buf;
-}
-
-
-/**
- * @brief       Get a pointer to the packet byte buffer
- *
- * @return      Pointer to the PDU byte buffer
- **/
-
-uint8_t *Packet::getBuf(void)
-{
-    return this->m_buf;
-}
-
-
-/**
- * @brief       Get Packet current length
- * 
- * @return      PDU byte buffer length
- **/
-
-int Packet::getLength(void)
-{
-    return this->m_length;
-}
 
 /**
  * @brief       Create a timestamp with a precision to the microsecond
@@ -1189,8 +1119,8 @@ SendPacket::SendPacket(Packet &packet) : PhyMsg()
 {
     whad_phy_send(
         this->getRaw(),
-        packet.getBuf(),
-        packet.getLength()
+        packet.getBytes(),
+        packet.getSize()
     );
 }
 
@@ -1238,8 +1168,8 @@ SchedulePacket::SchedulePacket(Packet &packet, Timestamp &timestamp) : PhyMsg()
 {
     whad_phy_sched_packet(
         this->getRaw(),
-        packet.getBuf(),
-        packet.getLength(),
+        packet.getBytes(),
+        packet.getSize(),
         timestamp.getSeconds(),
         timestamp.getMicroseconds()
     );
@@ -1362,8 +1292,8 @@ PacketReceived::PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts, 
         rssi,
         ts.getSeconds(),
         ts.getMicroseconds(),
-        packet.getBuf(),
-        packet.getLength()
+        packet.getBytes(),
+        packet.getSize()
     );
 }
 
@@ -1443,9 +1373,11 @@ Packet PacketReceived::getPacket()
     {
         return Packet(this->m_packet.packet.payload, this->m_packet.packet.length);
     }
-
-    /* Error. */
-    return Packet(0);
+    else
+    {
+        /* Throw parsing error. */
+        throw WhadMessageParsingError();
+    }
 }
 
 

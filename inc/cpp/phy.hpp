@@ -1,4 +1,4 @@
-#ifndef __INC_WHAD_PHY_HPP
+#ifndef __INC_WHAphyPhyD_PHY_HPP
 #define __INC_WHAD_PHY_HPP
 
 #ifdef __cplusplus
@@ -6,12 +6,15 @@
     #include <string>
     #include <vector>
     #include "message.hpp"
+    #include "common.hpp"
     #include "../domains/phy.h"
 
     namespace whad
     {
         namespace phy
         {
+            typedef whad::Packet<255> Packet;
+
             enum MessageType {
                 UnknownMsg = WHAD_PHY_UNKNOWN,
                 SetAskModMsg = WHAD_PHY_SET_ASK_MOD,
@@ -93,20 +96,6 @@
                 private:
                     uint8_t m_syncword[10];
                     uint8_t m_size;
-            };
-
-            class Packet
-            {
-                private:
-                    int m_length;
-                    uint8_t *m_buf;
-                
-                public:
-                    Packet(int length);
-                    Packet(uint8_t *bytes, int length);
-                    uint8_t *getBuf();
-                    int getLength();
-                    ~Packet();
             };
 
             class Timestamp
