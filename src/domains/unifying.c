@@ -9,7 +9,7 @@ whad_unifying_msgtype_t whad_unifying_get_message_type(Message *p_message)
     if (whad_get_message_domain(p_message) == DOMAIN_LOGITECH_UNIFYING)
     {
         /* Retrieve the message type. */
-        msg_type = (whad_unifying_msgtype_t)p_message->msg.esb.which_msg;
+        msg_type = (whad_unifying_msgtype_t)p_message->msg.unifying.which_msg;
     }
 
     /* Success. */

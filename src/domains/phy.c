@@ -9,7 +9,7 @@ whad_phy_msgtype_t whad_phy_get_message_type(Message *p_message)
     if (whad_get_message_domain(p_message) == DOMAIN_PHY)
     {
         /* Retrieve the message type. */
-        msg_type = (whad_phy_msgtype_t)p_message->msg.ble.which_msg;
+        msg_type = (whad_phy_msgtype_t)p_message->msg.phy.which_msg;
     }
 
     /* Success. */
