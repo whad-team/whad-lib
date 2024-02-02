@@ -34,7 +34,6 @@ whad_result_t whad_send_message(Message *p_msg);
 whad_msgtype_t whad_get_message_type(Message *p_msg);
 whad_domain_t whad_get_message_domain(Message *p_msg);
 
-
 #ifdef __cplusplus
 }
 #endif

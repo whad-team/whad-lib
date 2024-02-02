@@ -5,6 +5,8 @@
 
 #define ESB_PACKET_MAX_SIZE     255
 #define ESB_ADDR_MAX_SIZE       5
+#define WHAD_ESB_CHANNEL_AUTO   0xff
+#define WHAD_ESB_ADDR_ANY       ((uint8_t *)"\xff\xff\xff\xff\xff")
 
 #ifdef __cplusplus
 extern "C" {
