@@ -6,12 +6,15 @@
     #include <string>
     #include <vector>
     #include "message.hpp"
+    #include "common.hpp"
     #include "../domains/esb.h"
 
     namespace whad
     {
         namespace esb
-        {
+        {   
+            typedef whad::Packet<255> Packet;
+
             enum MessageType {
                 UnknownMsg = WHAD_ESB_UNKNOWN,
                 SetNodeAddrMsg = WHAD_ESB_SET_NODE_ADDRESS,
@@ -49,6 +52,8 @@
                     void setAddress(uint8_t *pAddress, uint8_t size);
             };
 
+            EsbAddress PromiscAddr;
+            EsbAddress NullAddr;
 
             /* Default ESB message class. */
             class EsbMsg : public NanoPbMsg
@@ -76,6 +81,155 @@
 
                 private:
                     EsbAddress m_address;
+            };
+
+            class SniffMode : public EsbMsg
+            {
+                private:
+                    bool parse(void);
+                    uint32_t m_channel;
+                    EsbAddress m_address;
+                    bool m_showacks;
+
+                public:
+                    SniffMode(EsbMsg &message);
+                    SniffMode();
+                    SniffMode(uint32_t channel, EsbAddress &address, bool showAcks);
+                    SniffMode(uint32_t channel);
+                    SniffMode(uint32_t channel, EsbAddress &address);
+                    SniffMode(EsbAddress &address);
+
+                    uint32_t getChannel(void);
+                    EsbAddress &getAddress(void);
+                    bool mustShowAcks(void);
+            };
+             
+            class JamMode : public EsbMsg
+            {
+                private:
+                    bool parse(void);
+                    uint32_t m_channel;
+
+                public:
+                    JamMode(EsbMsg &message);
+                    JamMode(uint32_t channel);
+
+                    uint32_t getChannel(void);
+            };
+
+            class SendPacket : public EsbMsg
+            {
+                protected:
+                    bool parse();
+
+                    uint32_t m_channel;
+                    uint32_t m_retries;
+                    Packet m_packet;
+
+                public:
+                    SendPacket(EsbMsg &message);
+                    SendPacket(uint32_t channel, uint32_t retries, Packet &packet);
+
+                    /* Getters. */
+                    uint32_t getChannel();
+                    uint32_t getRetrCount();
+                    Packet &getPacket();
+            };
+
+            class SendPacketRaw : public SendPacket
+            {
+                public:
+                    SendPacketRaw(EsbMsg &message);
+                    SendPacketRaw(uint32_t channel, uint32_t retries, Packet &packet);
+
+                private:
+                    bool parse();
+            };
+
+            class PrxMode : public EsbMsg
+            {
+                public:
+                    PrxMode(EsbMsg &message);
+                    PrxMode(uint32_t channel);
+
+                    uint32_t getChannel();
+            };
+
+            class PtxMode : public EsbMsg
+            {
+                public:
+                    PtxMode(EsbMsg &message);
+                    PtxMode(uint32_t channel);
+
+                    uint32_t getChannel();
+            };
+
+            class Start : public EsbMsg
+            {
+                public:
+                    Start(EsbMsg &message);
+                    Start();
+            };
+
+            class Stop : public EsbMsg
+            {
+                public:
+                    Stop(EsbMsg &message);
+                    Stop();
+            };
+
+            class Jammed : public EsbMsg
+            {
+                public:
+                    Jammed(EsbMsg &message);
+                    Jammed(uint32_t timestamp);
+
+                    uint32_t getTimestamp();
+            };
+
+            class RawPacketReceived : public EsbMsg
+            {
+                public:
+                    RawPacketReceived(EsbMsg &message);
+                    RawPacketReceived(uint32_t channel, Packet &packet);
+
+                    /* Setters. */
+                    void setChannel(uint32_t channel);
+                    void setPacket(Packet& packet);
+                    void setRssi(int32_t rssi);
+                    void setTimestamp(uint32_t timestamp);
+                    void setAddress(EsbAddress &address);
+                    void setCrcValidity(bool validity);
+                    
+
+                    /* Getters. */
+                    uint32_t getChannel();
+                    bool hasRssi();
+                    int32_t getRssi();
+                    bool hasTimestamp();
+                    uint32_t getTimestamp();
+                    bool hasCrcValidity();
+                    bool isCrcValid();
+                    bool hasAddress();
+                    EsbAddress& getAddress();
+                    Packet& getPacket();
+
+
+                protected:
+                    void parse();
+                    void update();
+
+                    uint32_t m_channel;
+                    
+                    int32_t m_rssi;
+                    bool m_hasRssi;
+                    uint32_t m_timestamp;
+                    bool m_hasTimestamp;
+                    bool m_crcValidity;
+                    bool m_hasCrcValidity;
+                    EsbAddress m_address;
+                    bool m_hasAddress;
+                    Packet m_packet;
             };
         }
     }
