@@ -658,6 +658,7 @@ bool SetLoraMod::isIqInverted()
 
 SetFreq::SetFreq(NanoPbMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -684,16 +685,16 @@ SetFreq::SetFreq(uint32_t frequency) : PhyMsg()
 
 uint32_t SetFreq::getFrequency()
 {
-    uint32_t freq = 0;
-
-    whad_phy_set_freq_parse(
-        this->getRaw(),
-        &freq
-    );
-
-    return freq;
+    return m_freq;
 }
 
+void SetFreq::unpack(void)
+{
+    whad_phy_set_freq_parse(
+        this->getRaw(),
+        &m_freq
+    );
+}
 
 /** Set datarate **/
 

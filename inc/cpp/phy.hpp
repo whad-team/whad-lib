@@ -224,6 +224,10 @@
                     SetFreq(uint32_t frequency);
 
                     uint32_t getFrequency();
+
+                private:
+                    void unpack(void);
+                    uint32_t m_freq;
             };
 
             class SetDatarate : public PhyMsg

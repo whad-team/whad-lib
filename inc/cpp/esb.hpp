@@ -81,6 +81,9 @@
 
                 private:
                     EsbAddress m_address;
+
+                    void pack();
+                    void unpack();
             };
 
             class SniffMode : public EsbMsg
@@ -230,6 +233,18 @@
                     EsbAddress m_address;
                     bool m_hasAddress;
                     Packet m_packet;
+            };
+
+            class PacketReceived : public RawPacketReceived
+            {
+                public:
+                    /* Constructors. */
+                    PacketReceived(EsbMsg &message);
+                    PacketReceived(uint32_t channel, Packet &packet);
+
+                private:
+                    void parse();
+                    void update();
             };
         }
     }

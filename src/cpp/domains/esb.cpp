@@ -140,21 +140,38 @@ MessageType whad::esb::EsbMsg::getType(void)
 
 SetNodeAddress::SetNodeAddress(EsbMsg &message) : EsbMsg(message)
 {
+    /* Unpack message. */
+    this->unpack();
 }
 
 SetNodeAddress::SetNodeAddress(EsbAddress &address) : EsbMsg()
 {
-    whad_esb_address_t addr;
-
-    /* Prepare address. */
-    addr.size = address.getLength();
-    memcpy(addr.address, address.getAddressBuf(), addr.size);
-
-    /* Craft message. */
-    whad_esb_set_node_address(this->getRaw(), &addr);
+    /* Copy address. */
+    m_address.setAddress(address.getAddressBuf(), address.getLength());
 }
 
 EsbAddress& SetNodeAddress::getAddress(void)
+{
+    return this->m_address;
+}
+
+/**
+ * @brief   Takes the object properties and fill the corresponding WHAD message.
+ **/
+
+void SetNodeAddress::pack()
+{
+    whad_esb_address_t addr;
+
+    /* Prepare address. */
+    addr.size = m_address.getLength();
+    memcpy(addr.address, m_address.getAddressBuf(), addr.size);
+
+    /* Craft message. */
+    whad_esb_set_node_address(this->getMessage(), &addr);
+}
+
+void SetNodeAddress::unpack()
 {
     whad_esb_address_t addr;
 
@@ -164,10 +181,10 @@ EsbAddress& SetNodeAddress::getAddress(void)
         this->m_address.setAddress(addr.address, addr.size);
     }
     else
-        this->m_address.setAddress(NULL, 0);
-    
-    /* Success. */
-    return this->m_address;
+    {
+        /* Error. */
+        throw WhadMessageParsingError();
+    }
 }
 
 SniffMode::SniffMode(EsbMsg &message) : EsbMsg(message)
@@ -709,6 +726,133 @@ void RawPacketReceived::parse()
     whad_esb_recvd_packet_t params;
 
     res = whad_esb_raw_pdu_received_parse(
+        this->getRaw(),
+        &params
+    );
+
+    if (res == WHAD_SUCCESS)
+    {
+        /* Extract mandatory parameters. */
+        m_channel = params.channel;
+        m_packet.setBytes(params.packet.bytes, params.packet.length);
+
+        /* Extract optional parameters. */
+        if (params.has_rssi)
+        {
+            m_hasRssi = true;
+            m_rssi = params.rssi;
+        }
+        else
+            m_hasRssi = false;
+
+        if (params.has_timestamp)
+        {
+            m_hasTimestamp = true;
+            m_timestamp = params.timestamp;
+        }
+        else
+            m_hasTimestamp = false;
+
+        if (params.has_crc_validity)
+        {
+            m_hasCrcValidity = true;
+            m_crcValidity = params.crc_validity;
+        }
+        else
+            m_hasCrcValidity = false;
+
+        if (params.has_address)
+        {
+            m_hasAddress = true;
+            m_address.setAddress(params.address.address, params.address.size);
+        }
+        else
+            m_hasAddress = false;
+    }
+    else
+    {
+        throw WhadMessageParsingError();
+    }
+}
+
+
+/** PacketReceived **/
+
+PacketReceived::PacketReceived(EsbMsg &message) : RawPacketReceived(message)
+{
+    /* Parse message. */
+    this->parse();
+}
+
+PacketReceived::PacketReceived(uint32_t channel, Packet &packet) : RawPacketReceived(channel, packet)
+{
+    /* Save into message. */
+    this->update();
+}
+
+void PacketReceived::update()
+{
+    whad_esb_recvd_packet_t params;
+
+    /* Set mandatory parameters. */
+    params.channel = m_channel;
+    params.packet.length = m_packet.getSize();
+    memcpy(params.packet.bytes, m_packet.getBytes(), m_packet.getSize());
+
+    /* Set optional parameters. */
+    if (m_hasRssi)
+    {
+        params.has_rssi = true;
+        params.rssi = m_rssi;
+    }
+    else
+    {
+        params.has_rssi = false;
+    }
+
+    if (m_hasTimestamp)
+    {
+        params.has_timestamp = true;
+        params.timestamp = m_timestamp;
+    }
+    else
+    {
+        params.has_timestamp = false;
+    }
+
+    if (m_hasCrcValidity)
+    {
+        params.has_crc_validity = true;
+        params.crc_validity = m_crcValidity;
+    }
+    else
+    {
+        params.has_crc_validity = false;
+    }
+
+    if (m_hasAddress)
+    {
+        params.has_address = true;
+        params.address.size = m_address.getLength();
+        memcpy(params.address.address, m_address.getAddressBuf(), m_address.getLength());
+    }
+    else
+    {
+        params.has_address = false;
+    }
+
+    whad_esb_pdu_received(
+        this->getRaw(),
+        &params
+    );
+}
+
+void PacketReceived::parse()
+{
+    whad_result_t res;
+    whad_esb_recvd_packet_t params;
+
+    res = whad_esb_pdu_received_parse(
         this->getRaw(),
         &params
     );

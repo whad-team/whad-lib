@@ -159,13 +159,41 @@ namespace whad {
                 return m_length;
             }
 
+            int getMinLength()
+            {
+                return minSize;
+            }
+
+            int getMaxLength()
+            {
+                return maxSize;
+            }
+
             /* Operators */
-            bool operator==(DeviceAddress &other)
+
+            /* Comparison operator overloading. */
+            bool operator==(const DeviceAddress &other)
             {
                 return (
                     (m_length == other.getLength()) &&
                     !memcmp(m_address, other.getBytes(), m_length)
                 );
+            }
+
+            /* Assignment operator overloading. */
+            DeviceAddress& operator=(DeviceAddress&& other) noexcept
+            {
+                if (this == &other)
+                    return *this;
+
+                int other_length = other.getLength();
+                if ((other_length >= minSize) && (other <= maxSize))
+                {
+                    m_length = other_length;
+                    memcpy(m_address, other.getBytes(), m_length);
+                }
+
+                return *this;
             }
 
         private:

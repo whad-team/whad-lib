@@ -34,12 +34,28 @@ whad::NanoPbMsg::~NanoPbMsg(void)
 
 
 /**
- * @brief   Retrieve a pointer on the underlying (wrapped) Nanopb message.
+ * @brief   Convert the message into its raw representation.
  * 
  * @return  Pointer to a Nanopb Message structure 
  **/
 
 Message *whad::NanoPbMsg::getRaw(void)
+{
+    /* Call the pack() callback method. */
+    this->pack();
+
+    /* Return our NanoPb message. */
+    return this->getMessage();
+}
+
+
+/**
+ * @brief   Retrieve a pointer on the underlying (wrapped) Nanopb message.
+ * 
+ * @return  Pointer to a Nanopb Message structure 
+ **/
+
+Message *whad::NanoPbMsg::getMessage(void)
 {
     return this->p_nanopbMessage;
 }
@@ -119,4 +135,12 @@ whad::MessageDomain whad::NanoPbMsg::getDomain(void)
 
     /* Return domain. */
     return domain;
+}
+
+void whad::NanoPbMsg::unpack()
+{
+}
+
+void whad::NanoPbMsg::pack()
+{
 }

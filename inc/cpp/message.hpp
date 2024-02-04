@@ -42,9 +42,14 @@ namespace whad
             ~NanoPbMsg();
 
             /* Accessor. */
+            Message *getMessage(void);
             Message *getRaw(void);
             MessageType getType(void);
             MessageDomain getDomain(void);
+
+        protected:
+            virtual void pack();
+            virtual void unpack();
     };
 
 };
