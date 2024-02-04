@@ -4,7 +4,7 @@
 #include <string>
 #include "message.hpp"
 #include "common.hpp"
-#include "generic/base.hpp"
+#include "generic/generic.hpp"
 
 namespace whad::generic {
 

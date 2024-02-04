@@ -1,14 +1,14 @@
-#include "generic/base.hpp"
+#include <discovery/discovery.hpp>
 
 /********************************
- * Generic message base class
+ * Discovery message base class
  *******************************/
 
 /**
  * @brief   Discovery message base class.
  **/
 
-whad::generic::GenericMsg::GenericMsg() : NanoPbMsg()
+whad::discovery::DiscoveryMsg::DiscoveryMsg() : NanoPbMsg()
 {
 }
 
@@ -19,7 +19,7 @@ whad::generic::GenericMsg::GenericMsg() : NanoPbMsg()
  * @param[in]   pMessage    NanoPbMsg object containing a discovery domain message 
  **/
 
-whad::generic::GenericMsg::GenericMsg(NanoPbMsg pMessage) : NanoPbMsg(pMessage.getRaw())
+whad::discovery::DiscoveryMsg::DiscoveryMsg(NanoPbMsg &pMessage) : NanoPbMsg(pMessage.getRaw())
 {
 }
 
@@ -28,7 +28,7 @@ whad::generic::GenericMsg::GenericMsg(NanoPbMsg pMessage) : NanoPbMsg(pMessage.g
  * @brief   Discovery message base class destructor.
  **/
 
-whad::generic::GenericMsg::~GenericMsg()
+whad::discovery::DiscoveryMsg::~DiscoveryMsg()
 {
 }
 
@@ -42,12 +42,13 @@ whad::generic::GenericMsg::~GenericMsg()
  * @return      Discovery message type.
  **/
 
-whad::generic::MessageType whad::generic::GenericMsg::getType(void)
+whad::discovery::MessageType whad::discovery::DiscoveryMsg::getType(void)
 {
-    whad::generic::MessageType msgType = (whad::generic::MessageType)whad_generic_get_message_type(
-        this->getRaw()
+    MessageType msgType = (whad::discovery::MessageType)whad_discovery_get_message_type(
+        this->getMessage()
     );
 
     /* Return message type. */
     return msgType;
 }
+

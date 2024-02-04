@@ -2,13 +2,18 @@
 #define __INC_WHAD_HPP
 
 #include "message.hpp"
+
 /* Generic messages. */
 #include <generic/cmdresult.hpp>
 #include <generic/verbose.hpp>
 #include <generic/debug.hpp>
 
 /* Discovery messages. */
-#include "discovery.hpp"
+#include <discovery/devreset.hpp>
+#include <discovery/ready.hpp>
+#include <discovery/speed.hpp>
+#include <discovery/domaininfo.hpp>
+#include <discovery/devinfo.hpp>
 
 /* BLE messages. */
 #include "ble.hpp"
