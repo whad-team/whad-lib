@@ -2,33 +2,35 @@
 
 using namespace whad::esb;
 
-/** JamMode **/
 
 JamMode::JamMode(EsbMsg &message) : EsbMsg(message)
 {
+    /* Unpack message. */
+    this->unpack();
 }
 
 JamMode::JamMode(uint32_t channel) : EsbMsg()
 {
-    this->m_channel = channel;
-
-    whad_esb_jam(
-        this->getRaw(),
-        channel
-    );
-}
-
-bool JamMode::parse(void)
-{
-    return (whad_esb_jam_parse(this->getRaw(), &this->m_channel) == WHAD_SUCCESS);
+    m_channel = channel;
 }
 
 uint32_t JamMode::getChannel(void)
 {
-    if (this->parse())
+    return m_channel;
+}
+
+void JamMode::pack()
+{
+    whad_esb_jam(
+        this->getMessage(),
+        m_channel
+    );
+}
+
+void JamMode::unpack()
+{
+    if (whad_esb_jam_parse(this->getMessage(), &m_channel) == WHAD_ERROR)
     {
-        return this->m_channel;
+        throw WhadMessageParsingError();
     }
-    else
-        return 0;
 }

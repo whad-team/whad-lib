@@ -10,7 +10,9 @@ namespace whad::esb {
     class JamMode : public EsbMsg
     {
         private:
-            bool parse(void);
+            void unpack(); 
+            void pack();
+            
             uint32_t m_channel;
 
         public:
