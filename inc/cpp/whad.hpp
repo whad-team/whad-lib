@@ -15,6 +15,9 @@
 #include <discovery/domaininfo.hpp>
 #include <discovery/devinfo.hpp>
 
+/* ESB */
+#include <esb/esb.hpp>
+
 /* BLE messages. */
 #include "ble.hpp"
 
