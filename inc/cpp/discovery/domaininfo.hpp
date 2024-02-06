@@ -4,7 +4,7 @@
 #include <string>
 #include "message.hpp"
 #include "common.hpp"
-#include <discovery/discovery.hpp>
+#include <discovery/base.hpp>
 
 namespace whad::discovery {
 
