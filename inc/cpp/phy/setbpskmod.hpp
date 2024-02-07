@@ -13,8 +13,11 @@ namespace whad::phy {
     class SetBpskMod : public PhyMsg
     {
         public:
-            SetBpskMod(NanoPbMsg &message);
+            SetBpskMod(PhyMsg &message);
             SetBpskMod();
+
+        private:
+            void pack();
     };
 
 }

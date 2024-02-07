@@ -14,10 +14,16 @@ namespace whad::phy {
     {
         public:
 
-            SniffMode(NanoPbMsg &message);
+            SniffMode(PhyMsg &message);
             SniffMode(bool iqMode);
 
             bool isIqModeEnabled();
+
+        private:
+            void pack();
+            void unpack();
+
+            bool m_IqModeEnabled;
     };
 
 }

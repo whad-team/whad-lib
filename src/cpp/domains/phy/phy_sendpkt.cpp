@@ -10,8 +10,9 @@ using namespace whad::phy;
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-SendPacket::SendPacket(NanoPbMsg &message) : PhyMsg(message)
+SendPacket::SendPacket(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -23,11 +24,7 @@ SendPacket::SendPacket(NanoPbMsg &message) : PhyMsg(message)
 
 SendPacket::SendPacket(Packet &packet) : PhyMsg()
 {
-    whad_phy_send(
-        this->getRaw(),
-        packet.getBytes(),
-        packet.getSize()
-    );
+    m_packet = packet;
 }
 
 
@@ -37,14 +34,41 @@ SendPacket::SendPacket(Packet &packet) : PhyMsg()
  * @retval      Packet object to send
  **/
 
-Packet SendPacket::getPacket()
+Packet& SendPacket::getPacket()
 {
-    memset(this->m_packet.payload, 0, sizeof(this->m_packet.payload));
+    return m_packet;
+}
 
-    whad_phy_send_parse(
-        this->getRaw(),
-        &this->m_packet
-    );
 
-    return Packet(this->m_packet.payload, this->m_packet.length);
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SendPacket::pack()
+{
+    whad_phy_send(
+        this->getMessage(),
+        m_packet.getBytes(),
+        m_packet.getSize()
+    );   
+}
+
+
+/**
+ * @brief   Extract parameters from a PhyMsg.
+ */
+
+void SendPacket::unpack()
+{
+    whad_phy_packet_t packet;
+
+    if (whad_phy_send_parse(this->getMessage(), &packet) == WHAD_SUCCESS)
+    {
+        /* Copy packet bytes. */
+        m_packet.setBytes(packet.payload, packet.length);
+    }
+    else
+    {
+        throw WhadMessageParsingError();
+    }
 }

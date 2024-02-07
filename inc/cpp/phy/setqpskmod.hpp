@@ -13,10 +13,16 @@ namespace whad::phy {
     class SetQpskMod : public PhyMsg
     {
         public:
-            SetQpskMod(NanoPbMsg &message);
+            SetQpskMod(PhyMsg &message);
             SetQpskMod(bool offset);
 
             bool getOffset();
+
+        private:
+            void pack();
+            void unpack();
+
+            bool m_offset;
     };
 
 }

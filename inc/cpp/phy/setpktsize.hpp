@@ -13,10 +13,16 @@ namespace whad::phy {
     class SetPacketSize : public PhyMsg
     {
         public:
-            SetPacketSize(NanoPbMsg &message);
+            SetPacketSize(PhyMsg &message);
             SetPacketSize(uint32_t size);
 
             uint32_t getSize();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_size;
     };
 
 }

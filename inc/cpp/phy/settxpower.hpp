@@ -19,10 +19,16 @@ namespace whad::phy {
     class SetTxPower : public PhyMsg
     {
         public:
-            SetTxPower(NanoPbMsg &message);
+            SetTxPower(PhyMsg &message);
             SetTxPower(TxPower power);
 
             TxPower getPower();
+
+        private:
+            void pack();
+            void unpack();
+
+            TxPower m_power;
     };
 
 }

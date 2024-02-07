@@ -2,16 +2,15 @@
 
 using namespace whad::phy;
 
-/** Sniff mode **/
-
 /**
  * @brief       Create a SniffMode message based on raw PHY message.
  * 
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-SniffMode::SniffMode(NanoPbMsg &message) : PhyMsg(message)
+SniffMode::SniffMode(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -23,11 +22,9 @@ SniffMode::SniffMode(NanoPbMsg &message) : PhyMsg(message)
 
 SniffMode::SniffMode(bool iqMode) : PhyMsg()
 {
-    whad_phy_sniff_mode(
-        this->getRaw(),
-        iqMode
-    );
+    m_IqModeEnabled = iqMode;
 }
+
 
 /**
  * @brief       Determine if IQ sniffing mode is enabled.
@@ -37,12 +34,31 @@ SniffMode::SniffMode(bool iqMode) : PhyMsg()
 
 bool SniffMode::isIqModeEnabled()
 {
-    bool enabled = false;
+    return m_IqModeEnabled;
+}
 
-    whad_phy_sniff_mode_parse(
-        this->getRaw(),
-        &enabled
+
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SniffMode::pack()
+{
+    whad_phy_sniff_mode(
+        this->getMessage(),
+        m_IqModeEnabled
     );
+}
 
-    return enabled;
+
+/**
+ * @brief   Extract parameters from PhyMsg.
+ */
+
+void SniffMode::unpack()
+{
+    if (whad_phy_sniff_mode_parse(this->getMessage(), &m_IqModeEnabled) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
 }

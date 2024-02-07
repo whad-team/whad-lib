@@ -13,10 +13,16 @@ namespace whad::phy {
     class SetAskMod : public PhyMsg
     {
         public:
-            SetAskMod(NanoPbMsg &message);
+            SetAskMod(PhyMsg &message);
             SetAskMod(bool ook);
 
             bool isOok();
+
+        private:
+            void pack();
+            void unpack();
+
+            bool m_isOok;
     };
 
 }

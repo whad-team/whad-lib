@@ -8,11 +8,12 @@ using namespace whad::phy;
 /**
  * @brief       Create a SetPacketSize message based on raw PHY message.
  * 
- * @param[in]   message     Base NanoPb message to use.
+ * @param[in]   message     Base PhyMsg message to use.
  **/
 
-SetPacketSize::SetPacketSize(NanoPbMsg &message) : PhyMsg(message)
+SetPacketSize::SetPacketSize(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -24,10 +25,7 @@ SetPacketSize::SetPacketSize(NanoPbMsg &message) : PhyMsg(message)
 
 SetPacketSize::SetPacketSize(uint32_t size) : PhyMsg()
 {
-    whad_phy_set_packet_size(
-        this->getRaw(),
-        size
-    );
+    m_size = size;
 }
 
 
@@ -47,4 +45,30 @@ uint32_t SetPacketSize::getSize()
     );
 
     return size;
+}
+
+
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SetPacketSize::pack()
+{
+    whad_phy_set_packet_size(
+        this->getMessage(),
+        m_size
+    );   
+}
+
+
+/**
+ * @brief   Extract parameters from PhyMsg.
+ */
+
+void SetPacketSize::unpack()
+{
+    if (whad_phy_set_packet_size_parse(this->getMessage(), &m_size) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
 }

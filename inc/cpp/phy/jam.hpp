@@ -18,19 +18,31 @@ namespace whad::phy {
     class JamMode : public PhyMsg
     {
         public:
-            JamMode(NanoPbMsg &message);
+            JamMode(PhyMsg &message);
             JamMode(JammingMode);
 
             JammingMode getMode();
+
+        private:
+            void pack();
+            void unpack();
+
+            JammingMode m_mode;
     };
 
     class Jammed : public PhyMsg
     {
         public:
-            Jammed(NanoPbMsg &message);
+            Jammed(PhyMsg &message);
             Jammed(Timestamp &timestamp);
 
             Timestamp getTimestamp();
+
+        private:
+            void pack();
+            void unpack();
+
+            Timestamp m_timestamp;
     };
 
 }

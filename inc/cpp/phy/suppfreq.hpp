@@ -13,8 +13,13 @@ namespace whad::phy {
     class SupportedFreqsResp : public PhyMsg
     {
         public:
-            SupportedFreqsResp(NanoPbMsg &message);
+            SupportedFreqsResp(PhyMsg &message);
             SupportedFreqsResp(const whad_phy_frequency_range_t *pFreqRanges);
+
+        private:
+            void pack();
+
+            const whad_phy_frequency_range_t *m_freqRanges;
     };
 
 }

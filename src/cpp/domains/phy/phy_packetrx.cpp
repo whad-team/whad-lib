@@ -2,8 +2,6 @@
 
 using namespace whad::phy;
 
-/** Received packet notification **/
-
 /**
  * @brief       Create a PacketReceived message based on raw PHY message.
  * 
@@ -12,6 +10,7 @@ using namespace whad::phy;
 
 PacketReceived::PacketReceived(NanoPbMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -26,27 +25,49 @@ PacketReceived::PacketReceived(NanoPbMsg &message) : PhyMsg(message)
 
 PacketReceived::PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts, Packet &packet)
 {
+    m_frequency = frequency;
+    m_rssi = rssi;
+    m_timestamp = ts;
+    m_packet = packet;
+}
+
+
+/**
+ * @brief   Pack parameters into a NanoPb message.
+ */
+
+void PacketReceived::pack()
+{
     whad_phy_packet_received(
-        this->getRaw(),
-        frequency,
-        rssi,
-        ts.getSeconds(),
-        ts.getMicroseconds(),
-        packet.getBytes(),
-        packet.getSize()
+        this->getMessage(),
+        m_frequency,
+        m_rssi,
+        m_timestamp.getSeconds(),
+        m_timestamp.getMicroseconds(),
+        m_packet.getBytes(),
+        m_packet.getSize()
     );
 }
 
 
 /**
- * @brief       Parse the current message.
- * 
- * @retval      True if parsing is OK, false otherwise.
- **/
+ * @brief   Unpack a Phy message into a PacketReceived message.
+ */
 
-bool PacketReceived::parse()
+void PacketReceived::unpack()
 {
-    return (whad_phy_packet_received_parse(this->getRaw(), &this->m_packet) == WHAD_SUCCESS);
+    whad_phy_received_packet_t packet;
+    if (whad_phy_packet_received_parse(this->getMessage(), &packet) == WHAD_SUCCESS)
+    {
+        m_frequency = packet.freq;
+        m_rssi = packet.rssi;
+        m_timestamp = Timestamp(packet.ts.ts_sec, packet.ts.ts_usec);
+        m_packet.setBytes(packet.packet.payload, packet.packet.length);
+    }
+    else
+    {
+        throw WhadMessageParsingError();
+    }
 }
 
 
@@ -58,12 +79,7 @@ bool PacketReceived::parse()
 
 uint32_t PacketReceived::getFrequency()
 {
-    if (this->parse())
-    {
-        return this->m_packet.freq;
-    }
-
-    return 0;
+   return m_frequency;
 }
 
 
@@ -75,12 +91,7 @@ uint32_t PacketReceived::getFrequency()
 
 int32_t PacketReceived::getRssi()
 {
-    if (this->parse())
-    {
-        return this->m_packet.rssi;
-    }
-
-    return 0;   
+   return m_rssi;  
 }
 
 
@@ -90,14 +101,9 @@ int32_t PacketReceived::getRssi()
  * @retval      Timestamp at which the packet has been received
  **/
 
-Timestamp PacketReceived::getTimestamp()
+Timestamp& PacketReceived::getTimestamp()
 {
-    if (this->parse())
-    {
-        return Timestamp(this->m_packet.ts.ts_sec, this->m_packet.ts.ts_usec);
-    }
-
-    return Timestamp(0,0);
+   return m_timestamp;
 }
 
 
@@ -107,15 +113,7 @@ Timestamp PacketReceived::getTimestamp()
  * @retval      Instance of Packet representing the received packet
  **/
 
-Packet PacketReceived::getPacket()
+Packet& PacketReceived::getPacket()
 {
-    if (this->parse())
-    {
-        return Packet(this->m_packet.packet.payload, this->m_packet.packet.length);
-    }
-    else
-    {
-        /* Throw parsing error. */
-        throw WhadMessageParsingError();
-    }
+    return m_packet;
 }

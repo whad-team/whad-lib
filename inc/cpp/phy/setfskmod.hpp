@@ -7,16 +7,19 @@
 #include "common.hpp"
 #include "../domains/phy.h"
 #include <phy/base.hpp>
+#include <phy/fskmod.hpp>
 
 namespace whad::phy {
 
-    class SetFskMod : public PhyMsg
+    class SetFskMod : public PhyMsg, public FskMod
     {
         public:
-            SetFskMod(NanoPbMsg &message);
+            SetFskMod(PhyMsg &message);
             SetFskMod(uint32_t deviation);
 
-            uint32_t getDeviation();
+        private:
+            void pack();
+            void unpack();
     };
 
 }

@@ -2,16 +2,15 @@
 
 using namespace whad::phy;
 
-/** Set Sync word **/
-
 /**
  * @brief       Create a SetSyncWord message based on raw PHY message.
  * 
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-SetSyncWord::SetSyncWord(NanoPbMsg &message) : PhyMsg(message)
+SetSyncWord::SetSyncWord(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -23,11 +22,7 @@ SetSyncWord::SetSyncWord(NanoPbMsg &message) : PhyMsg(message)
 
 SetSyncWord::SetSyncWord(SyncWord &syncWord) : PhyMsg()
 {
-    whad_phy_set_sync_word(
-        this->getRaw(),
-        syncWord.get(),
-        syncWord.getSize()
-    );
+    m_syncWord = syncWord;
 }
 
 
@@ -37,14 +32,40 @@ SetSyncWord::SetSyncWord(SyncWord &syncWord) : PhyMsg()
  * @retval      Synchronization word in use
  **/
 
-SyncWord SetSyncWord::get()
+SyncWord& SetSyncWord::get()
+{
+    return m_syncWord;
+}
+
+
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SetSyncWord::pack()
+{
+    whad_phy_set_sync_word(
+        this->getMessage(),
+        m_syncWord.get(),
+        m_syncWord.getSize()
+    );
+}
+
+
+/**
+ * @brief   Extract parameters from PhyMsg.
+ */
+
+void SetSyncWord::unpack()
 {
     whad_phy_syncword_t syncword;
 
-    whad_phy_set_sync_word_parse(
-        this->getRaw(),
-        &syncword
-    );
-
-    return SyncWord(syncword.syncword, syncword.length);
+    if (whad_phy_set_sync_word_parse(this->getMessage(), &syncword) == WHAD_SUCCESS)
+    {
+        m_syncWord = SyncWord(syncword.syncword, syncword.length);
+    }
+    else
+    {
+        throw WhadMessageParsingError();
+    }
 }

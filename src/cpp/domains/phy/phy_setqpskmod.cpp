@@ -2,9 +2,6 @@
 
 using namespace whad::phy;
 
-/** QPSK modulation **/
-
-
 /**
  * @brief   Create a SetQpskMod message from a NanoPbMsg message.
  * 
@@ -12,8 +9,9 @@ using namespace whad::phy;
  **/
 
 
-SetQpskMod::SetQpskMod(NanoPbMsg &message) : PhyMsg(message)
+SetQpskMod::SetQpskMod(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -25,10 +23,7 @@ SetQpskMod::SetQpskMod(NanoPbMsg &message) : PhyMsg(message)
 
 SetQpskMod::SetQpskMod(bool offset) : PhyMsg()
 {
-    whad_phy_set_qpsk_mod(
-        this->getRaw(),
-        offset
-    );
+    m_offset = offset;
 }
 
 
@@ -40,12 +35,31 @@ SetQpskMod::SetQpskMod(bool offset) : PhyMsg()
 
 bool SetQpskMod::getOffset()
 {
-    bool offset = false;
+    return m_offset;
+}
 
-    whad_phy_set_qpsk_mod_parse(
-        this->getRaw(),
-        &offset
-    );
 
-    return offset;
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SetQpskMod::pack()
+{
+    whad_phy_set_qpsk_mod(
+        this->getMessage(),
+        m_offset
+    );    
+}
+
+
+/**
+ * @brief   Extract parameters from PhyMsg.
+ */
+
+void SetQpskMod::unpack()
+{
+    if (whad_phy_set_qpsk_mod_parse(this->getMessage(), &m_offset) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
 }

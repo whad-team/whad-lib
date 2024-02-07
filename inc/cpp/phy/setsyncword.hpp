@@ -14,10 +14,16 @@ namespace whad::phy {
     {
         public:
 
-            SetSyncWord(NanoPbMsg &message);
+            SetSyncWord(PhyMsg &message);
             SetSyncWord(SyncWord &syncWord);
 
-            SyncWord get();
+            SyncWord& get();
+
+        private:
+            void pack();
+            void unpack();
+
+            SyncWord m_syncWord;
     };
 
 }

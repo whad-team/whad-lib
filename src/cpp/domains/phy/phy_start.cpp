@@ -2,24 +2,31 @@
 
 using namespace whad::phy;
 
-/** Start **/
-
 /**
  * @brief       Create a Start message based on raw PHY message.
  * 
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-Start::Start(NanoPbMsg &message) : PhyMsg(message)
+Start::Start(PhyMsg &message) : PhyMsg(message)
 {
 }
 
 
 /**
- * @brief       Create a Start message.
+ * @brief       Default constructor.
  **/
 
 Start::Start() : PhyMsg()
 {
-    whad_phy_start(this->getRaw());
+}
+
+
+/**
+ * @brief   Create a Start message.
+ */
+
+void Start::pack()
+{
+    whad_phy_start(this->getMessage());
 }

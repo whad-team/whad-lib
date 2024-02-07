@@ -2,16 +2,15 @@
 
 using namespace whad::phy;
 
-/** jam mode **/
-
 /**
  * @brief       Create a JamMode message based on raw PHY message.
  * 
- * @param[in]   message     Base NanoPb message to use.
+ * @param[in]   message     Base PhyMsg message to use.
  **/
 
-JamMode::JamMode(NanoPbMsg &message) : PhyMsg(message)
+JamMode::JamMode(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -23,33 +22,55 @@ JamMode::JamMode(NanoPbMsg &message) : PhyMsg(message)
 
 JamMode::JamMode(JammingMode mode) : PhyMsg()
 {
-    whad_phy_jam_mode(
-        this->getRaw(),
-        (whad_phy_jam_mode_t)mode
-    );
+    /* Save mode. */
+    m_mode = mode;
 }
 
 
 /**
  * @brief       Get the specified jamming mode
- * 
- * @param[in]   mode    Jamming mode to use
  **/
 
 JammingMode JamMode::getMode()
 {
-    whad_phy_jam_mode_t mode = PHY_JAM_MODE_CONTINUOUS;
-
-    whad_phy_jam_mode_parse(
-        this->getRaw(),
-        &mode
-    );
-
-    return (JammingMode)mode;
+    return m_mode;
 }
 
 
-/** Jammed notification **/
+/**
+ * @brief   Message pack callback.
+ */
+
+void JamMode::pack()
+{
+    /* Create the corresponding NanoPb message. */
+    whad_phy_jam_mode(
+        this->getMessage(),
+        (whad_phy_jam_mode_t)m_mode
+    );
+}
+
+
+/**
+ * @brief   Unpack the underlying message parameters.
+ */
+
+void JamMode::unpack()
+{
+    if (whad_phy_jam_mode_parse(this->getMessage(), (whad_phy_jam_mode_t *)&m_mode) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
+}
+
+
+/****************************
+ * Jammed notification
+ * 
+ * This notification is sent whenever an existing connection or advertisement
+ * has successfully been jammed.
+ ***************************/
+
 
 /**
  * @brief       Create a Jammed message based on raw PHY message.
@@ -57,8 +78,9 @@ JammingMode JamMode::getMode()
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-Jammed::Jammed(NanoPbMsg &message) : PhyMsg(message)
+Jammed::Jammed(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -70,11 +92,8 @@ Jammed::Jammed(NanoPbMsg &message) : PhyMsg(message)
 
 Jammed::Jammed(Timestamp &timestamp) : PhyMsg()
 {
-    whad_phy_jammed(
-        this->getRaw(),
-        timestamp.getSeconds(),
-        timestamp.getMicroseconds()
-    );
+    m_timestamp = Timestamp(timestamp.getSeconds(),
+                            timestamp.getMicroseconds());
 }
 
 
@@ -86,12 +105,27 @@ Jammed::Jammed(Timestamp &timestamp) : PhyMsg()
 
 Timestamp Jammed::getTimestamp()
 {
+    return m_timestamp;
+}
+
+
+void Jammed::pack()
+{
+     whad_phy_jammed(
+        this->getMessage(),
+        m_timestamp.getSeconds(),
+        m_timestamp.getMicroseconds()
+    );
+}
+
+void Jammed::unpack()
+{
     whad_phy_timestamp_t timestamp;
 
-    whad_phy_jammed_parse(
-        this->getRaw(),
-        &timestamp
-    );
+    if (whad_phy_jammed_parse(this->getMessage(), &timestamp) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
 
-    return Timestamp(timestamp.ts_sec, timestamp.ts_usec);
+    m_timestamp = Timestamp(timestamp.ts_sec, timestamp.ts_usec);
 }

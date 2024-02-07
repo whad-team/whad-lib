@@ -13,8 +13,11 @@ namespace whad::phy {
     class Stop : public PhyMsg
     {
         public:
-            Stop(NanoPbMsg &message);
+            Stop(PhyMsg &message);
             Stop();
+
+        private:
+            void pack();
     };
 
 }

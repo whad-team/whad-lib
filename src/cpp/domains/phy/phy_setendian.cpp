@@ -2,17 +2,15 @@
 
 using namespace whad::phy;
 
-
-/** Set endianness **/
-
 /**
  * @brief       Create a SetEndianness message based on raw PHY message.
  * 
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-SetEndianness::SetEndianness(NanoPbMsg &message) : PhyMsg(message)
+SetEndianness::SetEndianness(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -24,10 +22,7 @@ SetEndianness::SetEndianness(NanoPbMsg &message) : PhyMsg(message)
 
 SetEndianness::SetEndianness(Endianness endian) : PhyMsg()
 {
-    whad_phy_set_endianness(
-        this->getRaw(),
-        (whad_phy_endian_t)endian
-    );
+   m_endian = endian;
 }
 
 
@@ -39,12 +34,32 @@ SetEndianness::SetEndianness(Endianness endian) : PhyMsg()
 
 Endianness SetEndianness::getEndianness()
 {
-    whad_phy_endian_t endian;
+    return m_endian;
+}
 
-    whad_phy_set_endianness_parse(
-        this->getRaw(),
-        &endian
+
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SetEndianness::pack()
+{
+    whad_phy_set_endianness(
+        this->getMessage(),
+        (whad_phy_endian_t)m_endian
     );
+}
 
-    return (Endianness)endian;
+
+/**
+ * @brief   Extract parameters from PhyMsg.
+ */
+
+void SetEndianness::unpack()
+{
+    if (whad_phy_set_endianness_parse(this->getMessage(),
+                                      (whad_phy_endian_t *)&m_endian) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
 }

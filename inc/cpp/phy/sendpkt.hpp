@@ -13,13 +13,16 @@ namespace whad::phy {
     class SendPacket : public PhyMsg
     {
         public:
-            SendPacket(NanoPbMsg &message);
+            SendPacket(PhyMsg &message);
             SendPacket(Packet &packet);
 
-            Packet getPacket();
+            Packet& getPacket();
         
         private:
-            whad_phy_packet_t m_packet;
+            void pack();
+            void unpack();
+
+            Packet m_packet;
     };
 
 }

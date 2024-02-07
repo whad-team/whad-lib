@@ -18,12 +18,17 @@ namespace whad::phy {
 
             uint32_t getFrequency();
             int32_t getRssi();
-            Timestamp getTimestamp();
-            Packet getPacket();
+            Timestamp& getTimestamp();
+            Packet& getPacket();
 
         private:
-            bool parse();
-            whad_phy_received_packet_t m_packet;
+            void pack();
+            void unpack();
+
+            uint32_t m_frequency;
+            int32_t m_rssi;
+            Timestamp m_timestamp;
+            Packet m_packet;
     };
 
 }

@@ -2,17 +2,15 @@
 
 using namespace whad::phy;
 
-/** LoRa modulation **/
-
-
 /**
  * @brief       Create a SetLoraMod message from a NanoPbMsg message.
  * 
- * @param[in]   message NanoPbMsg instance
+ * @param[in]   message PhyMsg instance
  **/
 
-SetLoraMod::SetLoraMod(NanoPbMsg &message) : PhyMsg(message)
+SetLoraMod::SetLoraMod(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -32,33 +30,13 @@ SetLoraMod::SetLoraMod(uint32_t bandwidth, LoRaSpreadingFactor sf,
                                LoRaCodingRate cr, uint32_t preambleLength,
                                bool enableCrc, bool explicitMode, bool invertIq) : PhyMsg()
 {
-    whad_phy_set_lora_mod(
-        this->getRaw(),
-        bandwidth,
-        (whad_phy_lora_sf_t)sf,
-        (whad_phy_lora_cr_t)cr,
-        preambleLength,
-        enableCrc, explicitMode, invertIq
-    );
-}
-
-
-/**
- * @brief       Parse the current message and extract its parameters.
- * 
- * @retval      True if parsing has been correctly performed, false otherwise.
- **/
-
-bool SetLoraMod::parse()
-{
-    if (whad_phy_set_lora_mod_parse(this->getRaw(), &this->m_params) == WHAD_SUCCESS)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    m_bandwidth = bandwidth;
+    m_sf = sf;
+    m_cr = cr;
+    m_preambleLength = preambleLength;
+    m_enableCrc = enableCrc;
+    m_explicitMode = explicitMode;
+    m_invertIq = invertIq;
 }
 
 
@@ -70,13 +48,7 @@ bool SetLoraMod::parse()
 
 uint32_t SetLoraMod::getBandwidth()
 {
-    if (this->parse())
-    {
-        return this->m_params.bandwidth;
-    }
-    
-    /* Error. */
-    return 0;
+    return m_bandwidth;
 }
 
 
@@ -88,13 +60,7 @@ uint32_t SetLoraMod::getBandwidth()
 
 uint32_t SetLoraMod::getPreambleLength()
 {
-    if (this->parse())
-    {
-        return this->m_params.preamble_length;
-    }
-    
-    /* Error. */
-    return 0;
+    return m_preambleLength;
 }
 
 
@@ -106,13 +72,7 @@ uint32_t SetLoraMod::getPreambleLength()
 
 LoRaSpreadingFactor SetLoraMod::getSpreadingFactor()
 {
-    if (this->parse())
-    {
-        return (LoRaSpreadingFactor)this->m_params.sf;
-    }
-
-    /* Error. */
-    return LoraSfError;
+    return m_sf;
 }
 
 
@@ -124,13 +84,7 @@ LoRaSpreadingFactor SetLoraMod::getSpreadingFactor()
 
 LoRaCodingRate SetLoraMod::getCodingRate()
 {
-    if (this->parse())
-    {
-        return (LoRaCodingRate)this->m_params.cr;
-    }
-
-    /* Error. */
-    return LoraCrError; 
+    return m_cr;
 }
 
 
@@ -142,13 +96,7 @@ LoRaCodingRate SetLoraMod::getCodingRate()
 
 bool SetLoraMod::isCrcEnabled()
 {
-    if (this->parse())
-    {
-        return this->m_params.enable_crc;
-    }
-
-    /* Error. */
-    return false;
+    return m_enableCrc;
 }
 
 
@@ -160,13 +108,7 @@ bool SetLoraMod::isCrcEnabled()
 
 bool SetLoraMod::isExplicitMode()
 {
-    if (this->parse())
-    {
-        return this->m_params.explicit_mode;
-    }
-
-    /* Error. */
-    return false;
+    return m_explicitMode;
 }
 
 
@@ -178,13 +120,47 @@ bool SetLoraMod::isExplicitMode()
 
 bool SetLoraMod::isIqInverted()
 {
-    if (this->parse())
-    {
-        return this->m_params.invert_iq;
-    }
-
-    /* Error. */
-    return false;
+    return m_invertIq;
 }
 
 
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SetLoraMod::pack()
+{
+    whad_phy_set_lora_mod(
+        this->getMessage(),
+        m_bandwidth,
+        (whad_phy_lora_sf_t)m_sf,
+        (whad_phy_lora_cr_t)m_cr,
+        m_preambleLength,
+        m_enableCrc, m_explicitMode, m_invertIq
+    );
+}
+
+
+/**
+ * @brief   Extract parameters from PhyMsg.
+ */
+
+void SetLoraMod::unpack()
+{
+    whad_phy_lora_params_t params;
+
+    if (whad_phy_set_lora_mod_parse(this->getMessage(), &params) == WHAD_SUCCESS)
+    {
+        m_bandwidth = params.bandwidth;
+        m_sf = (LoRaSpreadingFactor)params.sf;
+        m_cr = (LoRaCodingRate)params.cr;
+        m_preambleLength = params.preamble_length;
+        m_enableCrc = params.enable_crc;
+        m_explicitMode = params.explicit_mode;
+        m_invertIq = params.invert_iq;
+    }
+    else
+    {
+        throw WhadMessageParsingError();
+    } 
+}

@@ -18,10 +18,16 @@ namespace whad::phy {
     class SetEndianness : public PhyMsg
     {
         public:
-            SetEndianness(NanoPbMsg &message);
+            SetEndianness(PhyMsg &message);
             SetEndianness(Endianness endian);
 
             Endianness getEndianness();
+
+        private:
+            void pack();
+            void unpack();
+
+            Endianness m_endian;
     };
 
 }

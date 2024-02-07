@@ -11,8 +11,9 @@ using namespace whad::phy;
  * @param[in]   message     NanoPb message
  */
 
-SetFskMod::SetFskMod(NanoPbMsg &message) : PhyMsg(message)
+SetFskMod::SetFskMod(PhyMsg &message) : PhyMsg(message), FskMod()
 {
+    this->unpack();
 }
 
 
@@ -22,30 +23,32 @@ SetFskMod::SetFskMod(NanoPbMsg &message) : PhyMsg(message)
  * @param[in]   deviation   Deviation in Hz
  */
 
-SetFskMod::SetFskMod(uint32_t deviation) : PhyMsg()
+SetFskMod::SetFskMod(uint32_t deviation) : PhyMsg(), FskMod(deviation)
 {
-    whad_phy_set_fsk_mod(
-        this->getRaw(),
-        deviation
-    );
 }
 
 
 /**
- * @brief   Get the current deviation from a SetFskMod message.
- * 
- * @retval  Deviation in Hz.
+ * @brief   Pack parameters into a PhyMsg.
  */
 
-uint32_t SetFskMod::getDeviation()
+void SetFskMod::pack()
 {
-    uint32_t deviation = 0;
+    whad_phy_set_fsk_mod(
+        this->getMessage(),
+        m_deviation
+    );  
+}
 
-    /* Parse message structure. */
-    whad_phy_set_fsk_mod_parse(
-        this->getRaw(),
-        &deviation
-    );
 
-    return deviation;
+/**
+ * @brief   Extract parameters from PhyMsg.
+ */
+
+void SetFskMod::unpack()
+{
+    if (whad_phy_set_fsk_mod_parse(this->getMessage(), &m_deviation) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
 }

@@ -13,8 +13,11 @@ namespace whad::phy {
     class Start : public PhyMsg
     {
         public:
-            Start(NanoPbMsg &message);
+            Start(PhyMsg &message);
             Start();
+
+        private:
+            void pack();
     };
 
 }

@@ -13,34 +13,50 @@ namespace whad::phy {
     class SchedulePacket : public PhyMsg
     {
         public:
-            SchedulePacket(NanoPbMsg &message);
+            SchedulePacket(PhyMsg &message);
             SchedulePacket(Packet &packet, Timestamp &timestamp);
 
-            Packet getPacket();
-            Timestamp getTimestamp();
+            Packet& getPacket();
+            Timestamp& getTimestamp();
+
+        private:
+            void pack();
+            void unpack();
+
+            Packet m_packet;
+            Timestamp m_timestamp;
     };
 
     class PacketScheduled : public PhyMsg
     {
         public:
-            PacketScheduled(NanoPbMsg &message);
+            PacketScheduled(PhyMsg &message);
             PacketScheduled(uint8_t packetId, bool full);
 
             uint8_t getPacketId();
             bool isFull();
 
         private:
-            bool parse();
-            whad_phy_scheduled_packet_t m_packet;
+            void pack();
+            void unpack();
+
+            uint8_t m_pktId;
+            bool m_full;
     };
 
     class ScheduledPacketSent : public PhyMsg
     {
         public:
-            ScheduledPacketSent(NanoPbMsg &message);
+            ScheduledPacketSent(PhyMsg &message);
             ScheduledPacketSent(uint32_t packetId);
 
             uint32_t getPacketId();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_pktId;
     };
 
 }

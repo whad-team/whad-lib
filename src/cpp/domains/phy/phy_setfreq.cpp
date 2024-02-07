@@ -2,8 +2,6 @@
 
 using namespace whad::phy;
 
-/** Set frequency **/
-
 /**
  * @brief       Create a SetFreq message from a NanoPbMsg message.
  * 
@@ -24,10 +22,7 @@ SetFreq::SetFreq(NanoPbMsg &message) : PhyMsg(message)
 
 SetFreq::SetFreq(uint32_t frequency) : PhyMsg()
 {
-    whad_phy_set_freq(
-        this->getRaw(),
-        frequency
-    );
+    m_freq = frequency;
 }
 
 
@@ -42,10 +37,28 @@ uint32_t SetFreq::getFrequency()
     return m_freq;
 }
 
-void SetFreq::unpack(void)
+
+/**
+ * @brief   Extract parameters from a PhyMsg.
+ */
+
+void SetFreq::unpack()
 {
-    whad_phy_set_freq_parse(
-        this->getRaw(),
-        &m_freq
+    if (whad_phy_set_freq_parse(this->getMessage(), &m_freq) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
+}
+
+
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SetFreq::pack()
+{
+    whad_phy_set_freq(
+        this->getMessage(),
+        m_freq
     );
 }

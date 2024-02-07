@@ -11,6 +11,7 @@ namespace whad::phy {
     class SyncWord 
     {
         public:
+            SyncWord();
             SyncWord(uint8_t *syncword, uint8_t size);
 
             uint8_t *get();

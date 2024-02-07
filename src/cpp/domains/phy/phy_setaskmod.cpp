@@ -2,16 +2,15 @@
 
 using namespace whad::phy;
 
-/** ASK modulation **/
-
 /**
  * @brief       Create a SetAskMod message based on raw PHY message.
  * 
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-SetAskMod::SetAskMod(whad::NanoPbMsg &message) : PhyMsg(message)
+SetAskMod::SetAskMod(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -23,10 +22,7 @@ SetAskMod::SetAskMod(whad::NanoPbMsg &message) : PhyMsg(message)
 
 SetAskMod::SetAskMod(bool ook) : PhyMsg()
 {
-    whad_phy_set_ask_mod(
-        this->getRaw(),
-        ook
-    );
+    m_isOok = ook;
 }
 
 
@@ -38,9 +34,31 @@ SetAskMod::SetAskMod(bool ook) : PhyMsg()
 
 bool SetAskMod::isOok()
 {
-    bool bIsOok = false;
+    return m_isOok;
+}
 
-    /* Parse message and extract OOK parameter. */
-    whad_phy_set_ask_mod_parse(this->getRaw(), &bIsOok);
-    return bIsOok;
+
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SetAskMod::pack()
+{
+    whad_phy_set_ask_mod(
+        this->getMessage(),
+        m_isOok
+    );
+}
+
+
+/**
+ * @brief   Extract parameters from a PhyMsg.
+ */
+
+void SetAskMod::unpack()
+{
+    if (whad_phy_set_ask_mod_parse(this->getMessage(), &m_isOok) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
 }

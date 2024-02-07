@@ -13,7 +13,7 @@ namespace whad::phy {
     class MonitorMode : public PhyMsg
     {
         public:
-            MonitorMode(NanoPbMsg &message);
+            MonitorMode(PhyMsg &message);
             MonitorMode();
     };
 

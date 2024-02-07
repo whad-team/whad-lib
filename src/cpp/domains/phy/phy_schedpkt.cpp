@@ -10,8 +10,9 @@ using namespace whad::phy;
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-SchedulePacket::SchedulePacket(NanoPbMsg &message) : PhyMsg(message)
+SchedulePacket::SchedulePacket(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -24,13 +25,8 @@ SchedulePacket::SchedulePacket(NanoPbMsg &message) : PhyMsg(message)
 
 SchedulePacket::SchedulePacket(Packet &packet, Timestamp &timestamp) : PhyMsg()
 {
-    whad_phy_sched_packet(
-        this->getRaw(),
-        packet.getBytes(),
-        packet.getSize(),
-        timestamp.getSeconds(),
-        timestamp.getMicroseconds()
-    );
+    m_packet = packet;
+    m_timestamp = timestamp;
 }
 
 
@@ -40,16 +36,9 @@ SchedulePacket::SchedulePacket(Packet &packet, Timestamp &timestamp) : PhyMsg()
  * @retval      Scheduled packet
  **/
 
-Packet SchedulePacket::getPacket()
+Packet& SchedulePacket::getPacket()
 {
-    whad_phy_sched_packet_t sched_packet;
-
-    whad_phy_sched_packet_parse(
-        this->getRaw(),
-        &sched_packet
-    );
-
-    return Packet(sched_packet.packet.payload, sched_packet.packet.length);
+   return m_packet;
 }
 
 
@@ -59,16 +48,38 @@ Packet SchedulePacket::getPacket()
  * @retval      Scheduled packet timestamp
  **/
 
-Timestamp SchedulePacket::getTimestamp()
+Timestamp& SchedulePacket::getTimestamp()
+{
+    return m_timestamp;    
+}
+
+void SchedulePacket::pack()
+{
+    whad_phy_sched_packet(
+        this->getMessage(),
+        m_packet.getBytes(),
+        m_packet.getSize(),
+        m_timestamp.getSeconds(),
+        m_timestamp.getMicroseconds()
+    );
+}
+
+void SchedulePacket::unpack()
 {
     whad_phy_sched_packet_t sched_packet;
 
-    whad_phy_sched_packet_parse(
-        this->getRaw(),
+    if (whad_phy_sched_packet_parse(
+        this->getMessage(),
         &sched_packet
-    );
-
-    return Timestamp(sched_packet.ts.ts_sec, sched_packet.ts.ts_usec);    
+    ) == WHAD_SUCCESS)
+    {
+        m_packet.setBytes(sched_packet.packet.payload, sched_packet.packet.length);
+        m_timestamp.set(sched_packet.ts.ts_sec, sched_packet.ts.ts_usec);
+    }
+    else
+    {
+        throw WhadMessageParsingError();
+    }
 }
 
 /** Scheduled packet notification **/
@@ -79,8 +90,9 @@ Timestamp SchedulePacket::getTimestamp()
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-PacketScheduled::PacketScheduled(NanoPbMsg &message) : PhyMsg(message)
+PacketScheduled::PacketScheduled(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -93,23 +105,36 @@ PacketScheduled::PacketScheduled(NanoPbMsg &message) : PhyMsg(message)
 
 PacketScheduled::PacketScheduled(uint8_t packetId, bool full) : PhyMsg()
 {
-    whad_phy_packet_scheduled(
-        this->getRaw(), packetId, full
-    );
+    m_pktId = packetId;
+    m_full = full;
 }
 
 
 /**
  * @brief       Parse the current message.
- * 
- * @retval      True if parsing is OK, false otherwise.
  **/
 
-bool PacketScheduled::parse()
+void PacketScheduled::unpack()
 {
-    return (whad_phy_packet_scheduled_parse(this->getRaw(), &this->m_packet) == WHAD_SUCCESS);
+    whad_phy_scheduled_packet_t packet;
+
+    if (whad_phy_packet_scheduled_parse(this->getMessage(), &packet) == WHAD_SUCCESS)
+    {
+        m_pktId = packet.id;
+        m_full = packet.full;
+    }
+    else
+    {
+        throw WhadMessageParsingError();
+    }
 }
 
+void PacketScheduled::pack()
+{
+    whad_phy_packet_scheduled(
+        this->getMessage(), m_pktId, m_full
+    );
+}
 
 /**
  * @brief       Get the packet identifier.
@@ -119,12 +144,7 @@ bool PacketScheduled::parse()
 
 uint8_t PacketScheduled::getPacketId()
 {
-    if (this->parse())
-    {
-        return this->m_packet.id;
-    }
-
-    return 0;
+    return m_pktId;
 }
 
 
@@ -136,12 +156,7 @@ uint8_t PacketScheduled::getPacketId()
 
 bool PacketScheduled::isFull()
 {
-    if (this->parse())
-    {
-        return this->m_packet.full;
-    }
-
-    return false;
+    return m_full;
 }
 
 
@@ -154,8 +169,9 @@ bool PacketScheduled::isFull()
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-ScheduledPacketSent::ScheduledPacketSent(NanoPbMsg &message) : PhyMsg(message)
+ScheduledPacketSent::ScheduledPacketSent(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -167,7 +183,7 @@ ScheduledPacketSent::ScheduledPacketSent(NanoPbMsg &message) : PhyMsg(message)
 
 ScheduledPacketSent::ScheduledPacketSent(uint32_t packetId) : PhyMsg()
 {
-    whad_phy_sched_packet_sent(this->getRaw(), packetId);
+    m_pktId = packetId;
 }
 
 
@@ -179,9 +195,28 @@ ScheduledPacketSent::ScheduledPacketSent(uint32_t packetId) : PhyMsg()
 
 uint32_t ScheduledPacketSent::getPacketId()
 {
-    uint32_t packetId = 0;
+    return m_pktId;
+}
 
-    whad_phy_sched_packet_sent_parse(this->getRaw(), &packetId);
 
-    return packetId;
+/**
+ * @brief   Extract parameters from underlying PhyMsg.
+ */
+
+void ScheduledPacketSent::unpack()
+{
+    if (whad_phy_sched_packet_sent_parse(this->getMessage(), &m_pktId) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
+}
+
+
+/**
+ * @brief   Pack parameters in the corresponding PhyMsg.
+ */
+
+void ScheduledPacketSent::pack()
+{
+    whad_phy_sched_packet_sent(this->getMessage(), m_pktId);
 }

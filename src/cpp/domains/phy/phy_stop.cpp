@@ -2,15 +2,13 @@
 
 using namespace whad::phy;
 
-/** Stop **/
-
 /**
  * @brief       Create a Stop message based on raw PHY message.
  * 
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-Stop::Stop(NanoPbMsg &message) : PhyMsg(message)
+Stop::Stop(PhyMsg &message) : PhyMsg(message)
 {
 }
 
@@ -21,5 +19,14 @@ Stop::Stop(NanoPbMsg &message) : PhyMsg(message)
 
 Stop::Stop() : PhyMsg()
 {
-    whad_phy_stop(this->getRaw());
+}
+
+
+/**
+ * @brief   Create a Stop message.
+ */
+
+void Stop::pack()
+{
+    whad_phy_stop(this->getMessage());
 }

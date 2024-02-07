@@ -2,17 +2,15 @@
 
 using namespace whad::phy;
 
-
-/** GFSK modulation **/
-
 /**
  * @brief   Create a SetGfskMod message from a NanoPbMsg message.
  * 
  * @param[in]   message NanoPbMsg instance
  **/
 
-SetGfskMod::SetGfskMod(NanoPbMsg &message) : PhyMsg(message)
+SetGfskMod::SetGfskMod(PhyMsg &message) : PhyMsg(message), FskMod()
 {
+    this->unpack();
 }
 
 
@@ -22,30 +20,32 @@ SetGfskMod::SetGfskMod(NanoPbMsg &message) : PhyMsg(message)
  * @param[in]   deviation   Deviation in Hz
  **/
 
-SetGfskMod::SetGfskMod(uint32_t deviation) : PhyMsg()
+SetGfskMod::SetGfskMod(uint32_t deviation) : PhyMsg(), FskMod(deviation)
+{
+}
+
+
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SetGfskMod::pack()
 {
     whad_phy_set_gfsk_mod(
-        this->getRaw(),
-        deviation
+        this->getMessage(),
+        m_deviation
     );
 }
 
 
 /**
- * @brief       Get the deviation
- * 
- * @retval      GFSK deviation in Hz
- **/
+ * @brief   Extract parameters from PhyMsg.
+ */
 
-uint32_t SetGfskMod::getDeviation()
+void SetGfskMod::unpack()
 {
-    uint32_t deviation = 0;
-
-    /* Parse message structure. */
-    whad_phy_set_gfsk_mod_parse(
-        this->getRaw(),
-        &deviation
-    );
-
-    return deviation;
+    if (whad_phy_set_gfsk_mod_parse(this->getMessage(), &m_deviation) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
 }

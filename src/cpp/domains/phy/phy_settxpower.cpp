@@ -2,16 +2,15 @@
 
 using namespace whad::phy;
 
-/** Set Tx power **/
-
 /**
  * @brief       Create a SetTxPower message based on raw PHY message.
  * 
  * @param[in]   message     Base NanoPb message to use.
  **/
 
-SetTxPower::SetTxPower(NanoPbMsg &message) : PhyMsg(message)
+SetTxPower::SetTxPower(PhyMsg &message) : PhyMsg(message)
 {
+    this->unpack();
 }
 
 
@@ -23,10 +22,7 @@ SetTxPower::SetTxPower(NanoPbMsg &message) : PhyMsg(message)
 
 SetTxPower::SetTxPower(TxPower power) : PhyMsg()
 {
-    whad_phy_set_tx_power(
-        this->getRaw(),
-        (whad_phy_txpower_t)power
-    );
+    m_power = power;
 }
 
 
@@ -38,12 +34,31 @@ SetTxPower::SetTxPower(TxPower power) : PhyMsg()
 
 TxPower SetTxPower::getPower()
 {
-    whad_phy_txpower_t power;
+    return m_power;
+}
 
-    whad_phy_set_tx_power_parse(
-        this->getRaw(),
-        &power
+
+/**
+ * @brief   Pack parameters into a PhyMsg.
+ */
+
+void SetTxPower::pack()
+{
+    whad_phy_set_tx_power(
+        this->getMessage(),
+        (whad_phy_txpower_t)m_power
     );
+}
 
-    return (TxPower)power;
+
+/**
+ * @brief   Extract parameters from PhyMsg.
+ */
+
+void SetTxPower::unpack()
+{
+    if (whad_phy_set_tx_power_parse(this->getMessage(), (whad_phy_txpower_t *)&m_power) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    } 
 }

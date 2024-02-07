@@ -2,16 +2,13 @@
 
 using namespace whad::phy;
 
-/** BPSK modulation **/
-
-
 /**
  * @brief   Create a SetBpskMod message from a NanoPbMsg message.
  * 
  * @param[in]   message NanoPbMsg instance
  **/
 
-SetBpskMod::SetBpskMod(NanoPbMsg &message) : PhyMsg(message)
+SetBpskMod::SetBpskMod(PhyMsg &message) : PhyMsg(message)
 {
 }
 
@@ -22,4 +19,16 @@ SetBpskMod::SetBpskMod(NanoPbMsg &message) : PhyMsg(message)
 
 SetBpskMod::SetBpskMod()
 {
+}
+
+
+/**
+ * @brief   Create a SetBpskMod message.
+ */
+
+void SetBpskMod::pack()
+{
+    whad_phy_set_bpsk_mod(
+        this->getMessage()
+    );
 }

@@ -13,10 +13,16 @@ namespace whad::phy {
     class SetDatarate : public PhyMsg
     {
         public:
-            SetDatarate(NanoPbMsg &message);
+            SetDatarate(PhyMsg &message);
             SetDatarate(uint32_t datarate);
 
             uint32_t getDatarate();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_datarate;
     };
 
 }

@@ -31,7 +31,7 @@ namespace whad::phy {
     class SetLoraMod : public PhyMsg
     {
         public:
-            SetLoraMod(NanoPbMsg &message);
+            SetLoraMod(PhyMsg &message);
             SetLoraMod(uint32_t bandwidth, LoRaSpreadingFactor sf,
                         LoRaCodingRate cr, uint32_t preambleLength,
                         bool enableCrc, bool explicitMode, bool invertIq);
@@ -45,8 +45,16 @@ namespace whad::phy {
             bool isIqInverted();
 
         private:
-            bool parse();
-            whad_phy_lora_params_t m_params;
+            void pack();
+            void unpack();
+
+            uint32_t m_bandwidth;
+            LoRaSpreadingFactor m_sf;
+            LoRaCodingRate m_cr;
+            uint32_t m_preambleLength;
+            bool m_enableCrc;
+            bool m_explicitMode;
+            bool m_invertIq;
     };
 
 }

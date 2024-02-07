@@ -19,7 +19,9 @@ namespace whad::phy {
             uint32_t getFrequency();
 
         private:
-            void unpack(void);
+            void pack();
+            void unpack();
+            
             uint32_t m_freq;
     };
 
