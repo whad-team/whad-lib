@@ -2,120 +2,229 @@
 
 using namespace whad::esb;
 
-/** RawPacketReceived **/
+/******************************************
+ * 
+ * RawPacketReceived notification class
+ * 
+ *****************************************/
+
+/**
+ * @brief   Constructor, parses an EsbMsg object as a RawPacketReceived message.
+ * 
+ * @param[in]   message Message to parse
+ */
 
 RawPacketReceived::RawPacketReceived(EsbMsg &message) : EsbMsg(message)
 {
     /* Parse message. */
-    this->parse();
+    this->unpack();
 }
+
+
+/**
+ * @brief   Constructor, create a RawPacketReceived message.
+ * 
+ * @param[in]   channel     ESB channel on which the packet has been captured
+ * @param[in]   packet      Received packet
+ */
 
 RawPacketReceived::RawPacketReceived(uint32_t channel, Packet &packet) : EsbMsg()
 {
     /* Save properties. */
     m_channel = channel;
     m_packet.set(packet);
-
-    /* Save into message. */
-    this->update();
 }
+
+
+/**
+ * @brief   Set channel
+ * 
+ * @param[in]   channel     ESB channel
+ */
 
 void RawPacketReceived::setChannel(uint32_t channel)
 {
     m_channel = channel;
-
-    /* Save into message. */
-    this->update();
 }
+
+
+/**
+ * @brief   Set packet
+ * 
+ * @param[in]   packet      Received packet
+ */
 
 void RawPacketReceived::setPacket(Packet &packet)
 {
     m_packet.set(packet);
-
-    /* Save into message. */
-    this->update();
 }
+
+
+/**
+ * @brief   Set RSSI
+ * 
+ * @param[in]   rssi        Received Signal Strength Indicator
+ */
 
 void RawPacketReceived::setRssi(int32_t rssi)
 {
     m_rssi = rssi;
     m_hasRssi = true;
-
-    /* Save into message. */
-    this->update();
 }
+
+
+/**
+ * @brief   Set packet reception timestamp
+ * 
+ * @param[in]   timestamp   Timestamp (milliseconds)
+ */
 
 void RawPacketReceived::setTimestamp(uint32_t timestamp)
 {
     m_timestamp = timestamp;
     m_hasTimestamp = true;
-
-    /* Save into message. */
-    this->update();
 }
+
+
+/**
+ * @brief   Set destination address
+ * 
+ * @param[in]   address     ESB address
+ */
 
 void RawPacketReceived::setAddress(EsbAddress &address)
 {
     m_hasAddress = true;
     m_address = address;
-
-    /* Save into message. */
-    this->update();
 }
+
+
+/**
+ * @brief   Set CRC validity
+ * 
+ * @param[in]   validity    True if CRC is valid, false otherwise
+ */
 
 void RawPacketReceived::setCrcValidity(bool validity)
 {
     m_hasCrcValidity = true;
     m_crcValidity = validity;
-
-    /* Save into message. */
-    this->update();
 }
+
+
+/**
+ * @brief   Get the channel number this packet has been captured on
+ * 
+ * @retval  Channel number
+ */
 
 uint32_t RawPacketReceived::getChannel()
 {
     return m_channel;
 }
 
+
+/**
+ * @brief   Determine if RSSI is available
+ * 
+ * @retval  True if available, false otherwise.
+ */
+
 bool RawPacketReceived::hasRssi()
 {
     return m_hasRssi;
 }
+
+
+/**
+ * @brief   Retrieve the RSSI level
+ * 
+ * @retval  RSSI
+ */
 
 int32_t RawPacketReceived::getRssi()
 {
     return m_rssi;
 }
 
+
+/**
+ * @brief   Determine if a timestamp is available
+ * 
+ * @retval  True if available, false otherwise
+ */
+
 bool RawPacketReceived::hasTimestamp()
 {
     return m_timestamp;
 }
+
+
+/**
+ * @brief   Retrieve the associated timestamp
+ * 
+ * @retval  Timestamp in milliseconds
+ */
 
 uint32_t RawPacketReceived::getTimestamp()
 {
     return m_timestamp;
 }
 
+
+/**
+ * @brief   Determine if CRC validity is available
+ * 
+ * @retval  True if available, false otherwise
+ */
+
 bool RawPacketReceived::hasCrcValidity()
 {
     return m_hasCrcValidity;
 }
+
+
+/**
+ * @brief   Check if CRC is valid (provided if CRC validity is true)
+ * 
+ * @retval  True if CRC is valid, false otherwise
+ */
 
 bool RawPacketReceived::isCrcValid()
 {
     return m_crcValidity;
 }
 
+
+/**
+ * @brief   Determine if the destination address is available
+ * 
+ * @retval  True if available, false otherwise
+ */
+
 bool RawPacketReceived::hasAddress()
 {
     return m_hasAddress;
 }
 
+
+/**
+ * @brief   Retrieve the destination address
+ * 
+ * @retval  Destination address
+ */
+
 EsbAddress& RawPacketReceived::getAddress()
 {
     return m_address;
 }
+
+
+/**
+ * @brief   Retrieve the captured packet bytes
+ * 
+ * @retval  Captured packet
+ */
 
 Packet& RawPacketReceived::getPacket()
 {
@@ -123,8 +232,11 @@ Packet& RawPacketReceived::getPacket()
 }
 
 
+/**
+ * @brief   Pack parameters into an EsbMsg.
+ */
 
-void RawPacketReceived::update()
+void RawPacketReceived::pack()
 {
     whad_esb_recvd_packet_t params;
 
@@ -176,18 +288,23 @@ void RawPacketReceived::update()
     }
 
     whad_esb_raw_pdu_received(
-        this->getRaw(),
+        this->getMessage(),
         &params
     );
 }
 
-void RawPacketReceived::parse()
+
+/**
+ * Extract parameters from an EsbMsg.
+ */
+
+void RawPacketReceived::unpack()
 {
     whad_result_t res;
     whad_esb_recvd_packet_t params;
 
     res = whad_esb_raw_pdu_received_parse(
-        this->getRaw(),
+        this->getMessage(),
         &params
     );
 
@@ -236,22 +353,40 @@ void RawPacketReceived::parse()
     }
 }
 
+/******************************************
+ * 
+ * PacketReceived notification class
+ * 
+ *****************************************/
 
-/** PacketReceived **/
+/**
+ * @brief   Constructor, parse a message as a PacketReceived message
+ */
 
 PacketReceived::PacketReceived(EsbMsg &message) : RawPacketReceived(message)
 {
     /* Parse message. */
-    this->parse();
+    this->unpack();
 }
+
+
+/**
+ * @brief   Constructor, create a new PacketReceived message
+ * 
+ * @param[in]   channel ESB channel the packet has been captured on
+ * @param[in]   packet  Captured packet
+ */
 
 PacketReceived::PacketReceived(uint32_t channel, Packet &packet) : RawPacketReceived(channel, packet)
 {
-    /* Save into message. */
-    this->update();
 }
 
-void PacketReceived::update()
+
+/**
+ * @brief   Pack parameters into an EsbMsg.
+ */
+
+void PacketReceived::pack()
 {
     whad_esb_recvd_packet_t params;
 
@@ -303,12 +438,17 @@ void PacketReceived::update()
     }
 
     whad_esb_pdu_received(
-        this->getRaw(),
+        this->getMessage(),
         &params
     );
 }
 
-void PacketReceived::parse()
+
+/**
+ * @brief   Extract parameters from EsbMsg.
+ */
+
+void PacketReceived::unpack()
 {
     whad_result_t res;
     whad_esb_recvd_packet_t params;

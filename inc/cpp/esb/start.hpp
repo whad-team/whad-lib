@@ -12,6 +12,9 @@ namespace whad::esb {
         public:
             Start(EsbMsg &message);
             Start();
+
+        private:
+            void pack();
     };
 }
 

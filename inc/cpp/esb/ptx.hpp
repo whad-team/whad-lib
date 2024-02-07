@@ -14,6 +14,12 @@ namespace whad::esb {
             PtxMode(uint32_t channel);
 
             uint32_t getChannel();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_channel;
     };
 }
 

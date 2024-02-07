@@ -36,8 +36,8 @@ namespace whad::esb {
 
 
         protected:
-            void parse();
-            void update();
+            void unpack();
+            void pack();
 
             uint32_t m_channel;
             
@@ -60,8 +60,8 @@ namespace whad::esb {
             PacketReceived(uint32_t channel, Packet &packet);
 
         private:
-            void parse();
-            void update();
+            void pack();
+            void unpack();
     };
 }
 

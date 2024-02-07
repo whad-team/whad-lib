@@ -2,30 +2,63 @@
 
 using namespace whad::esb;
 
-/** Jammed **/
+/**
+ * @brief   Constructor, parses an EsbMsg as a Jammed message.
+ *
+ * @param[in]   message Message to parse
+ */
 
 Jammed::Jammed(EsbMsg &message) : EsbMsg(message)
 {
+    this->unpack();
 }
+
+
+/**
+ * @brief   Constructor, create a new Jammed message
+ * 
+ * @param[in]   timestamp   Timestamp at which the target has been
+ *                          successfully jammed.
+ */
 
 Jammed::Jammed(uint32_t timestamp) : EsbMsg()
 {
+    m_timestamp = timestamp;
+}
+
+
+/**
+ * @brief   Retrieve the corresponding timestamp.
+ * 
+ * @retval  Timestamp in milliseconds
+*/
+uint32_t Jammed::getTimestamp()
+{
+    return m_timestamp;
+}
+
+
+/**
+ * Pack parameters into an EsbMsg.
+ */
+
+void Jammed::pack()
+{
     whad_esb_jammed(
-        this->getRaw(),
-        timestamp
+        this->getMessage(),
+        m_timestamp
     );
 }
 
-uint32_t Jammed::getTimestamp()
-{
-    uint32_t timestamp;
 
-    if (whad_esb_jammed_parse(this->getRaw(), &timestamp) == WHAD_SUCCESS)
-    {
-        return timestamp;
-    }
-    else
+/**
+ * Extract parameters from an EsbMsg.
+ */
+
+void Jammed::unpack()
+{
+    if (whad_esb_jammed_parse(this->getMessage(), &m_timestamp) == WHAD_ERROR)
     {
         throw WhadMessageParsingError();
-    } 
+    }
 }

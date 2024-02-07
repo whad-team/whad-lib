@@ -10,7 +10,9 @@ namespace whad::esb {
     class SniffMode : public EsbMsg
     {
         private:
-            bool parse(void);
+            void pack();
+            void unpack();
+            
             uint32_t m_channel;
             EsbAddress m_address;
             bool m_showacks;

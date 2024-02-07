@@ -7,10 +7,12 @@
 #include "esb/base.hpp"
 
 namespace whad::esb {
+    
     class SendPacket : public EsbMsg
     {
         protected:
-            bool parse();
+            void pack();
+            void unpack();
 
             uint32_t m_channel;
             uint32_t m_retries;
@@ -33,7 +35,8 @@ namespace whad::esb {
             SendPacketRaw(uint32_t channel, uint32_t retries, Packet &packet);
 
         private:
-            bool parse();
+            void pack();
+            void unpack();
     };
 }
 

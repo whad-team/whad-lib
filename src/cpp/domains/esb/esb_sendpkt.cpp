@@ -2,11 +2,23 @@
 
 using namespace whad::esb;
 
-/** PacketSend **/
+/**
+ * @brief   Constructor, parse an EsbMsg as a SendPacket message.
+ */
 
 SendPacket::SendPacket(EsbMsg &message) : EsbMsg(message)
 {
+    this->unpack();
 }
+
+
+/**
+ * @brief   Constructor, create a SendPacket message.
+ * 
+ * @param[in]   channel     Channel on which the packet has to be sent
+ * @param[in]   retries     Number of max retransmission retries
+ * @param[in]   packet      Packet to send
+ */
 
 SendPacket::SendPacket(uint32_t channel, uint32_t retries, Packet &packet)
 {
@@ -14,18 +26,31 @@ SendPacket::SendPacket(uint32_t channel, uint32_t retries, Packet &packet)
     this->m_channel = channel;
     this->m_retries = retries;
     this->m_packet.set(packet);
+}
 
+
+/**
+ * @brief   Pack parameters into an EsbMsg.
+ */
+
+void SendPacket::pack()
+{
     /* Craft message. */
     whad_esb_send(
-        this->getRaw(),
-        channel,
-        retries,
-        packet.getBytes(),
-        packet.getSize()
+        this->getMessage(),
+        m_channel,
+        m_retries,
+        m_packet.getBytes(),
+        m_packet.getSize()
     );
 }
 
-bool SendPacket::parse()
+
+/**
+ * @brief   Extract parameters from EsbMsg.
+ */
+
+void SendPacket::unpack()
 {
     whad_result_t res;
     whad_esb_send_params_t params;
@@ -37,95 +62,119 @@ bool SendPacket::parse()
     );
 
     if (res == WHAD_ERROR)
-        return WHAD_ERROR;
+    {
+        throw WhadMessageParsingError();
+    }
 
     /* Set properties accordingly. */
     m_channel = params.channel;
     m_retries = params.retr_count;
     pkt = Packet(params.packet.bytes, params.packet.length);
     m_packet.set(pkt);
-
-    /* Success. */
-    return true;
 }
+
+
+/**
+ * @brief   Get the channel number
+ * 
+ * @retval  Channel number
+ */
 
 uint32_t SendPacket::getChannel()
 {
-    if (this->parse())
-    {
-        return m_channel;
-    }
-    else
-    {
-        throw whad::WhadMessageParsingError();
-    }
+    return m_channel;
 }
+
+
+/**
+ * @brief   Get the maximum retransmission count
+ * 
+ * @retval  Maximum number of retransmissions
+ */
 
 uint32_t SendPacket::getRetrCount()
 {
-    if (this->parse())
-    {
-        return m_retries;
-    }
-    else
-    {
-        throw whad::WhadMessageParsingError();
-    }
+    return m_retries;
 }
+
+
+/**
+ * @brief   Get the packet to send
+ * 
+ * @retval  Packet to send
+ */
 
 Packet& SendPacket::getPacket()
 {
-    if (this->parse())
-    {
-        return m_packet;
-    }
-    else
-    {
-        throw whad::WhadMessageParsingError();
-    }
+    return m_packet;
 }
+
+
+/**
+ * @brief   Constructor, parse an EsbMsg into a SendPacketRaw message.
+ * 
+ * @param[in]   message     Message to parse
+ */
 
 SendPacketRaw::SendPacketRaw(EsbMsg &message) : SendPacket(message)
 {
+    this->unpack();
 }
+
+
+/**
+ * @brief   Constructor, create a SendPacketRaw message.
+ * 
+ * @param[in]   channel     Channel on which the packet has to be sent
+ * @param[in]   retries     Number of max retransmission retries
+ * @param[in]   packet      Packet to send
+ */
 
 SendPacketRaw::SendPacketRaw(uint32_t channel, uint32_t retries, Packet &packet): SendPacket(channel, retries, packet)
-{
-    /* Save properties. */
-    this->m_channel = channel;
-    this->m_retries = retries;
-    this->m_packet.set(packet);
-
-    /* Craft message. */
-    whad_esb_send_raw(
-        this->getRaw(),
-        channel,
-        retries,
-        packet.getBytes(),
-        packet.getSize()
-    );   
+{ 
 }
 
-bool SendPacketRaw::parse()
+
+/**
+ * @brief   Extract parameters from an EsbMsg.
+ */
+
+void SendPacketRaw::unpack()
 {
     whad_result_t res;
     whad_esb_send_params_t params;
     Packet pkt;
 
     res = whad_esb_send_raw_parse(
-        this->getRaw(),
+        this->getMessage(),
         &params
     );
 
     if (res == WHAD_ERROR)
-        return WHAD_ERROR;
+    {
+        throw WhadMessageParsingError();
+    }
 
     /* Set properties accordingly. */
     m_channel = params.channel;
     m_retries = params.retr_count;
     pkt = Packet(params.packet.bytes, params.packet.length);
     m_packet.set(pkt);
+}
 
-    /* Success. */
-    return true;
+
+/**
+ * @brief   Pack parameters into an EsbMsg.
+ */
+
+void SendPacketRaw::pack()
+{
+    /* Craft message. */
+    whad_esb_send_raw(
+        this->getMessage(),
+        m_channel,
+        m_retries,
+        m_packet.getBytes(),
+        m_packet.getSize()
+    );
 }

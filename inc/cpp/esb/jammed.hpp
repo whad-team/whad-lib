@@ -14,6 +14,12 @@ namespace whad::esb {
             Jammed(uint32_t timestamp);
 
             uint32_t getTimestamp();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_timestamp;
     };
 }
 
