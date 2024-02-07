@@ -12,12 +12,10 @@ namespace whad::generic {
     class Verbose : public GenericMsg
     {
         public:
-            Verbose(GenericMsg &message);
             Verbose(std::string message);
 
         private:
             void pack();
-            void unpack();
 
             std::string m_message;
     };

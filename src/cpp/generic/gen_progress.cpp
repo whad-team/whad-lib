@@ -8,7 +8,12 @@ using namespace whad::generic;
  * @param   value   Progress value or step.
  **/
 
-whad::generic::Progress::Progress(int32_t value) : GenericMsg()
+Progress::Progress(int32_t value) : GenericMsg()
 {
-    whad_generic_progress_message(this->getRaw(), value);
+    m_value = value;
+}
+
+void Progress::pack()
+{
+    whad_generic_progress_message(this->getMessage(), m_value);
 }

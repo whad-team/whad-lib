@@ -2,16 +2,6 @@
 
 using namespace whad::generic;
 
-/**
- * @brief   Build a generic verbose message from a generic message.
- * 
- * @param   message Message string to pass to the host.
- **/
-
-Verbose::Verbose(GenericMsg &message) : GenericMsg(message)
-{
-}
-
 
 /**
  * @brief   Build a generic verbose message.
@@ -23,6 +13,7 @@ Verbose::Verbose(std::string message) : GenericMsg()
 {
     m_message = message;
 }
+
 
 void Verbose::pack()
 {

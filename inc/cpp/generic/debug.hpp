@@ -13,6 +13,12 @@ namespace whad::generic {
     {
         public:
             Debug(int32_t level, std::string message);
+
+        private:
+            void pack();
+
+            std::string m_message;
+            int32_t m_level;
     };
 
 }

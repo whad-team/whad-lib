@@ -13,6 +13,10 @@ namespace whad::generic {
     {
         public:
             Progress(int32_t value);
+
+        private:
+            void pack();
+            int32_t m_value;
     };
 
 }
