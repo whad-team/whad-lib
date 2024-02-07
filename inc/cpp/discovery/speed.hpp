@@ -11,7 +11,7 @@ namespace whad::discovery {
     class SetTransportSpeed : public DiscoveryMsg
     {
         public:
-            SetTransportSpeed(NanoPbMsg &pMessage);
+            SetTransportSpeed(DiscoveryMsg &pMessage);
             SetTransportSpeed(uint32_t speed);
             
             uint32_t getSpeed();
