@@ -140,6 +140,37 @@ whad_result_t whad_ble_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Parse a message reporting a BLE link-layer data PDU
+ * 
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_parameters        Pointer to a whad_ble_pdu_t structure
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer or PDU pointer.
+ **/
+
+whad_result_t whad_ble_pdu_parse(Message *p_message, whad_ble_pdu_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL) )
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    p_parameters->conn_handle = p_message->msg.ble.msg.pdu.conn_handle;
+    p_parameters->processed = p_message->msg.ble.msg.pdu.processed;
+    p_parameters->decrypted = p_message->msg.ble.msg.pdu.decrypted;
+    p_parameters->pdu_length = p_message->msg.ble.msg.pdu.pdu.size;
+    p_parameters->p_pdu = p_message->msg.ble.msg.pdu.pdu.bytes;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
 /**
  * @brief Initialize a message reporting a BLE connection
  * 
@@ -213,6 +244,33 @@ whad_result_t whad_ble_notify_disconnected(Message *p_message, uint32_t conn_han
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Parse a message reporting a BLE disconnection
+ * 
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       conn_handle         Connection handle of the connection this PDU has been captured from
+ * @param[in]       reason              Disconnection reason (as defined in the BLE specification)
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer.
+ **/
+
+whad_result_t whad_ble_notify_disconnected_parse(Message *p_message, whad_ble_disconnected_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    p_parameters->conn_handle = p_message->msg.ble.msg.disconnected.conn_handle;
+    p_parameters->reason = p_message->msg.ble.msg.disconnected.reason;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
 
 /**
  * @brief Initialize a message setting the BD address of the adapter
@@ -1761,6 +1819,46 @@ whad_result_t _whad_ble_sequence_copy_packets(Message *p_message, whad_prepared_
 }
 
 
+whad_result_t whad_ble_prepare_sequence_get_trigger_type(Message *p_message, whad_ble_trigger_t *p_trigger_type)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_trigger_type == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Determine the trigger type. */
+    switch (p_message->msg.ble.msg.prepare.trigger.which_trigger)
+    {
+        /* Manual mode. */
+        case ble_PrepareSequenceCmd_Trigger_manual_tag:
+        {
+            *p_trigger_type = BLE_MANUAL_TRIGGER;
+            return WHAD_SUCCESS;
+        }
+        break;
+
+        case ble_PrepareSequenceCmd_Trigger_connection_event_tag:
+        {
+            *p_trigger_type = BLE_CONNEVT_TRIGGER;
+            return WHAD_SUCCESS;
+        }
+        break;
+
+        case ble_PrepareSequenceCmd_Trigger_reception_tag:
+        {
+            *p_trigger_type = BLE_PATTERN_TRIGGER;
+            return WHAD_SUCCESS;
+        }
+        break;
+
+
+        default:
+            return WHAD_ERROR;
+    }
+
+}
+
 /**
  * @brief Initialize a message to send a sequence of PDU when a matching PDU is received
  *  
@@ -1847,7 +1945,7 @@ whad_result_t whad_ble_prepare_sequence_manual(Message *p_message, uint32_t id, 
                                                whad_prepared_packet_t *p_packets, int pkt_count) 
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_packets))
+    if ((p_message == NULL) || (p_packets == NULL))
     {
         return WHAD_ERROR;
     }
@@ -1875,6 +1973,42 @@ whad_result_t whad_ble_prepare_sequence_manual(Message *p_message, uint32_t id, 
 
 
 /**
+ * @brief Parse a message to send a sequence of PDU all at once on a manual trigger
+ *  
+ * @param[in]       p_message           Pointer to the message to parse
+ * @param[in,out]   p_parameters        Pointer to a `whad_ble_prepseq_params_t`
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_prepare_sequence_manual_parse(Message *p_message, whad_ble_prepseq_params_t *p_parameters) 
+{
+    int i;
+
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters (id and direction) */
+    memset(p_parameters, 0, sizeof(whad_ble_prepseq_params_t));
+    p_parameters->id = p_message->msg.ble.msg.prepare.id;
+    p_parameters->direction = p_message->msg.ble.msg.prepare.direction;
+
+    /* Set prepared packets array. */
+    for (i=0; i<p_message->msg.ble.msg.prepare.sequence_count; i++)
+    {
+        p_parameters->packets[i].length = p_message->msg.ble.msg.prepare.sequence[i].packet.size;
+        p_parameters->packets[i].p_bytes = p_message->msg.ble.msg.prepare.sequence[i].packet.bytes;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+/**
  * @brief Initialize a message to send a sequence of PDU all at once on a specific connection event
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -1893,7 +2027,7 @@ whad_result_t whad_ble_prepare_sequence_conn_evt(Message *p_message, uint32_t co
                                                whad_prepared_packet_t *p_packets, int pkt_count) 
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_packets))
+    if ((p_message == NULL) || (p_packets == NULL))
     {
         return WHAD_ERROR;
     }
@@ -1923,6 +2057,44 @@ whad_result_t whad_ble_prepare_sequence_conn_evt(Message *p_message, uint32_t co
 
 
 /**
+ * @brief Parse a message to send a sequence of PDU all at once on a connection event trigger
+ *  
+ * @param[in]       p_message           Pointer to the message to parse
+ * @param[in,out]   p_parameters        Pointer to a `whad_ble_prepseq_params_t`
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_prepare_sequence_conn_evt_parse(Message *p_message, whad_ble_prepseq_params_t *p_parameters) 
+{
+    unsigned int i;
+
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    memset(p_parameters, 0, sizeof(whad_ble_prepseq_params_t));
+    p_parameters->id = p_message->msg.ble.msg.prepare.id;
+    p_parameters->direction = p_message->msg.ble.msg.prepare.direction;
+    p_parameters->conn_evt = p_message->msg.ble.msg.prepare.trigger.trigger.connection_event.connection_event;
+
+    /* Set prepared packets array. */
+    for (i=0; i<p_message->msg.ble.msg.prepare.sequence_count; i++)
+    {
+        p_parameters->packets[i].length = p_message->msg.ble.msg.prepare.sequence[i].packet.size;
+        p_parameters->packets[i].p_bytes = p_message->msg.ble.msg.prepare.sequence[i].packet.bytes;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief Initialize a message to manually trigger the sending of a prepared sequence of PDUs
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -1944,6 +2116,32 @@ whad_result_t whad_ble_prepare_sequence_trigger(Message *p_message, uint32_t id)
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_trigger_tag;
     p_message->msg.ble.msg.trigger.id = id;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Parse a message to manually trigger the sending of a prepared sequence of PDUs
+ *  
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_id                Pointer to the trigger id
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_prepare_sequence_trigger_parse(Message *p_message, uint32_t *p_id) 
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_id == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract value. */
+    *p_id = p_message->msg.ble.msg.trigger.id;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -2004,6 +2202,33 @@ whad_result_t whad_ble_triggered(Message *p_message, uint32_t id)
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+/**
+ * @brief Parse a message to notify that a prepared sequence has been triggered
+ *  
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_id                Pointer to the sequence id
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_triggered_parse(Message *p_message, uint32_t *p_id) 
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_id == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract sequence id. */
+    *p_id = p_message->msg.ble.msg.triggered.id;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
 
 /**
  * @brief Initialize a message to notify that an access address has been discovered
@@ -2091,6 +2316,37 @@ whad_result_t whad_ble_adv_pdu(Message *p_message, whad_ble_advtype_t adv_type, 
         p_message->msg.ble.msg.adv_pdu.adv_data.size = adv_data_length;
         memcpy(p_message->msg.ble.msg.adv_pdu.adv_data.bytes, p_adv_data, adv_data_length);
     }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Parse a message notifying an advertising PDU
+ *  
+ * @param[in]       p_message           Pointer to the message to parse
+ * @param[in,out]   p_parameters        Pointer to a `whad_ble_prepseq_params_t`
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_adv_pdu_parse(Message *p_message, whad_ble_adv_pdu_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    p_parameters->addr_type = p_message->msg.ble.msg.adv_pdu.addr_type;
+    p_parameters->adv_type = p_message->msg.ble.msg.adv_pdu.adv_type;
+    p_parameters->rssi = p_message->msg.ble.msg.adv_pdu.rssi;
+    p_parameters->p_bdaddr = p_message->msg.ble.msg.adv_pdu.bd_address;
+    p_parameters->p_adv_data = p_message->msg.ble.msg.adv_pdu.adv_data.bytes;
+    p_parameters->adv_data_length = p_message->msg.ble.msg.adv_pdu.adv_data.size;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -2193,6 +2449,32 @@ whad_result_t whad_ble_hijacked(Message *p_message, uint32_t access_address, boo
 
 
 /**
+ * @brief Parse a message to notify that the adapter has successfully (or not) hijacked a connection
+ *  
+ * @param[in]           p_message           Pointer to the message structure to initialize
+ * @param[in,out]       p_parameters        Pointer to the message parameters
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_hijacked_parse(Message *p_message, whad_ble_hijacked_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    p_parameters->access_address = p_message->msg.ble.msg.hijacked.access_address;
+    p_parameters->success = p_message->msg.ble.msg.hijacked.success;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+/**
  * @brief Initialize a message to notify that the adapter has successfully (or not) hijacked a connection
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -2218,6 +2500,34 @@ whad_result_t whad_ble_injected(Message *p_message, uint32_t access_address, uin
     p_message->msg.ble.msg.injected.access_address = access_address;
     p_message->msg.ble.msg.injected.injection_attempts = attempts;
     p_message->msg.ble.msg.injected.success = success;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Parse a message to notify that the adapter has successfully (or not) hijacked a connection
+ *  
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_parameters        Pointer to a structure containing the parameters
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_injected_parse(Message *p_message, whad_ble_injected_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    p_parameters->access_address = p_message->msg.ble.msg.injected.access_address;
+    p_parameters->attempts = p_message->msg.ble.msg.injected.injection_attempts;
+    p_parameters->success = p_message->msg.ble.msg.injected.success;
 
     /* Success. */
     return WHAD_SUCCESS;
