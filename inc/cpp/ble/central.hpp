@@ -11,7 +11,11 @@ namespace whad::ble {
     class CentralMode : public BleMsg
     {
         public:
+            CentralMode(BleMsg &message);
             CentralMode(void);
+
+        private:
+            void pack();
     };
 
 }

@@ -14,6 +14,7 @@ namespace whad::ble {
             uint32_t m_connEvent;
 
         public:
+            ConnEventTrigger();
             ConnEventTrigger(uint32_t connEvent);
             uint32_t getConnEvent(void);
     };

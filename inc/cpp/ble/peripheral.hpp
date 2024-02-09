@@ -11,7 +11,23 @@ namespace whad::ble {
     class PeripheralMode : public BleMsg
     {
         public:
-            PeripheralMode(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, int scanRspLength);
+            PeripheralMode(BleMsg &message);
+            PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength);
+
+            uint8_t *getAdvData();
+            unsigned int getAdvDataLength();
+            uint8_t *getScanRsp();
+            unsigned int getScanRspLength();
+
+
+        private:
+            void pack();
+            void unpack();
+
+            uint8_t m_advData[31];
+            unsigned int m_advDataLength;
+            uint8_t m_scanRsp[31];
+            unsigned int m_scanRspLength;
     };
 
 }

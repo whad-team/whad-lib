@@ -2,6 +2,11 @@
 
 using namespace whad::ble;
 
+ConnEventTrigger::ConnEventTrigger()
+{
+    m_connEvent = 0;
+}
+
 /**
  * @brief       Connection Event trigger constructor
  * 
@@ -10,7 +15,7 @@ using namespace whad::ble;
 
 ConnEventTrigger::ConnEventTrigger(uint32_t connEvent)
 {
-    this->m_connEvent = connEvent;
+    m_connEvent = connEvent;
 }
 
 

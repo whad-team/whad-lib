@@ -11,8 +11,19 @@ namespace whad::ble {
     class JamAdv : public BleMsg
     {
         public:
-            JamAdv(void);
+            JamAdv(BleMsg &message);
+            JamAdv();
             JamAdv(uint32_t channel);
+
+            bool hasChannel();
+            uint32_t getChannel();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_channel;
+            bool m_hasChannel;
     };
 
 }

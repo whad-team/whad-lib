@@ -11,7 +11,18 @@ namespace whad::ble {
     class Disconnected : public BleMsg
     {
         public:
+            Disconnected(BleMsg &message);
             Disconnected(uint32_t conn_handle, uint32_t reason);
+
+            uint32_t getConnHandle();
+            uint32_t getReasonCode();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_connHandle;
+            uint32_t m_reasonCode;
     };
 
 }

@@ -11,7 +11,20 @@ namespace whad::ble {
     class Connected : public BleMsg
     {
         public:
+            Connected(BleMsg &message);
             Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr);
+
+            /* Getters. */
+            uint32_t getConnHandle();
+            BDAddress& getAdvertiserAddr();
+            BDAddress& getInitiatorAddr();
+
+        private:
+            void pack();
+
+            uint32_t m_connHandle;
+            BDAddress m_advAddr;
+            BDAddress m_initAddr;
     };
 
 }

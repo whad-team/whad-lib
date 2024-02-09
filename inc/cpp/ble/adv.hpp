@@ -11,7 +11,22 @@ namespace whad::ble {
     class AdvMode : public BleMsg
     {
         public:
-            AdvMode(uint8_t *pAdvData, int advDataLength, uint8_t *pScanRsp, int scanRspLength);
+            AdvMode(BleMsg &message);
+            AdvMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength);
+
+            unsigned int getAdvDataLength();
+            unsigned int getScanRspLength();
+            uint8_t *getAdvData();
+            uint8_t *getScanRsp();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint8_t m_advData[31];
+            int m_advDataLength;
+            uint8_t m_scanRsp[31];
+            int m_scanRspLength;
     };
 
 }

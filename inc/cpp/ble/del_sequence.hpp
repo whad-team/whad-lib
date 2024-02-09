@@ -11,7 +11,16 @@ namespace whad::ble {
     class DeleteSequence : public BleMsg
     {
         public:
+            DeleteSequence(BleMsg &message);
             DeleteSequence(uint32_t id);
+
+            uint32_t getId();
+
+        private:
+            void pack();
+
+            uint32_t m_seqId;
+
     };
 
 }

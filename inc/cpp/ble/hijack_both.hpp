@@ -5,13 +5,19 @@
 #include "message.hpp"
 #include "common.hpp"
 #include <ble/base.hpp>
+#include <ble/hijack_base.hpp>
 
 namespace whad::ble {
 
-    class HijackBoth : public BleMsg
+    class HijackBoth : public BleMsg, public HijackBase
     {
         public:
+            HijackBoth(BleMsg &message);
             HijackBoth(uint32_t accessAddress);
+
+        private:
+            void pack();
+            void unpack();
     };
 
 }

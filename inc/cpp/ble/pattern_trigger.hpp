@@ -10,18 +10,19 @@ namespace whad::ble {
 
     class PatternTrigger
     {
-        private:
-            uint8_t *m_pattern;
-            uint8_t *m_mask;
-            uint32_t m_offset;
-            int m_length;
-
         public:
+            PatternTrigger();
             PatternTrigger(uint8_t *pPattern, uint8_t *pMask, int length, uint32_t offset);
             int getLength(void);
             uint8_t *getPattern(void);
             uint8_t *getMask(void);
             uint32_t getOffset(void);
+
+        private:
+            uint8_t *m_pattern;
+            uint8_t *m_mask;
+            uint32_t m_offset;
+            int m_length;
     };
 
 }

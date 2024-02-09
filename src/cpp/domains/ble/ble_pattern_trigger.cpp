@@ -2,6 +2,15 @@
 
 using namespace whad::ble;
 
+PatternTrigger::PatternTrigger()
+{
+    m_pattern = NULL;
+    m_mask = NULL;
+    m_length = 0;
+    m_offset = 0;
+
+}
+
 /**
  * @brief       PatternTrigger constructor
  * 
@@ -13,10 +22,10 @@ using namespace whad::ble;
 
 PatternTrigger::PatternTrigger(uint8_t *pPattern, uint8_t *pMask, int length, uint32_t offset)
 {
-    this->m_pattern = pPattern;
-    this->m_mask = pMask;
-    this->m_length = length;
-    this->m_offset = offset;
+    m_pattern = pPattern;
+    m_mask = pMask;
+    m_length = length;
+    m_offset = offset;
 }
 
 
