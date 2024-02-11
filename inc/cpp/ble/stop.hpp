@@ -11,7 +11,11 @@ namespace whad::ble {
     class Stop : public BleMsg
     {
         public:
+            Stop(BleMsg &message);
             Stop(void);
+
+        private:
+            void pack();
     };
 
 }

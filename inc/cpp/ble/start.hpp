@@ -11,7 +11,11 @@ namespace whad::ble {
     class Start : public BleMsg
     {
         public:
+            Start(BleMsg &message);
             Start(void);
+
+        private:
+            void pack();
     };
 
 }

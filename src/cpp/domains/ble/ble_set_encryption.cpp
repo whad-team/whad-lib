@@ -2,6 +2,11 @@
 
 using namespace whad::ble;
 
+SetEncryption::SetEncryption(BleMsg &message) : BleMsg(message)
+{
+    this->unpack();
+}
+
 /**
  * @brief       SetEncryption message constructor.
  * 
@@ -18,46 +23,42 @@ SetEncryption::SetEncryption(uint32_t connHandle, uint8_t llKey[16],
                                   uint8_t eDiv[2], bool enabled) : BleMsg()
 {
     /* Save properties. */
-    this->m_connHandle = connHandle;
-    this->m_enabled = enabled;
-    memcpy(this->m_LLKey, llKey, 16);
-    memcpy(this->m_llIv, llIv, 8);
-    memcpy(this->m_key, key, 16);
-    memcpy(this->m_rand, rand, 8);
-    memcpy(this->m_eDiv, eDiv, 2);
+    m_connHandle = connHandle;
+    m_enabled = enabled;
+    memcpy(m_LLKey, llKey, 16);
+    memcpy(m_llIv, llIv, 8);
+    memcpy(m_key, key, 16);
+    memcpy(m_rand, rand, 8);
+    memcpy(m_eDiv, eDiv, 2);
+}
 
-    /* Fill the NanoPb message with the correct values. */
+
+/**
+ * @brief   Pack parameters into a BleMsg
+ */
+
+void SetEncryption::pack()
+{
     whad_ble_set_encryption(
-        this->getRaw(),
-        connHandle,
-        enabled,
-        llKey,
-        llIv,
-        key,
-        rand,
-        eDiv
+        this->getMessage(),
+        m_connHandle,
+        m_enabled,
+        m_LLKey,
+        m_llIv,
+        m_key,
+        m_rand,
+        m_eDiv
     );
 }
 
 
 /**
- * @brief       SetEncryption message constructor.
- * 
- * @param[in]   message         NanoPb message to use
+ * @brief       Extract parameters from a BleMsg
  **/
 
-SetEncryption::SetEncryption(NanoPbMsg message) : BleMsg(message)
+void SetEncryption::unpack()
 {
     whad_ble_encryption_params_t params;
-
-    /* Set our properties to default values. */
-    this->m_connHandle = 0;
-    this->m_enabled = false;
-    memset(this->m_LLKey, 0, 16);
-    memset(this->m_llIv, 0, 8);
-    memset(this->m_key, 0, 16);
-    memset(this->m_rand, 0, 8);
-    memset(this->m_eDiv, 0, 2);
 
     /* Parse SetEncryption message. */
     if (whad_ble_set_encryption_parse(this->getRaw(), &params) == WHAD_SUCCESS)
@@ -70,8 +71,10 @@ SetEncryption::SetEncryption(NanoPbMsg message) : BleMsg(message)
         memcpy(this->m_rand, params.p_rand, 8);
         memcpy(this->m_eDiv, params.p_ediv, 2);
     }
-
-    /* TODO: trigger an exception if parsing fails. */
+    else
+    {
+        throw WhadMessageParsingError();
+    }
 }
 
 
