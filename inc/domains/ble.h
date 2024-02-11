@@ -178,6 +178,7 @@ typedef enum {
 /* Get BLE message type from NanoPb message. */
 whad_ble_msgtype_t whad_ble_get_message_type(Message *p_message);
 
+
 /* Set BLE parameters */
 whad_result_t whad_ble_set_bdaddress(Message *p_message, whad_ble_addrtype_t addr_type, uint8_t *p_bdaddr);
 whad_result_t whad_ble_set_bdaddress_parse(Message *p_message, whad_ble_addrtype_t *p_addr_type, uint8_t *p_bdaddr);
@@ -234,6 +235,8 @@ typedef struct {
     uint8_t channelmap[5];
     uint8_t channels[5];
 } whad_ble_sniff_conn_params_t;
+
+typedef whad_ble_sniff_conn_params_t whad_ble_synchro_params_t;
 
 whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_address, uint32_t crc_init,
                                          uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
@@ -388,6 +391,14 @@ typedef struct {
     int adv_data_length;
 } whad_ble_adv_pdu_t;
 
+typedef struct {
+    uint32_t access_address;
+    uint32_t timestamp;
+    bool inc_ts;
+    int32_t rssi;
+    bool inc_rssi;
+} whad_ble_aa_disc_params_t;
+
 whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_t *p_pattern, int pattern_length, uint32_t position);
 whad_result_t whad_ble_reactive_jam_parse(Message *p_message, whad_ble_reactive_jam_params_t *p_parameters);
 
@@ -406,12 +417,15 @@ whad_result_t whad_ble_triggered(Message *p_message, uint32_t id);
 whad_result_t whad_ble_triggered_parse(Message *p_message, uint32_t *p_id);
 whad_result_t whad_ble_access_address_discovered(Message *p_message, uint32_t access_address, uint32_t timestamp, 
                                                  int32_t rssi, bool inc_ts, bool inc_rssi);
+whad_result_t whad_ble_access_address_discovered_parse(Message *p_message, whad_ble_aa_disc_params_t *p_parameters);
 whad_result_t whad_ble_adv_pdu(Message *p_message, whad_ble_advtype_t adv_type, int32_t rssi, uint8_t *p_bdaddr,
                                whad_ble_addrtype_t addr_type, uint8_t *p_adv_data, int adv_data_length);
 whad_result_t whad_ble_adv_pdu_parse(Message *p_message, whad_ble_adv_pdu_t *p_parameters);
 whad_result_t whad_ble_synchronized(Message *p_message, uint32_t access_address, uint32_t crc_init,
                                     uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap);
+whad_result_t whad_ble_synchronized_parse(Message *p_message, whad_ble_synchro_params_t *p_parameters);
 whad_result_t whad_ble_desynchronized(Message *p_message, uint32_t access_address);
+whad_result_t whad_ble_desynchronized_parse(Message *p_message, uint32_t *p_access_address);
 whad_result_t whad_ble_hijacked(Message *p_message, uint32_t access_address, bool success);
 whad_result_t whad_ble_hijacked_parse(Message *p_message, whad_ble_hijacked_params_t *p_parameters);
 whad_result_t whad_ble_injected(Message *p_message, uint32_t access_address, uint32_t attempts, bool success);

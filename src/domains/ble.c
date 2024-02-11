@@ -907,7 +907,6 @@ whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_adv_data, int
     return WHAD_SUCCESS;   
 }
 
-/* TODO */
 whad_result_t whad_ble_set_adv_data_parse(Message *p_message, uint8_t *p_adv_data, int *p_adv_data_length, 
                                     uint8_t *p_scanrsp_data, int *p_scanrsp_data_length)
 {
@@ -2276,6 +2275,53 @@ whad_result_t whad_ble_access_address_discovered(Message *p_message, uint32_t ac
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Parse a message to notify that an access address has been discovered
+ *  
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in]       p_parameters        Pointer to a `whad_ble_aa_disc_params_t` structure
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_access_address_discovered_parse(Message *p_message, whad_ble_aa_disc_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    p_parameters->access_address = p_message->msg.ble.msg.aa_disc.access_address;
+    if (p_message->msg.ble.msg.aa_disc.has_timestamp)
+    {
+        p_parameters->inc_ts = true;
+        p_parameters->timestamp = p_message->msg.ble.msg.aa_disc.timestamp;
+    }
+    else
+    {
+        p_parameters->inc_ts = false;
+        p_parameters->timestamp = 0;
+    }
+
+    if (p_message->msg.ble.msg.aa_disc.has_rssi)
+    {
+        p_parameters->inc_rssi = true;
+        p_parameters->rssi = p_message->msg.ble.msg.aa_disc.rssi;
+    }
+    else
+    {
+        p_parameters->inc_rssi = false;
+        p_parameters->rssi = 0;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
 /**
  * @brief Initialize a message to notify an advertising PDU
  *  
@@ -2391,6 +2437,36 @@ whad_result_t whad_ble_synchronized(Message *p_message, uint32_t access_address,
 
 
 /**
+ * @brief Parse a message to notify that the adapter has synchronized with an active connection
+ *  
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_parameters        Pointer to a `whad_ble_synchro_params_t` structure
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_synchronized_parse(Message *p_message, whad_ble_synchro_params_t *p_parameters)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_parameters == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    p_parameters->access_address = p_message->msg.ble.msg.synchronized.access_address;
+    p_parameters->hop_interval = p_message->msg.ble.msg.synchronized.hop_interval;
+    p_parameters->hop_increment = p_message->msg.ble.msg.synchronized.hop_increment;
+    p_parameters->crc_init = p_message->msg.ble.msg.synchronized.crc_init;
+    memcpy(p_parameters->channelmap, p_message->msg.ble.msg.synchronized.channel_map, 5);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief Initialize a message to notify that the adapter has been desynchronized from an active connection
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
@@ -2412,6 +2488,32 @@ whad_result_t whad_ble_desynchronized(Message *p_message, uint32_t access_addres
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_desynchronized_tag;
     p_message->msg.ble.msg.desynchronized.access_address = access_address;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Parse a message to notify that the adapter has been desynchronized from an active connection
+ *  
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_access_address    Pointer to the access address of the desynchronized connection
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
+ **/
+
+whad_result_t whad_ble_desynchronized_parse(Message *p_message, uint32_t *p_access_address)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_access_address == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract access address. */
+    *p_access_address = p_message->msg.ble.msg.desynchronized.access_address;
 
     /* Success. */
     return WHAD_SUCCESS;
