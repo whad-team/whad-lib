@@ -139,6 +139,7 @@ typedef enum {
     WHAD_BLE_SET_BDADDRESS=ble_Message_set_bd_addr_tag,
     WHAD_BLE_SET_ADV_DATA=ble_Message_set_adv_data_tag,
     WHAD_BLE_SET_ENCRYPTION=ble_Message_encryption_tag,
+    WHAD_BLE_SNIFF_AA=ble_Message_sniff_aa_tag,
     WHAD_BLE_SNIFF_ADV=ble_Message_sniff_adv_tag,
     WHAD_BLE_SNIFF_CONN_REQ=ble_Message_sniff_connreq_tag,
     WHAD_BLE_SNIFF_ACT_CONN=ble_Message_sniff_conn_tag,
