@@ -10,19 +10,22 @@ namespace whad::ble {
 
     class SniffAdv : public BleMsg
     {
-        private:
-            uint32_t m_channel;
-            BDAddress m_targetAddr;
-            bool m_useExtAdv;
-
         public:
-            SniffAdv(NanoPbMsg message);
+            SniffAdv(BleMsg &message);
             SniffAdv(uint32_t channel, BDAddress targetAddr, bool useExtAdv);
 
             /* Getters. */
             uint32_t getChannel();
             BDAddress getAddress();
             bool mustUseExtAdv();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_channel;
+            BDAddress m_targetAddr;
+            bool m_useExtAdv;
     };
 
 }

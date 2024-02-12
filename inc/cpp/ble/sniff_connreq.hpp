@@ -11,7 +11,22 @@ namespace whad::ble {
     class SniffConnReq : public BleMsg
     {
         public:
+            SniffConnReq(BleMsg &message);
             SniffConnReq(uint32_t channel, BDAddress targetAddr, bool showAdv, bool showEmpty);
+
+            uint32_t getChannel();
+            BDAddress& getTargetAddress();
+            bool mustReportAdv();
+            bool mustReportEmpty();
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_channel;
+            BDAddress m_targetAddr;
+            bool m_showAdv;
+            bool m_showEmpty;
     };
 
 }

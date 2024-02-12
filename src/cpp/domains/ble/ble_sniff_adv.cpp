@@ -3,21 +3,14 @@
 using namespace whad::ble;
 
 /**
- * @brief       SniffAdv message constructor.
+ * @brief   Parse a BleMsg as a SniffAdv message
  * 
- * @param[in]   channel     Channel to use for sniffing
- * @param[in]   targetAddr  Target device BD address
- * @param[in]   useExtAdv   If set to true, use extended advertising (BLE 5.x)
- **/
+ * @param[in]   message     Message to parse
+ */
 
-SniffAdv::SniffAdv(uint32_t channel, BDAddress targetAddr, bool useExtAdv) : BleMsg()
+SniffAdv::SniffAdv(BleMsg &message) : BleMsg(message)
 {
-    whad_ble_sniff_adv(
-        this->getRaw(),
-        useExtAdv,
-        channel,
-        targetAddr.getAddressBuf()
-    );
+    this->unpack();
 }
 
 
@@ -29,17 +22,48 @@ SniffAdv::SniffAdv(uint32_t channel, BDAddress targetAddr, bool useExtAdv) : Ble
  * @param[in]   useExtAdv   If set to true, use extended advertising (BLE 5.x)
  **/
 
-SniffAdv::SniffAdv(NanoPbMsg message) : BleMsg(message)
+SniffAdv::SniffAdv(uint32_t channel, BDAddress targetAddr, bool useExtAdv) : BleMsg()
+{
+    m_channel = channel;
+    m_targetAddr = targetAddr;
+    m_useExtAdv = useExtAdv;
+}
+
+
+/**
+ * @brief   Pack parameters into a BleMsg
+ */
+
+void SniffAdv::pack()
+{
+    whad_ble_sniff_adv(
+        this->getMessage(),
+        m_useExtAdv,
+        m_channel,
+        m_targetAddr.getAddressBuf()
+    );  
+}
+
+
+/**
+ * @brief   Extract parameters from BleMsg
+ */
+
+void SniffAdv::unpack()
 {
     whad_ble_sniff_adv_params_t params;
-    this->m_channel = 0;
-    this->m_useExtAdv = false;
+    m_channel = 0;
+    m_useExtAdv = false;
 
-    if (whad_ble_sniff_adv_parse(this->getRaw(), &params) == WHAD_SUCCESS)
+    if (whad_ble_sniff_adv_parse(this->getMessage(), &params) == WHAD_SUCCESS)
     {
-        this->m_channel = params.channel;
-        this->m_useExtAdv = params.use_ext_adv;
-        this->m_targetAddr.setAddress(params.p_bdaddr);
+        m_channel = params.channel;
+        m_useExtAdv = params.use_ext_adv;
+        m_targetAddr.setAddress(params.p_bdaddr);
+    }
+    else
+    {
+        throw WhadMessageParsingError();
     }
 }
 
@@ -52,7 +76,7 @@ SniffAdv::SniffAdv(NanoPbMsg message) : BleMsg(message)
 
 uint32_t SniffAdv::getChannel(void)
 {
-    return this->m_channel;
+    return m_channel;
 }
 
 
@@ -64,7 +88,7 @@ uint32_t SniffAdv::getChannel(void)
 
 bool SniffAdv::mustUseExtAdv(void)
 {
-    return this->m_useExtAdv;
+    return m_useExtAdv;
 }
 
 
@@ -76,5 +100,5 @@ bool SniffAdv::mustUseExtAdv(void)
 
 BDAddress SniffAdv::getAddress(void)
 {
-    return this->m_targetAddr;
+    return m_targetAddr;
 }

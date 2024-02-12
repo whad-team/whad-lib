@@ -41,6 +41,7 @@ namespace whad::ble {
         SetBdAddressMsg = WHAD_BLE_SET_BDADDRESS,
         SetAdvDataMsg = WHAD_BLE_SET_ADV_DATA,
         SetEncryptionMsg = WHAD_BLE_SET_ENCRYPTION,
+        SniffAAMsg = WHAD_BLE_SNIFF_AA,
         SniffAdvMsg = WHAD_BLE_SNIFF_ADV,
         SniffConnReqMsg = WHAD_BLE_SNIFF_CONN_REQ,
         SniffActConnMsg = WHAD_BLE_SNIFF_ACT_CONN,
