@@ -23,6 +23,16 @@ ScanMode::ScanMode(bool active) : BleMsg()
     m_active = active;
 }
 
+/**
+ * @brief   Determine if an active scan is requested or not
+ * 
+ * @retval  True if active scan is requested, False otherwise.
+ */
+
+bool ScanMode::isActiveModeEnabled()
+{
+    return m_active;
+}
 
 /**
  * @brief   Pack parameters into a BleMsg

@@ -2,16 +2,23 @@
 
 using namespace whad::ble;
 
+uint8_t cm_NULL[5] = {0, 0, 0, 0, 0};
+
 ChannelMap::ChannelMap()
 {
     /* By default, all 40 channels are active. */
-    memset(this->m_map, 0xff, 5);
+    memset(m_map, 0xff, 5);
 }
 
 ChannelMap::ChannelMap(uint8_t channelMap[5])
 {
     /* Import channel map. */
-    memcpy(this->m_map, channelMap, 5);
+    memcpy(m_map, channelMap, 5);
+}
+
+bool ChannelMap::isNull()
+{
+    return !memcmp(m_map, cm_NULL, 5);
 }
 
 void ChannelMap::enableChannel(int channel)

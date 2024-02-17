@@ -24,6 +24,8 @@ namespace whad::ble {
             void disableChannel(int channel);
             bool isChannelEnabled(int channel);
 
+            bool isNull();
+
             /* Channel map accessor. */
             uint8_t *getChannelMapBuf(void);
     };
