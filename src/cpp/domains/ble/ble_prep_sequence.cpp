@@ -105,6 +105,45 @@ std::vector<PDU>& PrepareSequence::getPackets()
 }
 
 
+/**
+ * @brief   Determine the type of trigger for this sequence
+ * 
+ * @retval  Type of trigger
+ */
+
+SequenceType PrepareSequence::getType(BleMsg &message)
+{
+    whad_result_t result;
+    whad_ble_trigger_t triggerType;
+
+    result = whad_ble_prepare_sequence_get_trigger_type(
+        message.getMessage(),
+        &triggerType
+    );
+
+    if (result == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
+    else
+    {
+        switch (triggerType)
+        {
+            case BLE_CONNEVT_TRIGGER:
+                return SequenceConnEvt;
+
+            case BLE_MANUAL_TRIGGER:
+                return SequenceManual;
+
+            case BLE_PATTERN_TRIGGER:
+                return SequencePattern;
+        }
+    }
+
+    return SequenceManual;
+}
+
+
 /***************************************************
  * PrepareSequence with manual trigger.
  ***************************************************/

@@ -8,6 +8,12 @@
 
 namespace whad::ble {
 
+    enum SequenceType {
+        SequencePattern = 0,
+        SequenceManual,
+        SequenceConnEvt,
+    };
+
     /**
      * PrepareSequence base class.
      * 
@@ -24,6 +30,8 @@ namespace whad::ble {
             uint32_t getId();
             Direction getDirection();
             std::vector<PDU>& getPackets();
+
+            static SequenceType getType(BleMsg &message);
 
         protected:
             uint32_t m_id;
