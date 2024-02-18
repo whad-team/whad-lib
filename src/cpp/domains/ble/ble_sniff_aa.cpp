@@ -52,6 +52,30 @@ void SniffAccessAddress::pack()
 
 
 /**
+ * @brief   Extract parameters from a BleMsg
+ */
+
+void SniffAccessAddress::unpack()
+{
+    whad_result_t result;
+    uint8_t channelMap[5];
+
+    result = whad_ble_sniff_access_address_parse(
+        this->getMessage(),
+        channelMap
+    );
+
+    if (result == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
+    else
+    {
+        m_channelMap = ChannelMap(channelMap);
+    }
+}
+
+/**
  * @brief   Parse a BleMsg as an AccessAddressDiscovered message
  * 
  * @param[in]   message     Message to parse
