@@ -1,5 +1,5 @@
-#ifndef __INC_WHAD_ZIGBEE_RAWPDU_HPP
-#define __INC_WHAD_ZIGBEE_RAWPDU_HPP
+#ifndef __INC_WHAD_ZIGBEE_PDU_HPP
+#define __INC_WHAD_ZIGBEE_PDU_HPP
 
 #include <string>
 #include "message.hpp"
@@ -9,11 +9,11 @@
 
 namespace whad::zigbee {
 
-    class RawPduReceived : public ZigbeeMsg
+    class PduReceived : public ZigbeeMsg
     {
         public:
-            RawPduReceived(ZigbeeMsg &message);
-            RawPduReceived(ZigbeePacket &pdu);
+            PduReceived(ZigbeeMsg &message);
+            PduReceived(ZigbeePacket &pdu);
 
             /* Getter. */
             ZigbeePacket& getPacket();
@@ -26,4 +26,4 @@ namespace whad::zigbee {
     };
 }
 
-#endif /* __INC_WHAD_ZIGBEE_RAWPDU_HPP */
+#endif /* __INC_WHAD_ZIGBEE_PDU_HPP */
