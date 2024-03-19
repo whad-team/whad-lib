@@ -85,3 +85,69 @@ void SendRawPdu::unpack()
         m_pdu = PDU(params.p_pdu, params.length);
     }
 }
+
+
+/**
+ * @brief   Get PDU direction
+ * 
+ * @return  PDU direction (see enum `Direction`)
+ */
+
+Direction SendRawPdu::getDirection()
+{
+    return m_direction;
+}
+
+
+/**
+ * @brief   Retrieve the associated connection handle
+ * 
+ * @return  Connection handle
+ */
+
+uint32_t SendRawPdu::getConnHandle()
+{
+    return m_connHandle;
+}
+
+
+/**
+ * @brief   Retrieve the PDU access address.
+ * 
+ * @return  Access address
+ */
+
+uint32_t SendRawPdu::getAccessAddress()
+{
+    return m_accessAddr;
+}
+
+PDU& SendRawPdu::getPdu()
+{
+    return m_pdu;
+}
+
+
+/**
+ * @brief   Retrieve the PDU CRC
+ * 
+ * @return  CRC value for the PDU
+ */
+
+uint32_t SendRawPdu::getCrc()
+{
+    return m_crc;
+}
+
+
+/**
+ * @brief   Determine if the PDU is encrypted
+ * 
+ * @retval  True    PDU must be sent encrypted
+ * @retval  False   PDU must not be sent encrypted
+ */
+
+bool SendRawPdu::isEncrypted()
+{
+    return m_encrypt;
+}
