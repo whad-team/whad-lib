@@ -10,7 +10,7 @@ namespace whad::zigbee {
 
     typedef whad::Packet<255> PDU;
 
-    /* BLE message types. */
+    /* ZigBee message types. */
     enum MessageType {
         UnknownMsg = WHAD_ZIGBEE_UNKNOWN,
         SetNodeAddressMsg = WHAD_ZIGBEE_SET_NODE_ADDRESS,

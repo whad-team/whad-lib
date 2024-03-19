@@ -137,9 +137,7 @@ namespace whad {
                 /* Set device address. */
                 if ((length >= minSize) && (length <= maxSize))
                 {
-                    /* Copy address bytes. */
-                    m_length = length;
-                    memcpy(m_address, pAddress, length);
+                    set(pAddress, length);
                 }
                 else
                 {
@@ -169,6 +167,16 @@ namespace whad {
                 return maxSize;
             }
 
+            void set(uint8_t *pBytes, int length)
+            {
+                if ((length >= minSize) && (length <= maxSize))
+                {
+                    /* Copy address bytes. */
+                    m_length = length;
+                    memcpy(m_address, pBytes, length);
+                }
+            }
+
             /* Operators */
 
             /* Comparison operator overloading. */
@@ -181,13 +189,13 @@ namespace whad {
             }
 
             /* Assignment operator overloading. */
-            DeviceAddress& operator=(DeviceAddress&& other) noexcept
+            DeviceAddress& operator=(DeviceAddress& other) noexcept
             {
                 if (this == &other)
                     return *this;
 
                 int other_length = other.getLength();
-                if ((other_length >= minSize) && (other <= maxSize))
+                if ((other_length >= minSize) && (other_length <= maxSize))
                 {
                     m_length = other_length;
                     memcpy(m_address, other.getBytes(), m_length);

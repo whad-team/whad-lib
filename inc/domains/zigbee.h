@@ -23,7 +23,7 @@ typedef enum {
     WHAD_ZIGBEE_SEND_RAW=zigbee_Message_send_raw_tag,
     WHAD_ZIGBEE_END_DEVICE_MODE=zigbee_Message_end_device_tag,
     WHAD_ZIGBEE_ROUTER_MODE=zigbee_Message_router_tag,
-    WHAD_ZIGBEE_COORD_MODE=zigbee_Message_router_tag,
+    WHAD_ZIGBEE_COORD_MODE=zigbee_Message_coordinator_tag,
     WHAD_ZIGBEE_START=zigbee_Message_start_tag,
     WHAD_ZIGBEE_STOP=zigbee_Message_stop_tag,
     WHAD_ZIGBEE_MITM_MODE=zigbee_Message_mitm_tag,
