@@ -33,3 +33,4 @@
 #include "ble/synchro.hpp"
 #include "ble/hijacked.hpp"
 #include "ble/injected.hpp"
+#include "ble/triggered.hpp"
