@@ -1,5 +1,5 @@
-#ifndef __INC_WHAD_ZIGBEE_PACKET_HPP
-#define __INC_WHAD_ZIGBEE_PACKET_HPP
+#ifndef __INC_WHAD_UNIFYING_PACKET_HPP
+#define __INC_WHAD_UNIFYING_PACKET_HPP
 
 #include "unifying/base.hpp"
 
@@ -48,4 +48,4 @@ namespace whad::unifying {
     };
 }
 
-#endif /* __INC_WHAD_ZIGBEE_PACKET_HPP */
+#endif /* __INC_WHAD_UNIFYING_PACKET_HPP */
