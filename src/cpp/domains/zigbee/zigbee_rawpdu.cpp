@@ -90,7 +90,7 @@ void RawPduReceived::pack()
     }
 
     /* Craft message with packet info. */
-    whad_zigbee_pdu_received(
+    whad_zigbee_raw_pdu_received(
         this->getMessage(),
         &packet
     );
