@@ -797,7 +797,7 @@ whad_result_t whad_zigbee_raw_pdu_received(Message *p_message, whad_zigbee_recvd
 
     /* Set message properties. */
     p_message->which_msg = Message_zigbee_tag;
-    p_message->msg.zigbee.which_msg = unifying_Message_raw_pdu_tag;
+    p_message->msg.zigbee.which_msg = zigbee_Message_raw_pdu_tag;
     p_message->msg.zigbee.msg.raw_pdu.channel = p_packet->channel;
     p_message->msg.zigbee.msg.raw_pdu.pdu.size = p_packet->packet.length;
     p_message->msg.zigbee.msg.raw_pdu.fcs = p_packet->fcs;
@@ -926,7 +926,7 @@ whad_result_t whad_zigbee_pdu_received(Message *p_message, whad_zigbee_recvd_pac
 
     /* Set message properties. */
     p_message->which_msg = Message_zigbee_tag;
-    p_message->msg.zigbee.which_msg = unifying_Message_raw_pdu_tag;
+    p_message->msg.zigbee.which_msg = zigbee_Message_pdu_tag;
     p_message->msg.zigbee.msg.pdu.channel = p_packet->channel;
     p_message->msg.zigbee.msg.pdu.pdu.size = p_packet->packet.length;
     memcpy(p_message->msg.zigbee.msg.pdu.pdu.bytes, p_packet->packet.bytes, p_packet->packet.length);
