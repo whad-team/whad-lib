@@ -39,7 +39,7 @@ namespace whad
             /* Constructor and destructor. */
             NanoPbMsg();
             NanoPbMsg(Message *message);
-            ~NanoPbMsg();
+            virtual ~NanoPbMsg();
 
             /* Accessor. */
             Message *getMessage(void);
