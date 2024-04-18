@@ -60,7 +60,8 @@ whad_result_t whad_ble_raw_pdu(Message *p_message, uint32_t channel, int32_t rss
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_raw_pdu_tag;
 
-    /* Set connection handle, access address and direction. */
+    /* Set channel, connection handle, access address and direction. */
+    p_message->msg.ble.msg.raw_pdu.channel = channel;
     p_message->msg.ble.msg.raw_pdu.access_address = access_address;
     p_message->msg.ble.msg.raw_pdu.conn_handle = conn_handle;
     p_message->msg.ble.msg.raw_pdu.direction = (ble_BleDirection)direction;
@@ -91,6 +92,11 @@ whad_result_t whad_ble_raw_pdu(Message *p_message, uint32_t channel, int32_t rss
     {
         p_message->msg.ble.msg.raw_pdu.has_rssi = true;
         p_message->msg.ble.msg.raw_pdu.rssi = rssi;
+    }
+    else
+    {
+        p_message->msg.ble.msg.raw_pdu.has_rssi = false;
+        p_message->msg.ble.msg.raw_pdu.rssi= 0;
     }
 
     /* Processed / decrypted. */

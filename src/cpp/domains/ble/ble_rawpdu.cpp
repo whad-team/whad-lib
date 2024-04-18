@@ -2,6 +2,11 @@
 
 using namespace whad::ble;
 
+RawPdu::RawPdu(BleMsg &message) : BleMsg(message)
+{
+    //this->unpack();
+}
+
 /**
  * @brief   Raw PDU constructor, including timestamp.
  * 
@@ -25,9 +30,25 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
                           uint32_t relative_timestamp, Direction direction, bool processed,
                           bool decrypted) : BleMsg()
 {
+    m_channel = channel;
+    m_connHandle = conn_handle;
+    m_accessAddress = access_address;
+    m_pdu = pdu;
+    m_crc = crc;
+    m_rssi = rssi;
+    m_crcValidity = crc_validity;
+    m_timestamp = timestamp;
+    m_relative_timestamp = relative_timestamp;
+    m_direction = direction;
+    m_processed = processed;
+    m_decrypted = decrypted;
+    m_hasTimestamp = true;
+
+    /*
     whad_ble_raw_pdu(this->getMessage(), channel, rssi, conn_handle, access_address, pdu.getBytes(), pdu.getSize(), crc, 
                      crc_validity, timestamp, relative_timestamp, (whad_ble_direction_t)direction, processed,
                      decrypted, true);
+    */
 }
 
 /**
@@ -50,6 +71,59 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
                            PDU pdu, uint32_t crc, bool crc_validity, Direction direction,
                            bool processed, bool decrypted) : BleMsg()
 {
-    whad_ble_raw_pdu(this->getMessage(), channel, rssi, conn_handle, access_address, pdu.getBytes(), pdu.getSize(),
-                     crc, crc_validity, 0, 0, (whad_ble_direction_t)direction, processed, decrypted, false);
+    m_channel = channel;
+    m_connHandle = conn_handle;
+    m_accessAddress = access_address;
+    m_pdu = pdu;
+    m_crc = crc;
+    m_rssi = rssi;
+    m_crcValidity = crc_validity;
+    m_direction = direction;
+    m_processed = processed;
+    m_decrypted = decrypted;
+    m_hasTimestamp = false;
+}
+
+void RawPdu::pack(void)
+{
+    if (m_hasTimestamp)
+    {
+        whad_ble_raw_pdu(
+            this->getMessage(),
+            m_channel,
+            m_rssi,
+            m_connHandle,
+            m_accessAddress,
+            m_pdu.getBytes(),
+            m_pdu.getSize(),
+            m_crc, 
+            m_crcValidity,
+            m_timestamp,
+            m_relative_timestamp,
+            (whad_ble_direction_t)m_direction,
+            m_processed,
+            m_decrypted,
+            true
+        );
+    }
+    else
+    {
+        whad_ble_raw_pdu(
+            this->getMessage(),
+            m_channel,
+            m_rssi,
+            m_connHandle,
+            m_accessAddress,
+            m_pdu.getBytes(),
+            m_pdu.getSize(),
+            m_crc, 
+            m_crcValidity,
+            0,
+            0,
+            (whad_ble_direction_t)m_direction,
+            m_processed,
+            m_decrypted,
+            false
+        );        
+    }
 }
