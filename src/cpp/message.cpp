@@ -124,8 +124,8 @@ whad::MessageDomain whad::NanoPbMsg::getDomain(void)
                 domain = DomainUnifying;
                 break;
 
-            case DOMAIN_ZIGBEE:
-                domain = DomainZigbee;
+            case DOMAIN_DOT15D4:
+                domain = DomainDot15d4;
                 break;
 
             default:

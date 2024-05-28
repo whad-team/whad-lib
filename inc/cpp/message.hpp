@@ -22,7 +22,7 @@ namespace whad
         DomainEsb,
         DomainPhy,
         DomainUnifying,
-        DomainZigbee
+        DomainDot15d4
     };
 
     /**
