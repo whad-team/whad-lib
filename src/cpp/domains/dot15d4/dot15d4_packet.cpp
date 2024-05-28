@@ -89,7 +89,7 @@ Dot15d4Packet::Dot15d4Packet(uint32_t channel, uint8_t *pPdu, int length, uint32
 /* Setters. */
 
 /**
- * @brief   Set zigbee packet channel value
+ * @brief   Set dot15d4 packet channel value
  * 
  * @param[in]   channel     Zigbee channel this packet has been received on
  */
@@ -100,7 +100,7 @@ void Dot15d4Packet::setChannel(uint32_t channel)
 }
 
 /**
- * @brief   Set zigbee packet channel FCS value
+ * @brief   Set dot15d4 packet channel FCS value
  * 
  * @param[in]   fcs         Frame Check Sequence value for this packet
  */
@@ -112,7 +112,7 @@ void Dot15d4Packet::setFcs(uint32_t fcs)
 
 
 /**
- * @brief   Set zigbee packet PDU
+ * @brief   Set dot15d4 packet PDU
  * 
  * @param[in]   pdu         packet PDU
  */

@@ -66,7 +66,7 @@ void EnergyDetect::unpack()
 
 
 /**
- * @brief   Retrieve the zigbee channel to detect
+ * @brief   Retrieve the dot15d4 channel to detect
  * 
  * @retval  Channel number
  */

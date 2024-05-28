@@ -78,7 +78,7 @@ void SendRawPdu::unpack()
 
 
 /**
- * @brief   Retrieve the zigbee channel to use
+ * @brief   Retrieve the dot15d4 channel to use
  * 
  * @retval  Channel number
  */

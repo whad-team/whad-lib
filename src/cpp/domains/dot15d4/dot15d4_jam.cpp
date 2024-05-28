@@ -66,7 +66,7 @@ void JamMode::unpack()
 
 
 /**
- * @brief   Retrieve the zigbee channel to jam
+ * @brief   Retrieve the dot15d4 channel to jam
  * 
  * @retval  Channel number
  */

@@ -75,7 +75,7 @@ void SetNodeAddress::unpack()
 
 
 /**
- * @brief   Retrieve the zigbee node address
+ * @brief   Retrieve the dot15d4 node address
  * 
  * @retval  Node address
  */
@@ -87,7 +87,7 @@ uint64_t SetNodeAddress::getAddress()
 
 
 /**
- * @brief   Retrieve the zigbee node address type
+ * @brief   Retrieve the dot15d4 node address type
  * 
  * @retval  Node address type
  */

@@ -66,7 +66,7 @@ void SniffMode::unpack()
 
 
 /**
- * @brief   Retrieve the zigbee channel to sniff
+ * @brief   Retrieve the dot15d4 channel to sniff
  * 
  * @retval  Channel number
  */

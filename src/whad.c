@@ -122,7 +122,7 @@ whad_msgtype_t whad_get_message_type(Message *p_msg)
         case Message_esb_tag:
         case Message_phy_tag:
         case Message_unifying_tag:
-        case Message_zigbee_tag:
+        case Message_dot15d4_tag:
             msg_type = WHAD_MSGTYPE_DOMAIN;
             break;
 
@@ -156,8 +156,8 @@ whad_domain_t whad_get_message_domain(Message *p_msg)
             domain = DOMAIN_LOGITECH_UNIFYING;
             break;
 
-        case Message_zigbee_tag:
-            domain = DOMAIN_ZIGBEE;
+        case Message_dot15d4_tag:
+            domain = DOMAIN_DOT15D4;
             break;
 
         default:

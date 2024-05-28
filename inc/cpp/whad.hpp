@@ -21,7 +21,7 @@
 #include <ble/ble.hpp>
 
 /* ZigBee messages. */
-#include <zigbee/zigbee.hpp>
+#include <dot15d4/dot15d4.hpp>
 
 /* Unifying messages. */
 #include <unifying/unifying.hpp>

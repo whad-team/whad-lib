@@ -37,7 +37,7 @@ Dot15d4Msg::~Dot15d4Msg()
 
 
 /**
- * @brief       Identify the underlying zigbee message.
+ * @brief       Identify the underlying dot15d4 message.
  *
  * This method can be used when parsing incoming Dot15d4 domain message to identify
  * the type of message it contains and process it later.

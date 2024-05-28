@@ -15,7 +15,7 @@ RawPduReceived::RawPduReceived(Dot15d4Msg &message) : Dot15d4Msg(message)
 
 
 /**
- * @brief   Create a RawPduReceived message from a zigbee packet
+ * @brief   Create a RawPduReceived message from a dot15d4 packet
  * 
  * @param[in]   packet      Zigbee packet to include in the message
  */
@@ -154,7 +154,7 @@ void RawPduReceived::unpack()
 /**
  * @brief   Retrieve the Zigbee packet
  * 
- * @retval  Reference to a zigbee packet, including PDU and metadata
+ * @retval  Reference to a dot15d4 packet, including PDU and metadata
  */
 
 Dot15d4Packet& RawPduReceived::getPacket()

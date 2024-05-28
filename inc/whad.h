@@ -9,7 +9,7 @@
 #include "domains/phy.h"
 #include "domains/esb.h"
 #include "domains/unifying.h"
-#include "domains/zigbee.h"
+#include "domains/dot15d4.h"
 
 
 #define WHAD_MESSAGE_MAX_SIZE       (4096)
