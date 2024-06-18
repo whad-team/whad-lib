@@ -33,7 +33,7 @@ whad_esb_msgtype_t whad_esb_get_message_type(Message *p_message)
 whad_result_t whad_esb_set_node_address(Message *p_message, whad_esb_address_t *p_addr)
 {
     /* Sanity checks. */
-    if ((p_message == NULL) || (p_addr))
+    if ((p_message == NULL) || (p_addr == NULL))
     {
         return WHAD_ERROR;
     }

@@ -27,14 +27,42 @@ LIB_DIR := lib
 # Include flags
 INCLUDE  := -I. -Inanopb -Iinc
 
-# NANOPB targets
-TARGETS := $(wildcard src/*.c) $(wildcard $(NANOPB_DIR)/*.c) $(wildcard $(WHAD_DIR)/*.c) $(wildcard $(WHAD_DIR)/*/*.c)
-OBJS=$(TARGETS:.c=.o)
+# WHAD Library
+TARGETS := $(wildcard nanopb/*.c) \
+	$(wildcard whad/protocol/*.c) \
+	$(wildcard whad/protocol/*/*.c) \
+	$(wildcard src/*.c) \
+	$(wildcard src/domains/*.c) \
+	$(wildcard src/cpp/*.cpp) \
+	$(wildcard src/cpp/domains/*.cpp) \
+	$(wildcard src/cpp/domains/*/*.cpp) \
+	$(wildcard src/cpp/discovery/*.cpp) \
+	$(wildcard src/cpp/generic/*.cpp)
+OBJS := $(TARGETS:.c=.o)
+OBJS := $(OBJS:.cpp=.o)
+
+# WHAD Lib
+INC_FOLDERS += \
+	-I./ \
+	-Iinc \
+	-Iinc/cpp \
+	-Inanopb \
+	-Iwhad/protocol \
+	-Iwhad/protocol/ble \
+	-Iwhad/protocol/dot15d4 \
+	-Iwhad/protocol/esb \
+	-Iwhad/protocol/phy
+INCLUDE += $(INC_FOLDERS)
+
+%.o: %.cpp
+	echo "file $<"
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 libwhad.a: $(OBJS)
+	echo $(OBJS)
 	$(AR) -rc $(LIB_DIR)/libwhad.a $(OBJS)
 
 all: libwhad.a
