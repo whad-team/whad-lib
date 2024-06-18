@@ -1179,6 +1179,8 @@ whad_result_t whad_phy_supported_frequencies(Message *p_message, whad_phy_freque
 whad_result_t whad_phy_sched_packet(Message *p_message, uint8_t *p_packet, int length, uint32_t ts_sec,
                                              uint32_t ts_usec)
 {
+    uint64_t timestamp = ts_sec*1000000 + ts_usec;
+
     /* Sanity check. */
     if ((p_message == NULL) || (p_packet == NULL))
     {
@@ -1200,9 +1202,7 @@ whad_result_t whad_phy_sched_packet(Message *p_message, uint8_t *p_packet, int l
     memcpy(p_message->msg.phy.msg.sched_send.packet.bytes, p_packet, length);
 
     /* Set timestamp. */
-    p_message->msg.phy.msg.sched_send.has_timestamp = true;
-    p_message->msg.phy.msg.sched_send.timestamp.sec = ts_sec;
-    p_message->msg.phy.msg.sched_send.timestamp.usec = ts_usec;
+    p_message->msg.phy.msg.sched_send.timestamp = timestamp;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1240,8 +1240,8 @@ whad_result_t whad_phy_sched_packet_parse(Message *p_message, whad_phy_sched_pac
     }
 
     /* Extract timestamp. */
-    p_sched_packet->ts.ts_sec = p_message->msg.phy.msg.sched_send.timestamp.sec;
-    p_sched_packet->ts.ts_usec = p_message->msg.phy.msg.sched_send.timestamp.usec;
+    p_sched_packet->ts.ts_sec = (uint32_t)(p_message->msg.phy.msg.sched_send.timestamp/1000000);
+    p_sched_packet->ts.ts_usec = (uint32_t)(p_message->msg.phy.msg.sched_send.timestamp%1000000);
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1273,15 +1273,11 @@ whad_result_t whad_phy_jammed(Message *p_message, uint32_t ts_sec, uint32_t ts_u
     
     if ((ts_sec > 0) || (ts_usec > 0))
     {
-        p_message->msg.phy.msg.jammed.has_timestamp = true;
-        p_message->msg.phy.msg.jammed.timestamp.sec = ts_sec;
-        p_message->msg.phy.msg.jammed.timestamp.usec = ts_usec;
+        p_message->msg.phy.msg.jammed.timestamp = ts_sec*1000000 + ts_usec;
     }
     else
     {
-        p_message->msg.phy.msg.jammed.has_timestamp = false;
-        p_message->msg.phy.msg.jammed.timestamp.sec = 0;
-        p_message->msg.phy.msg.jammed.timestamp.usec = 0;
+        p_message->msg.phy.msg.jammed.timestamp = 0;
     }
 
     /* Success. */
@@ -1308,14 +1304,8 @@ whad_result_t whad_phy_jammed_parse(Message *p_message, whad_phy_timestamp_t *p_
     }
 
     /* Extract timestamp from message. */
-    p_timestamp->ts_sec = 0;
-    p_timestamp->ts_usec = 0;
-
-    if (p_message->msg.phy.msg.jammed.has_timestamp)
-    {
-        p_timestamp->ts_sec = p_message->msg.phy.msg.jammed.timestamp.sec;
-        p_timestamp->ts_usec = p_message->msg.phy.msg.jammed.timestamp.usec;
-    }
+    p_timestamp->ts_sec = (uint32_t)(p_message->msg.phy.msg.jammed.timestamp / 1000000);
+    p_timestamp->ts_usec = (uint32_t)(p_message->msg.phy.msg.jammed.timestamp % 1000000);
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1409,14 +1399,12 @@ whad_result_t whad_phy_packet_received(Message *p_message, uint32_t frequency, i
     if ((ts_sec > 0) || (ts_usec > 0))
     {
         p_message->msg.phy.msg.packet.has_timestamp = true;
-        p_message->msg.phy.msg.packet.timestamp.sec = ts_sec;
-        p_message->msg.phy.msg.packet.timestamp.usec = ts_usec;
+        p_message->msg.phy.msg.packet.timestamp = ts_sec*1000000 + ts_usec;
     }
     else
     {
         p_message->msg.phy.msg.packet.has_timestamp = false;
-        p_message->msg.phy.msg.packet.timestamp.sec = 0;
-        p_message->msg.phy.msg.packet.timestamp.usec = 0;
+        p_message->msg.phy.msg.packet.timestamp = 0;
     }
 
     /* Set rssi. */
@@ -1457,8 +1445,8 @@ whad_result_t whad_phy_packet_received_parse(Message *p_message, whad_phy_receiv
     p_received_pkt->ts.ts_usec = 0;
     if (p_message->msg.phy.msg.packet.has_timestamp)
     {
-        p_received_pkt->ts.ts_sec = p_message->msg.phy.msg.packet.timestamp.sec;
-        p_received_pkt->ts.ts_usec = p_message->msg.phy.msg.packet.timestamp.usec;
+        p_received_pkt->ts.ts_sec = (uint32_t)(p_message->msg.phy.msg.packet.timestamp / 1000000);
+        p_received_pkt->ts.ts_usec = (uint32_t)(p_message->msg.phy.msg.packet.timestamp % 1000000);
     }
 
     p_received_pkt->rssi = p_message->msg.phy.msg.packet.rssi;

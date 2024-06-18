@@ -3,7 +3,7 @@
 
 #include "../nanopb/pb_encode.h"
 #include "../nanopb/pb_decode.h"
-#include "../protocol/whad.pb.h"
+#include "../whad/protocol/whad.pb.h"
 
 #ifdef __cplusplus
 extern "C" {
