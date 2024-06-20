@@ -76,5 +76,6 @@ void EsbAddress::setAddress(uint8_t *pAddress, uint8_t size)
     {
         /* Copy BD address. */
         memcpy(this->m_address, pAddress, size);
+        this->m_size = size;
     }
 }
