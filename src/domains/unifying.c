@@ -34,7 +34,7 @@ whad_unifying_msgtype_t whad_unifying_get_message_type(Message *p_message)
 whad_result_t whad_unifying_set_node_address(Message *p_message, whad_unifying_address_t *p_addr)
 {
     /* Sanity checks. */
-    if ((p_message == NULL) || (p_addr))
+    if ((p_message == NULL) || (p_addr == NULL))
     {
         return WHAD_ERROR;
     }
