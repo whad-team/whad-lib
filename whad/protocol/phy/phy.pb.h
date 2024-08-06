@@ -84,6 +84,17 @@ typedef enum _phy_LoRaCodingRate {
     phy_LoRaCodingRate_CR48 = 3 
 } phy_LoRaCodingRate;
 
+typedef enum _phy_Modulation { 
+    phy_Modulation_ASK = 0, 
+    phy_Modulation_FSK = 1, 
+    phy_Modulation_FOURFSK = 2, 
+    phy_Modulation_GFSK = 3, 
+    phy_Modulation_MSK = 4, 
+    phy_Modulation_BPSK = 5, 
+    phy_Modulation_QPSK = 6, 
+    phy_Modulation_LORA = 7 
+} phy_Modulation;
+
 /* Struct definitions */
 /* *
  GetSupportedFrequenciesCmd
@@ -168,6 +179,7 @@ typedef struct _phy_MonitoringReport {
 } phy_MonitoringReport;
 
 typedef PB_BYTES_ARRAY_T(255) phy_PacketReceived_packet_t;
+typedef PB_BYTES_ARRAY_T(8) phy_PacketReceived_syncword_t;
 typedef struct _phy_PacketReceived { 
     uint32_t frequency;
     bool has_rssi;
@@ -175,6 +187,11 @@ typedef struct _phy_PacketReceived {
     bool has_timestamp;
     uint64_t timestamp;
     phy_PacketReceived_packet_t packet;
+    uint32_t deviation;
+    uint32_t datarate;
+    phy_Endianness endian;
+    phy_Modulation modulation;
+    phy_PacketReceived_syncword_t syncword;
 } phy_PacketReceived;
 
 typedef struct _phy_PacketSent { 
@@ -182,6 +199,7 @@ typedef struct _phy_PacketSent {
 } phy_PacketSent;
 
 typedef PB_BYTES_ARRAY_T(255) phy_RawPacketReceived_packet_t;
+typedef PB_BYTES_ARRAY_T(8) phy_RawPacketReceived_syncword_t;
 typedef struct _phy_RawPacketReceived { 
     uint32_t frequency;
     bool has_rssi;
@@ -190,6 +208,11 @@ typedef struct _phy_RawPacketReceived {
     uint64_t timestamp;
     phy_RawPacketReceived_packet_t packet;
     pb_callback_t iq;
+    uint32_t deviation;
+    uint32_t datarate;
+    phy_Endianness endian;
+    phy_Modulation modulation;
+    phy_RawPacketReceived_syncword_t syncword;
 } phy_RawPacketReceived;
 
 /* *
@@ -416,6 +439,10 @@ typedef struct _phy_Message {
 #define _phy_LoRaCodingRate_MAX phy_LoRaCodingRate_CR48
 #define _phy_LoRaCodingRate_ARRAYSIZE ((phy_LoRaCodingRate)(phy_LoRaCodingRate_CR48+1))
 
+#define _phy_Modulation_MIN phy_Modulation_ASK
+#define _phy_Modulation_MAX phy_Modulation_LORA
+#define _phy_Modulation_ARRAYSIZE ((phy_Modulation)(phy_Modulation_LORA+1))
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -447,8 +474,8 @@ extern "C" {
 #define phy_StopCmd_init_default                 {0}
 #define phy_JamCmd_init_default                  {_phy_JammingMode_MIN}
 #define phy_MonitorCmd_init_default              {0}
-#define phy_PacketReceived_init_default          {0, false, 0, false, 0, {0, {0}}}
-#define phy_RawPacketReceived_init_default       {0, false, 0, false, 0, {0, {0}}, {{NULL}, NULL}}
+#define phy_PacketReceived_init_default          {0, false, 0, false, 0, {0, {0}}, 0, 0, _phy_Endianness_MIN, _phy_Modulation_MIN, {0, {0}}}
+#define phy_RawPacketReceived_init_default       {0, false, 0, false, 0, {0, {0}}, {{NULL}, NULL}, 0, 0, _phy_Endianness_MIN, _phy_Modulation_MIN, {0, {0}}}
 #define phy_PacketSent_init_default              {0}
 #define phy_Jammed_init_default                  {0}
 #define phy_MonitoringReport_init_default        {0, {{NULL}, NULL}}
@@ -480,8 +507,8 @@ extern "C" {
 #define phy_StopCmd_init_zero                    {0}
 #define phy_JamCmd_init_zero                     {_phy_JammingMode_MIN}
 #define phy_MonitorCmd_init_zero                 {0}
-#define phy_PacketReceived_init_zero             {0, false, 0, false, 0, {0, {0}}}
-#define phy_RawPacketReceived_init_zero          {0, false, 0, false, 0, {0, {0}}, {{NULL}, NULL}}
+#define phy_PacketReceived_init_zero             {0, false, 0, false, 0, {0, {0}}, 0, 0, _phy_Endianness_MIN, _phy_Modulation_MIN, {0, {0}}}
+#define phy_RawPacketReceived_init_zero          {0, false, 0, false, 0, {0, {0}}, {{NULL}, NULL}, 0, 0, _phy_Endianness_MIN, _phy_Modulation_MIN, {0, {0}}}
 #define phy_PacketSent_init_zero                 {0}
 #define phy_Jammed_init_zero                     {0}
 #define phy_MonitoringReport_init_zero           {0, {{NULL}, NULL}}
@@ -500,12 +527,22 @@ extern "C" {
 #define phy_PacketReceived_rssi_tag              2
 #define phy_PacketReceived_timestamp_tag         3
 #define phy_PacketReceived_packet_tag            4
+#define phy_PacketReceived_deviation_tag         5
+#define phy_PacketReceived_datarate_tag          6
+#define phy_PacketReceived_endian_tag            7
+#define phy_PacketReceived_modulation_tag        8
+#define phy_PacketReceived_syncword_tag          9
 #define phy_PacketSent_timestamp_tag             1
 #define phy_RawPacketReceived_frequency_tag      1
 #define phy_RawPacketReceived_rssi_tag           2
 #define phy_RawPacketReceived_timestamp_tag      3
 #define phy_RawPacketReceived_packet_tag         4
 #define phy_RawPacketReceived_iq_tag             5
+#define phy_RawPacketReceived_deviation_tag      6
+#define phy_RawPacketReceived_datarate_tag       7
+#define phy_RawPacketReceived_endian_tag         8
+#define phy_RawPacketReceived_modulation_tag     9
+#define phy_RawPacketReceived_syncword_tag       10
 #define phy_SchedulePacketResp_id_tag            1
 #define phy_SchedulePacketResp_full_tag          2
 #define phy_SchedulePacketSent_id_tag            1
@@ -703,7 +740,12 @@ X(a, STATIC,   SINGULAR, UENUM,    mode,              1)
 X(a, STATIC,   SINGULAR, UINT32,   frequency,         1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
 X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3) \
-X(a, STATIC,   SINGULAR, BYTES,    packet,            4)
+X(a, STATIC,   SINGULAR, BYTES,    packet,            4) \
+X(a, STATIC,   SINGULAR, UINT32,   deviation,         5) \
+X(a, STATIC,   SINGULAR, UINT32,   datarate,          6) \
+X(a, STATIC,   SINGULAR, UENUM,    endian,            7) \
+X(a, STATIC,   SINGULAR, UENUM,    modulation,        8) \
+X(a, STATIC,   SINGULAR, BYTES,    syncword,          9)
 #define phy_PacketReceived_CALLBACK NULL
 #define phy_PacketReceived_DEFAULT NULL
 
@@ -712,7 +754,12 @@ X(a, STATIC,   SINGULAR, UINT32,   frequency,         1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
 X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3) \
 X(a, STATIC,   SINGULAR, BYTES,    packet,            4) \
-X(a, CALLBACK, REPEATED, INT32,    iq,                5)
+X(a, CALLBACK, REPEATED, INT32,    iq,                5) \
+X(a, STATIC,   SINGULAR, UINT32,   deviation,         6) \
+X(a, STATIC,   SINGULAR, UINT32,   datarate,          7) \
+X(a, STATIC,   SINGULAR, UENUM,    endian,            8) \
+X(a, STATIC,   SINGULAR, UENUM,    modulation,        9) \
+X(a, STATIC,   SINGULAR, BYTES,    syncword,         10)
 #define phy_RawPacketReceived_CALLBACK pb_default_field_callback
 #define phy_RawPacketReceived_DEFAULT NULL
 
@@ -887,7 +934,7 @@ extern const pb_msgdesc_t phy_Message_msg;
 #define phy_JamCmd_size                          2
 #define phy_Jammed_size                          11
 #define phy_MonitorCmd_size                      0
-#define phy_PacketReceived_size                  286
+#define phy_PacketReceived_size                  312
 #define phy_PacketSent_size                      11
 #define phy_SchedulePacketResp_size              13
 #define phy_SchedulePacketSent_size              11
