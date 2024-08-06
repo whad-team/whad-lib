@@ -61,10 +61,10 @@ bool whad_phy_frequency_range_encode_cb(pb_ostream_t *ostream, const pb_field_t 
 
 /**
  * @brief Initialize a message specifying the Amplitude Shift Keying modulation
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       on_off_keying       Set to true to use On/Off keying, false otherwise
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -89,10 +89,10 @@ whad_result_t whad_phy_set_ask_mod(Message *p_message, bool on_off_keying)
 
 /**
  * @brief Parse a message specifying the Amplitude Shift Keying modulation
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_on_off_keying     Pointer to the on/off keying parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -115,10 +115,10 @@ whad_result_t whad_phy_set_ask_mod_parse(Message *p_message, bool *p_on_off_keyi
 
 /**
  * @brief Initialize a message specifying the Frequency Shift Keying modulation
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       deviation           Set FSK deviation in Hz
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -143,10 +143,10 @@ whad_result_t whad_phy_set_fsk_mod(Message *p_message, uint32_t deviation)
 
 /**
  * @brief Parse a message specifying the Frequency Shift Keying modulation
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_deviation         Pointer to the output deviation parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -169,10 +169,10 @@ whad_result_t whad_phy_set_fsk_mod_parse(Message *p_message, uint32_t *p_deviati
 
 /**
  * @brief Initialize a message specifying the 4 Frequency Shift Keying modulation
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       deviation           Set 4FSK deviation in Hz
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -197,10 +197,10 @@ whad_result_t whad_phy_set_4fsk_mod(Message *p_message, uint32_t deviation)
 
 /**
  * @brief Parse a message specifying the 4 Frequency Shift Keying modulation
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_deviation         Pointer to the output deviation parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -223,10 +223,10 @@ whad_result_t whad_phy_set_4fsk_mod_parse(Message *p_message, uint32_t *p_deviat
 
 /**
  * @brief Initialize a message specifying the Gaussian Frequency Shift Keying modulation
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       deviation           Set GFSK deviation in Hz
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -251,10 +251,10 @@ whad_result_t whad_phy_set_gfsk_mod(Message *p_message, uint32_t deviation)
 
 /**
  * @brief Parse a message specifying the Gaussian Frequency Shift Keying modulation
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_deviation         Pointer to the output deviation parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -277,9 +277,9 @@ whad_result_t whad_phy_set_gfsk_mod_parse(Message *p_message, uint32_t *p_deviat
 
 /**
  * @brief Initialize a message specifying the Binary Phase Shift Keying modulation
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -303,10 +303,10 @@ whad_result_t whad_phy_set_bpsk_mod(Message *p_message)
 
 /**
  * @brief Initialize a message specifying the Quadrature Phase Shift Keying modulation
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       offset              QPSK offset
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -331,10 +331,10 @@ whad_result_t whad_phy_set_qpsk_mod(Message *p_message, bool b_offset)
 
 /**
  * @brief Parse a message specifying the Quadrature Phase Shift Keying modulation
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_offset            Pointer to the output offset parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -357,10 +357,10 @@ whad_result_t whad_phy_set_qpsk_mod_parse(Message *p_message, bool *p_offset)
 
 /**
  * @brief Initialize a message specifying the Minimum Shift Keying modulation
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       deviation           Set MSK deviation in Hz
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -385,10 +385,10 @@ whad_result_t whad_phy_set_msk_mod(Message *p_message, uint32_t deviation)
 
 /**
  * @brief Parse a message specifying the Minimum Shift Keying modulation
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_deviation         Pointer to the output deviation parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -411,7 +411,7 @@ whad_result_t whad_phy_set_msk_mod_parse(Message *p_message, uint32_t *p_deviati
 
 /**
  * @brief Initialize a message specifying the LoRa modulation
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       bandwith            Bandwidth in Hz
  * @param[in]       spreading_factor    Spreading factor to use
@@ -420,7 +420,7 @@ whad_result_t whad_phy_set_msk_mod_parse(Message *p_message, uint32_t *p_deviati
  * @param[in]       enable_crc          Enable CRC if set to true, disabled otherwise
  * @param[in]       explicit_mode       Enable explicit mode if set to true, disabled otherwise
  * @param[in]       invert_iq           Invert IQ if set to true (downlink)
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -453,10 +453,10 @@ whad_result_t whad_phy_set_lora_mod(Message *p_message, uint32_t bandwidth, whad
 
 /**
  * @brief Parse a message specifying the LoRa modulation
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_lora_params       Pointer to the output LoRa parameters
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -485,10 +485,10 @@ whad_result_t whad_phy_set_lora_mod_parse(Message *p_message, whad_phy_lora_para
 
 /**
  * @brief Initialize a message specifying the frequency to use
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       frequency           Frequency to use, in Hz
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -513,10 +513,10 @@ whad_result_t whad_phy_set_freq(Message *p_message, uint32_t frequency)
 
 /**
  * @brief Parse a message specifying the frequency to use
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_freq              Pointer to the output frequency parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -539,10 +539,10 @@ whad_result_t whad_phy_set_freq_parse(Message *p_message, uint32_t *p_freq)
 
 /**
  * @brief Initialize a message specifying the datarate to use
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       datarate            Frequency to use, in Hz
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
@@ -567,10 +567,10 @@ whad_result_t whad_phy_set_datarate(Message *p_message, uint32_t datarate)
 
 /**
  * @brief Parse a message specifying the datarate to use
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_datarate          Pointer to the output datarate parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -593,10 +593,10 @@ whad_result_t whad_phy_set_datarate_parse(Message *p_message, uint32_t *p_datara
 
 /**
  * @brief Initialize a message specifying the endianness
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       endianness          Packet endianness
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -621,10 +621,10 @@ whad_result_t whad_phy_set_endianness(Message *p_message, whad_phy_endian_t endi
 
 /**
  * @brief Parse a message specifying the endianness
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_endianness        Pointer to the output endianness parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -647,10 +647,10 @@ whad_result_t whad_phy_set_endianness_parse(Message *p_message, whad_phy_endian_
 
 /**
  * @brief Initialize a message specifying the transmit power
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       tx_power            TX power
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -675,10 +675,10 @@ whad_result_t whad_phy_set_tx_power(Message *p_message, whad_phy_txpower_t tx_po
 
 /**
  * @brief Parse a message specifying the transmit power
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_power             Pointer to the output power parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -701,10 +701,10 @@ whad_result_t whad_phy_set_tx_power_parse(Message *p_message, whad_phy_txpower_t
 
 /**
  * @brief Initialize a message specifying the packet size in bytes
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       size                Packet size in bytes
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -729,10 +729,10 @@ whad_result_t whad_phy_set_packet_size(Message *p_message, uint32_t size)
 
 /**
  * @brief Parse a message specifying the packet size in bytes
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_packet_size       Pointer to the output packet size parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -755,11 +755,11 @@ whad_result_t whad_phy_set_packet_size_parse(Message *p_message, uint32_t *p_pac
 
 /**
  * @brief Initialize a message specifying the synchronization word
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       p_syncword          Pointer to a buffer containing the synchronization word
  * @param[in]       length              Syncword length in bytes
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -791,10 +791,10 @@ whad_result_t whad_phy_set_sync_word(Message *p_message, uint8_t *p_syncword, in
 
 /**
  * @brief Parse a message specifying the synchronization word
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_syncword          Pointer to the output syncword parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -818,10 +818,10 @@ whad_result_t whad_phy_set_sync_word_parse(Message *p_message, whad_phy_syncword
 
 /**
  * @brief Initialize a message setting the hardware in sniffing mode
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       iq_stream           If set to true, will capture I/Q instead of packets
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -847,10 +847,10 @@ whad_result_t whad_phy_sniff_mode(Message *p_message, bool iq_stream)
 
 /**
  * @brief Parse a message setting the hardware in sniffing mode
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_iq_stream         Pointer to the output iq_stream boolean parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -877,10 +877,10 @@ whad_result_t whad_phy_sniff_mode_parse(Message *p_message, bool *p_iq_stream)
 
 /**
  * @brief Initialize a message setting the hardware in jamming mode
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       mode                Jamming mode to use
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -905,10 +905,10 @@ whad_result_t whad_phy_jam_mode(Message *p_message, whad_phy_jam_mode_t mode)
 
 /**
  * @brief Parse a message setting the hardware in jamming mode
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_mode              Pointer to the output jamming mode parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -931,9 +931,9 @@ whad_result_t whad_phy_jam_mode_parse(Message *p_message, whad_phy_jam_mode_t *p
 
 /**
  * @brief Initialize a message setting the hardware in monitor mode
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -957,9 +957,9 @@ whad_result_t whad_phy_monitor_mode(Message *p_message)
 
 /**
  * @brief Initialize a message starting the current mode
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -983,9 +983,9 @@ whad_result_t whad_phy_start(Message *p_message)
 
 /**
  * @brief Initialize a message stopping the current mode
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -1009,11 +1009,11 @@ whad_result_t whad_phy_stop(Message *p_message)
 
 /**
  * @brief Initialize a message to send a raw packet
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       p_packet            Pointer to packet bytes to send
  * @param[in]       length              Number of bytes to send
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -1045,10 +1045,10 @@ whad_result_t whad_phy_send(Message *p_message, uint8_t *p_packet, int length)
 
 /**
  * @brief Parse a message to send a raw packet
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_packet            Pointer to the packet parameters
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -1079,11 +1079,11 @@ whad_result_t whad_phy_send_parse(Message *p_message, whad_phy_packet_t *p_packe
 
 /**
  * @brief Initialize a message to send raw IQs
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       p_iq_stream         Pointer to IQ to send
  * @param[in]       length              Number of bytes to send
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -1105,7 +1105,7 @@ whad_result_t whad_phy_send_raw_iq(Message *p_message, uint8_t *p_iq_stream, int
     /* Configure protobuf message. */
     p_message->which_msg = Message_phy_tag;
     p_message->msg.phy.which_msg =  phy_Message_send_raw_tag;
-    
+
     /* TODO: implement support for repeated and packed IQs */
 
     /* Success. */
@@ -1115,11 +1115,11 @@ whad_result_t whad_phy_send_raw_iq(Message *p_message, uint8_t *p_iq_stream, int
 
 /**
  * @brief Initialize a message specifying the supported frequency ranges for the current device
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       p_ranges            Pointer to a list of supported frequency ranges
  * @param[in]       nb_ranges           Number of ranges in the provided list
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -1143,7 +1143,7 @@ whad_result_t whad_phy_supported_frequencies(Message *p_message, whad_phy_freque
         for (i=0; i < nb_ranges; i++)
         {
             p_freq_ranges[i].start = p_ranges[i].start;
-            p_freq_ranges[i].end = p_ranges[i].end; 
+            p_freq_ranges[i].end = p_ranges[i].end;
         }
 
         /* Populate field. */
@@ -1165,13 +1165,13 @@ whad_result_t whad_phy_supported_frequencies(Message *p_message, whad_phy_freque
 
 /**
  * @brief Initialize a message to schedule a packet to be sent
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       p_packet            Pointer to a packet buffer to send
  * @param[in]       length              Packet length in bytes
  * @param[in]       ts_sec              Timestamp, seconds
  * @param[in]       ts_usec             Timestamp, microseconds
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or supported ranges pointer.
  **/
@@ -1211,10 +1211,10 @@ whad_result_t whad_phy_sched_packet(Message *p_message, uint8_t *p_packet, int l
 
 /**
  * @brief Parse a message to schedule a packet to be sent
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_sched_packet      Pointer to the scheduled packet parameters
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -1250,7 +1250,7 @@ whad_result_t whad_phy_sched_packet_parse(Message *p_message, whad_phy_sched_pac
 
 /**
  * @brief Initialize a message notifying the target has been jammed
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       ts_sec              Timestamp, seconds
  * @param[in]       ts_usec             Timestamp, microseconds
@@ -1270,7 +1270,7 @@ whad_result_t whad_phy_jammed(Message *p_message, uint32_t ts_sec, uint32_t ts_u
     /* Populate fields. */
     p_message->which_msg = Message_phy_tag;
     p_message->msg.phy.which_msg = phy_Message_jammed_tag;
-    
+
     if ((ts_sec > 0) || (ts_usec > 0))
     {
         p_message->msg.phy.msg.jammed.timestamp = ts_sec*1000000 + ts_usec;
@@ -1287,10 +1287,10 @@ whad_result_t whad_phy_jammed(Message *p_message, uint32_t ts_sec, uint32_t ts_u
 
 /**
  * @brief Parse a message notifying the target has been jammed
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_timestamp         Pointer to the timestamp parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -1314,7 +1314,7 @@ whad_result_t whad_phy_jammed_parse(Message *p_message, whad_phy_timestamp_t *p_
 
 /**
  * @brief Initialize a message notifying a scheduled packet has been sent.
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       packet_id           Packet id
  *
@@ -1342,10 +1342,10 @@ whad_result_t whad_phy_sched_packet_sent(Message *p_message, uint32_t packet_id)
 
 /**
  * @brief Parse a message notifying a scheduled packet has been sent.
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_packet_id         Pointer to the timestamp parameter
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -1365,10 +1365,10 @@ whad_result_t whad_phy_sched_packet_sent_parse(Message *p_message, uint32_t *p_p
     return WHAD_SUCCESS;
 }
 
-
+#if 0
 /**
  * @brief Initialize a message reporting a PHY packet
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       frequency           Frequency on which the PHY packet has been captured
  * @param[in]       rssi                Received Signal Strength Indicator in dBm
@@ -1376,7 +1376,7 @@ whad_result_t whad_phy_sched_packet_sent_parse(Message *p_message, uint32_t *p_p
  * @param[in]       ts_usec             Timestamp (microseconds) at which the packet has been received
  * @param[in]       payload              Pointer to the packet payload
  * @param[in]       length              Payload size in bytes
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or payload pointer.
  **/
@@ -1418,14 +1418,94 @@ whad_result_t whad_phy_packet_received(Message *p_message, uint32_t frequency, i
     /* Success. */
     return WHAD_SUCCESS;
 }
+#else
 
+/**
+ * @brief Initialize a message reporting a PHY packet
+ *
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       frequency           Frequency on which the PHY packet has been captured
+ * @param[in]       rssi                Received Signal Strength Indicator in dBm
+ * @param[in]       ts_sec              Timestamp (seconds) at which the packet has been received
+ * @param[in]       ts_usec             Timestamp (microseconds) at which the packet has been received
+ * @param[in]       payload             Pointer to the packet payload
+ * @param[in]       length              Payload size in bytes
+ * @param[in]       syncword            Pointer to the packet syncword
+ * @param[in]       syncword_length     Syncword size in bytes
+ * @param[in]       deviation           Modulation deviation (in Hz)
+ * @param[in]       datarate            Modulation datarate (in bauds)
+ * @param[in]       endianness          Modulation endianness (little / big endian)
+ * @param[in]       modulation          Modulation in use
+
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message pointer or payload pointer.
+ **/
+
+whad_result_t whad_phy_packet_received(Message *p_message, uint32_t frequency, int32_t rssi, uint32_t ts_sec, uint32_t ts_usec,
+                              uint8_t *payload, int length, uint8_t *syncword, int syncword_length, uint32_t deviation, uint32_t datarate,
+                              whad_phy_endian_t endianness, whad_phy_modulation_t modulation)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (payload == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate fields. */
+    p_message->which_msg = Message_phy_tag;
+    p_message->msg.phy.which_msg = phy_Message_packet_tag;
+    p_message->msg.phy.msg.packet.frequency = frequency;
+
+    /* Set timestamp if provided. */
+    if ((ts_sec > 0) || (ts_usec > 0))
+    {
+        p_message->msg.phy.msg.packet.has_timestamp = true;
+        p_message->msg.phy.msg.packet.timestamp = ts_sec*1000000 + ts_usec;
+    }
+    else
+    {
+        p_message->msg.phy.msg.packet.has_timestamp = false;
+        p_message->msg.phy.msg.packet.timestamp = 0;
+    }
+
+    /* Set rssi. */
+    p_message->msg.phy.msg.packet.has_rssi = true;
+    p_message->msg.phy.msg.packet.rssi = rssi;
+
+    /* Copy packet into our message. */
+    p_message->msg.phy.msg.packet.packet.size = length;
+    memcpy(p_message->msg.phy.msg.packet.packet.bytes, payload, length);
+
+    /* Copy syncword into our message. */
+    p_message->msg.phy.msg.packet.syncword.size = syncword_length;
+    memcpy(p_message->msg.phy.msg.packet.syncword.bytes, syncword, syncword_length);
+
+    /* Set deviation */
+    p_message->msg.phy.msg.packet.deviation = deviation;
+
+    /* Set datarate */
+    p_message->msg.phy.msg.packet.datarate = datarate;
+
+    /* Set endianness */
+    p_message->msg.phy.msg.packet.endian = endianness;
+
+    /* Set modulation */
+    p_message->msg.phy.msg.packet.modulation = modulation;
+
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+#endif
 
 /**
  * @brief Parse a message notifying a scheduled packet has been sent.
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_received_pkt      Pointer to the recived packet
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/
@@ -1465,7 +1545,7 @@ whad_result_t whad_phy_packet_received_parse(Message *p_message, whad_phy_receiv
 
 /**
  * @brief Initialize a message indicating the result of a scheduled packet request
- * 
+ *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       id                  Scheduled packet identifier
  * @param[in]       full                If set to true, indicate the scheduled packets FIFO is full
@@ -1493,7 +1573,7 @@ whad_result_t whad_phy_packet_scheduled(Message *p_message, uint8_t id, bool ful
     }
     else
     {
-       p_message->msg.phy.msg.sched_pkt_rsp.has_full = false; 
+       p_message->msg.phy.msg.sched_pkt_rsp.has_full = false;
     }
 
     /* Success. */
@@ -1502,10 +1582,10 @@ whad_result_t whad_phy_packet_scheduled(Message *p_message, uint8_t id, bool ful
 
 /**
  * @brief Parse a message notifying a scheduled packet has been sent.
- * 
+ *
  * @param[in]       p_message           Pointer to the message structure to initialize
  * @param[in,out]   p_sched_pkt         Pointer to the recived packet
- * 
+ *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or parameter pointer.
  **/

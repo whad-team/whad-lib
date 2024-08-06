@@ -14,12 +14,17 @@ namespace whad::phy {
     {
         public:
             PacketReceived(NanoPbMsg &message);
-            PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts, Packet &packet);
+            PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts, Packet &packet, SyncWord &syncword, Endianness endian, uint32_t datarate, uint32_t deviation, ModulationType modulation);
 
             uint32_t getFrequency();
             int32_t getRssi();
             Timestamp& getTimestamp();
             Packet& getPacket();
+            SyncWord& getSyncWord();
+            Endianness getEndianness();
+            uint32_t getDatarate();
+            uint32_t getDeviation();
+            ModulationType getModulation();
 
         private:
             void pack();
@@ -29,6 +34,11 @@ namespace whad::phy {
             int32_t m_rssi;
             Timestamp m_timestamp;
             Packet m_packet;
+            SyncWord m_syncword;
+            Endianness m_endian;
+            uint32_t m_datarate;
+            uint32_t m_deviation;
+            ModulationType m_modulation;
     };
 
 }

@@ -13,6 +13,21 @@ namespace whad::phy {
 
     typedef whad::Packet<255> Packet;
 
+    enum ModulationType {
+      ModulationASK  = MOD_ASK,
+      ModulationFSK  = MOD_FSK,
+      Modulation4FSK = MOD_4FSK,
+      ModulationGFSK = MOD_GFSK,
+      ModulationMSK  = MOD_MSK,
+      ModulationBPSK = MOD_BPSK,
+      ModulationQPSK = MOD_QPSK,
+      ModulationLora = MOD_LORA
+    };
+
+    enum Endianness {
+        PhyLittleEndian = PHY_LITTLE_ENDIAN,
+        PhyBigEndian = PHY_BIG_ENDIAN
+    };
     enum MessageType {
         UnknownMsg = WHAD_PHY_UNKNOWN,
         SetAskModMsg = WHAD_PHY_SET_ASK_MOD,

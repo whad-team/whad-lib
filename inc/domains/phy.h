@@ -33,6 +33,17 @@ typedef enum {
 } whad_phy_endian_t;
 
 typedef enum {
+  MOD_ASK  = phy_Modulation_ASK,
+  MOD_FSK  = phy_Modulation_FSK,
+  MOD_4FSK = phy_Modulation_FOURFSK,
+  MOD_GFSK = phy_Modulation_GFSK,
+  MOD_MSK  = phy_Modulation_MSK,
+  MOD_BPSK = phy_Modulation_BPSK,
+  MOD_QPSK = phy_Modulation_QPSK,
+  MOD_LORA = phy_Modulation_LORA
+} whad_phy_modulation_t;
+
+typedef enum {
     PHY_TXPOWER_LOW = phy_TXPower_LOW,
     PHY_TXPOWER_MEDIUM = phy_TXPower_MEDIUM,
     PHY_TXPOWER_HIGH = phy_TXPower_HIGH
@@ -187,8 +198,14 @@ whad_result_t whad_phy_sched_packet_parse(Message *p_message, whad_phy_sched_pac
 /* Notifications. */
 whad_result_t whad_phy_jammed(Message *p_message, uint32_t ts_sec, uint32_t ts_usec);
 whad_result_t whad_phy_jammed_parse(Message *p_message, whad_phy_timestamp_t *p_timestamp);
+#if 0
 whad_result_t whad_phy_packet_received(Message *p_message, uint32_t frequency, int32_t rssi, uint32_t ts_sec, uint32_t ts_usec,
                               uint8_t *payload, int length);
+#else
+whad_result_t whad_phy_packet_received(Message *p_message, uint32_t frequency, int32_t rssi, uint32_t ts_sec, uint32_t ts_usec,
+                              uint8_t *payload, int length, uint8_t *syncword, int syncword_length, uint32_t deviation, uint32_t datarate,
+                              whad_phy_endian_t endianness, whad_phy_modulation_t modulation);
+#endif
 whad_result_t whad_phy_packet_received_parse(Message *p_message, whad_phy_received_packet_t *p_received_pkt);
 whad_result_t whad_phy_packet_scheduled(Message *p_message, uint8_t id, bool full);
 whad_result_t whad_phy_packet_scheduled_parse(Message *p_message, whad_phy_scheduled_packet_t *p_sched_pkt);
