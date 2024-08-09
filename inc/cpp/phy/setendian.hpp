@@ -10,10 +10,6 @@
 
 namespace whad::phy {
 
-    enum Endianness {
-        PhyLittleEndian = PHY_LITTLE_ENDIAN,
-        PhyBigEndian = PHY_BIG_ENDIAN
-    };
 
     class SetEndianness : public PhyMsg
     {
