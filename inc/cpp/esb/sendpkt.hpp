@@ -28,15 +28,24 @@ namespace whad::esb {
             Packet &getPacket();
     };
 
-    class SendPacketRaw : public SendPacket
+    class SendPacketRaw : public EsbMsg
     {
+        protected:
+            void pack();
+            void unpack();
+
+            uint32_t m_channel;
+            uint32_t m_retries;
+            Packet m_packet;
+
         public:
             SendPacketRaw(EsbMsg &message);
             SendPacketRaw(uint32_t channel, uint32_t retries, Packet &packet);
 
-        private:
-            void pack();
-            void unpack();
+            /* Getters. */
+            uint32_t getChannel();
+            uint32_t getRetrCount();
+            Packet &getPacket();
     };
 }
 

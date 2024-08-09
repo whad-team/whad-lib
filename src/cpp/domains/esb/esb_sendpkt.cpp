@@ -116,7 +116,7 @@ Packet& SendPacket::getPacket()
  * @param[in]   message     Message to parse
  */
 
-SendPacketRaw::SendPacketRaw(EsbMsg &message) : SendPacket(message)
+SendPacketRaw::SendPacketRaw(EsbMsg &message) : EsbMsg(message)
 {
     this->unpack();
 }
@@ -130,8 +130,11 @@ SendPacketRaw::SendPacketRaw(EsbMsg &message) : SendPacket(message)
  * @param[in]   packet      Packet to send
  */
 
-SendPacketRaw::SendPacketRaw(uint32_t channel, uint32_t retries, Packet &packet): SendPacket(channel, retries, packet)
+SendPacketRaw::SendPacketRaw(uint32_t channel, uint32_t retries, Packet &packet)
 { 
+    m_channel = channel;
+    m_retries = retries;
+    m_packet.set(packet);
 }
 
 
@@ -143,7 +146,6 @@ void SendPacketRaw::unpack()
 {
     whad_result_t res;
     whad_esb_send_params_t params;
-    Packet pkt;
 
     res = whad_esb_send_raw_parse(
         this->getMessage(),
@@ -158,8 +160,7 @@ void SendPacketRaw::unpack()
     /* Set properties accordingly. */
     m_channel = params.channel;
     m_retries = params.retr_count;
-    pkt = Packet(params.packet.bytes, params.packet.length);
-    m_packet.set(pkt);
+    m_packet.setBytes(params.packet.bytes, params.packet.length);
 }
 
 
@@ -177,4 +178,39 @@ void SendPacketRaw::pack()
         m_packet.getBytes(),
         m_packet.getSize()
     );
+}
+
+/**
+ * @brief   Get the channel number
+ * 
+ * @retval  Channel number
+ */
+
+uint32_t SendPacketRaw::getChannel()
+{
+    return m_channel;
+}
+
+
+/**
+ * @brief   Get the maximum retransmission count
+ * 
+ * @retval  Maximum number of retransmissions
+ */
+
+uint32_t SendPacketRaw::getRetrCount()
+{
+    return m_retries;
+}
+
+
+/**
+ * @brief   Get the packet to send
+ * 
+ * @retval  Packet to send
+ */
+
+Packet& SendPacketRaw::getPacket()
+{
+    return m_packet;
 }
