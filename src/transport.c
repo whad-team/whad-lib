@@ -31,8 +31,15 @@ void whad_transport_init(whad_transport_cfg_t *p_transport_cfg)
 /**
  * @brief   WHAD incoming data callback.
  * 
- * This callback must be called to notify WHAD a byte has been received.
-*/
+ * This callback must be called to notify WHAD that one or more bytes have been
+ * received.
+ * 
+ * @param p_data Pointer to the received bytes
+ * @param size   Size of the received bytes
+ * @retval  WHAD_SUCCESS        Success.
+ * @retval  WHAD_RINGBUF_FULL   RX buffer is full.
+ */
+
 whad_result_t whad_transport_data_received(uint8_t *p_data, int size)
 {
     int i;
@@ -50,6 +57,14 @@ whad_result_t whad_transport_data_received(uint8_t *p_data, int size)
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief   Send pending TX bytes.
+ * 
+ * @retval  WHAD_SUCCESS        Pending TX data successfully sent
+ * @retval  WHAD_RINGBUF_EMPTY  TX ring buffer is empty.
+ * @retval  WHAD_ERROR          Error while sending pending data.
+ */
 
 whad_result_t whad_transport_send_pending(void)
 {

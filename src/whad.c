@@ -40,6 +40,15 @@ void whad_free_message_resources(Message *p_msg)
     }
 }
 
+
+/**
+ * @brief Send a WHAD message over the communication layer
+ * 
+ * @param[in]   p_msg        Pointer to a NanoPb message structure
+ * @retval      WHAD_ERROR   An error occurred while sending message
+ * @retval      WHAD_SUCCESS Message has successfully been queued for transmission
+ */
+
 whad_result_t whad_send_message(Message *p_msg)
 {
     /* Serialize our message. */
@@ -63,6 +72,15 @@ whad_result_t whad_send_message(Message *p_msg)
         return WHAD_ERROR;
 }
 
+
+/**
+ * @brief Retrieve a received WHAD message from the communication layer
+ * 
+ * @param[in]   p_msg        Pointer to a NanoPb message structure
+ * @retval      WHAD_ERROR   An error occurred while getting the message
+ * @retval      WHAD_SUCCESS Message has successfully been retrieved
+ * @retval      WHAD_NONE    No received message to be retrieved
+ */
 
 whad_result_t whad_get_message(Message *p_msg)
 {
@@ -104,6 +122,13 @@ whad_result_t whad_get_message(Message *p_msg)
 }
 
 
+/**
+ * @brief Retrieve the message type of a given message
+ * 
+ * @param[in]   p_msg        Pointer to a NanoPb message structure
+ * @return      Message type
+ */
+
 whad_msgtype_t whad_get_message_type(Message *p_msg)
 {
     whad_msgtype_t msg_type = WHAD_MSGTYPE_UNKNOWN;
@@ -133,6 +158,14 @@ whad_msgtype_t whad_get_message_type(Message *p_msg)
     /* Return message type. */
     return msg_type;
 }
+
+
+/**
+ * @brief Retrieve the domain of a domain message
+ * 
+ * @param[in]   p_msg        Pointer to a NanoPb message structure
+ * @return      Message domain
+ */
 
 whad_domain_t whad_get_message_domain(Message *p_msg)
 {

@@ -20,15 +20,21 @@ typedef enum {
 } whad_transport_state_t;
 
 /**
- * WHAD Transport configuration structure.
+ * @struct whad_transport_cfg_t
+ * @brief WHAD Transport configuration structure.
+ * 
+ * @var whad_transport_cfg_t::max_txbuf_size
+ * Maximum size of transmission buffer.
+ * @var whad_transport_cfg_t::pfn_data_send_buffer
+ * Pointer to a callback function that sends data over UART.
  */
 typedef struct {
-    /* Transport parameters. */
-    int max_txbuf_size;    // Max buffer size for buffer tx.
+    /* Max transmission buffer size. */
+    int max_txbuf_size;
 
     /* Callbacks. */
     whad_transport_data_send_buffer_cb_t pfn_data_send_buffer;
-    whad_transport_message_cb_t pfn_message_cb;
+    /* whad_transport_message_cb_t pfn_message_cb; */
 } whad_transport_cfg_t;
 
 /**
@@ -43,8 +49,8 @@ typedef struct {
     whad_transport_state_t state;
 
     /* RX and TX buffers. */
-    whad_ringbuf_t rx_buf;
-    whad_ringbuf_t tx_buf;
+    whad_ringbuf_t rx_buf; /* Transport RX ring buffer */
+    whad_ringbuf_t tx_buf; /* Transport TX ring buffer */
 
     /* Callbacks. */
     whad_transport_cfg_t config;

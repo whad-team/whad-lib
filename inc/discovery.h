@@ -15,30 +15,31 @@ extern "C" {
  * Discovery
  ********************************/
 typedef enum {
-    DOMAIN_NONE = discovery_Domain__DomainNone,
-    DOMAIN_PHY = discovery_Domain_Phy,
-    DOMAIN_BT_CLASSIC = discovery_Domain_BtClassic,
-    DOMAIN_BTLE = discovery_Domain_BtLE,
-    DOMAIN_DOT15D4 = discovery_Domain_Dot15d4,
-    DOMAIN_SIXLOWPAN = discovery_Domain_SixLowPan,
-    DOMAIN_ESB = discovery_Domain_Esb,
-    DOMAIN_LOGITECH_UNIFYING = discovery_Domain_LogitechUnifying,
-    DOMAIN_MOSART = discovery_Domain_Mosart,
-    DOMAIN_ANT = discovery_Domain_ANT,
-    DOMAIN_ANT_PLUS = discovery_Domain_ANT_Plus,
-    DOMAIN_ANT_FS = discovery_Domain_ANT_FS,
+    DOMAIN_NONE = discovery_Domain__DomainNone, /*!< Domain is unknown*/
+    DOMAIN_PHY = discovery_Domain_Phy, /*!< PHY domain*/
+    DOMAIN_BT_CLASSIC = discovery_Domain_BtClassic, /*!< Bluetooth Classic domain*/
+    DOMAIN_BTLE = discovery_Domain_BtLE, /*!< Bluetooth Low Energy domain*/
+    DOMAIN_DOT15D4 = discovery_Domain_Dot15d4, /*!< IEEE802.15.4 domain*/
+    DOMAIN_SIXLOWPAN = discovery_Domain_SixLowPan, /*!< 6LowPAN domain*/
+    DOMAIN_ESB = discovery_Domain_Esb, /*!< Enhanced ShockBurst domain*/
+    DOMAIN_LOGITECH_UNIFYING = discovery_Domain_LogitechUnifying, /*!< Logitech Unifying domain*/
+    DOMAIN_MOSART = discovery_Domain_Mosart, /*!< Mosart domain*/
+    DOMAIN_ANT = discovery_Domain_ANT, /*!< ANT domain*/
+    DOMAIN_ANT_PLUS = discovery_Domain_ANT_Plus, /*!< ANT+ domain*/
+    DOMAIN_ANT_FS = discovery_Domain_ANT_FS, /*!< ANT FS domain*/
 } whad_domain_t;
 
+/* Device capabilities (pre-protocol) */
 typedef enum {
-    CAP_NONE = discovery_Capability__CapNone,
-    CAP_SCAN = discovery_Capability_Scan,
-    CAP_SNIFF = discovery_Capability_Sniff,
-    CAP_INJECT = discovery_Capability_Inject,
-    CAP_JAM = discovery_Capability_Jam,
-    CAP_HIJACK = discovery_Capability_Hijack,
-    CAP_HOOK = discovery_Capability_Hook,
-    CAP_SIMULATE_ROLE = discovery_Capability_SimulateRole,
-    CAP_NO_RAW_DATA = discovery_Capability_NoRawData
+    CAP_NONE = discovery_Capability__CapNone, /*!< No capability*/
+    CAP_SCAN = discovery_Capability_Scan, /*!< Can scan other devices */
+    CAP_SNIFF = discovery_Capability_Sniff, /*!< Can sniff packets/data */
+    CAP_INJECT = discovery_Capability_Inject, /*!< Can inject packets/data */
+    CAP_JAM = discovery_Capability_Jam, /*!< Can jam */
+    CAP_HIJACK = discovery_Capability_Hijack, /*!< Can hijack connection */
+    CAP_HOOK = discovery_Capability_Hook, /*!< Can hook connection */
+    CAP_SIMULATE_ROLE = discovery_Capability_SimulateRole, /*!< Can simulate a role */
+    CAP_NO_RAW_DATA = discovery_Capability_NoRawData /*!< Cannot access raw data */
 } whad_capability_t;
 
 typedef enum {
