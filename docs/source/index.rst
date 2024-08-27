@@ -22,3 +22,12 @@ WHAD C/C++ Library documentation
     c/esb
     c/phy
     c/unifying
+
+.. toctree::
+    :maxdepth: 2
+    :caption: C++ API
+
+    cpp/api
+    cpp/parsing
+    cpp/generic
+    cpp/ble

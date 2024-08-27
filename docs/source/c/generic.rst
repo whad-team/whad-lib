@@ -25,8 +25,6 @@ created using the :cpp:func:`whad_verbose` function (which is a wrapper for the
 :cpp:func:`whad_generic_verbose_message` function):
 
 .. code-block:: C
-    
-    Message msg;
 
     /* Create a verbose message. */
     whad_verbose("This is some information for the user.");
@@ -44,7 +42,7 @@ through the :cpp:func:`whad_generic_debug_message` function:
     Message msg;
 
     /* Create a debug message. */
-    whad_generic_debug_message("Some debug message.");   
+    whad_generic_debug_message(&msg, 1, "Some debug message.");   
 
 
 Generic API reference
