@@ -14,5 +14,11 @@ WHAD C/C++ Library documentation
     :caption: C API
 
     c/api
+    c/parsing
     c/discovery
-    c/reference
+    c/generic
+    c/ble
+    c/dot15d4
+    c/esb
+    c/phy
+    c/unifying

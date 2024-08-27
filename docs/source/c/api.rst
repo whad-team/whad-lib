@@ -38,10 +38,10 @@ Processing incoming WHAD messages
 ---------------------------------
 
 When an incoming WHAD message is returned by the library, following a call to
-:c:func:`whad_get_message()`, it must be processed by the firmware. The first
+:cpp:func:`whad_get_message()`, it must be processed by the firmware. The first
 thing to do is to determine the type of the received message by calling
-:c:func:`whad_get_message_type()` and then if it is a domain-related message to
-call the :c:func:`whad_get_message_domain()` to determine which domain it is
+:cpp:func:`whad_get_message_type()` and then if it is a domain-related message to
+call the :cpp:func:`whad_get_message_domain()` to determine which domain it is
 related to.
 
 .. code-block:: c
@@ -60,7 +60,8 @@ related to.
             /* Message is a generic one, process. */
             case WHAD_MSGTYPE_GENERIC:
             {
-                /* Handle generic message ... */
+                /* Handle generic message. */
+                generic_handler(&msg);
             }
             break;
 
@@ -106,7 +107,7 @@ by the WHAD generic, discovery, and various supported domains header files. The
 messages must be sent following the WHAD protocol, and are basically created and
 then queued for transmission.
 
-In the above code, we used the :c:func:`whad_generic_cmd_result()` function to
+In the above code, we used the :cpp:func:`whad_generic_cmd_result()` function to
 create a WHAD generic command result message with a specific error code that tells
 the host the required domain is not supported by our hardware. Since our hardware
 is supposed to advertise its supported domains, the host is not supposed to send
@@ -114,8 +115,18 @@ such a message but we need to take care of all possibilities. This call will
 fill our ``Message`` structure with all the required information, ready to be
 sent to the host. 
 
-To send this message to the host, we call the :c:func:`whad_send_message()`
+To send this message to the host, we call the :cpp:func:`whad_send_message()`
 function to enqueue the message and make it sent to the host whenever the
 hardware is ready to transmit.
 
+.. important::
 
+    Dispatching domain-related messages is detailed in :ref:`whad_domain_message_processing`
+
+WHAD Transport API reference
+----------------------------
+
+.. doxygenfile:: inc/whad.h
+    :sections: define enums
+
+.. doxygenfile:: src/whad.c

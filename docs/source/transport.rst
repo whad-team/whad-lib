@@ -12,21 +12,18 @@ Configuring the communication layer
 In order to establish a communication between the hardware and the host computer,
 the library communication layer must be correctly configured.
 
-First, a :c:struct:`whad_transport_cfg_t` structure needs to be allocated and
+First, a :cpp:struct:`whad_transport_cfg_t` structure needs to be allocated and
 filled to provide the library with 
 
 - the maximum number of bytes that can be sent over UART in a single transmission
 - a callback function the communication layer will use to send data through UART
 - a callback function for the communication layer to notify the reception of a WHAD message
 
-.. doxygenstruct:: whad_transport_cfg_t
-    :members:
-
 The following code configures a communication layer with a maximum of 16 bytes per
 transmission and two callback functions implemented by the developer to handle UART
 transmission and WHAD message processing.
 
-Note that the UART transmission callback calls :c:func:`whad_transport_data_sent`
+Note that the UART transmission callback calls :cpp:func:`whad_transport_data_sent`
 to notify the communication layer that the data has been successfully sent and it
 is ready to send more data.
 
@@ -64,10 +61,8 @@ Queuing a WHAD message for transmission
 ---------------------------------------
 
 Once configured, the library is able to send WHAD messages through a call to
-:c:func:`whad_send_message()`. This message will be queued for transmission
+:cpp:func:`whad_send_message()`. This message will be queued for transmission
 and sent when the hardware is ready to transmit data over UART.
-
-.. doxygenfunc:: whad_send_message
 
 The following code shows how to send a WHAD message:
 
@@ -88,31 +83,28 @@ Sending pending messages
 The hardware must regularly flush any pending transmission data in order to keep
 the transmission queue as small as possible to allow further messages to be sent.
 
-A call to :c:func:`whad_transport_send_pending()` causes the communication
+A call to :cpp:func:`whad_transport_send_pending()` causes the communication
 layer to transmit as many bytes as possible over the UART communication channel
 to the host, through a call to the configured transmission callback function.
 
 Once the data transmitted, the firmware must call
-:c:func:`whad_transport_data_sent()` to allow further transmissions.
+:cpp:func:`whad_transport_data_sent()` to allow further transmissions.
 
 Feeding the library with received data
 --------------------------------------
 
 The communication layer is able to send messages over UART but
 still needs to get notified when some data has been received. This is
-done through a call to :c:func:`whad_transport_data_received()` in which
+done through a call to :cpp:func:`whad_transport_data_received()` in which
 the received bytes are provided to the communication layer:
-
-.. doxygenfunction:: whad_transport_data_received
 
 Receiving WHAD messages
 -----------------------
 
 The communication layer is fed with incoming data from UART and will decode
 messages as they arrive. If a valid WHAD message has been received, a call to
-:c:func:`whad_get_message()` will succeed and provide the raw NanoPb message.
+:cpp:func:`whad_get_message()` will succeed and provide the raw NanoPb message.
 
-.. doxygenfunction:: whad_get_message
 
 Basic communication loop
 ------------------------
@@ -151,4 +143,10 @@ as soon as they are received.
         whad_transport_send_pending();
     }
 
-    
+
+Transport API reference
+-----------------------
+
+
+.. doxygenfile:: inc/transport.h
+

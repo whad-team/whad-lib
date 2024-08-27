@@ -1,9 +1,13 @@
+.. _whad_discovery:
+
 WHAD Device discovery
 =====================
 
 When a host computer starts communicating with a WHAD interface, it sends a series
 of message to discover its characteristics and its supported domains in order
 to tailor the host features and match the capabilities exposed by the interface.
+
+.. _whad_discovery_cap:
 
 Discovery of interface characteristics
 --------------------------------------
@@ -101,8 +105,8 @@ Once our capabilities defined, we can build the response message:
 
 .. note::
 
-    The ``CAPABILITIES`` structure created above is used by both :c:func:`whad_discovery_device_info_resp`
-    and :c:func:`whad_discovery_domain_info_resp` to provide the host with the supported
+    The ``CAPABILITIES`` structure created above is used by both :cpp:func:`whad_discovery_device_info_resp`
+    and :cpp:func:`whad_discovery_domain_info_resp` to provide the host with the supported
     domains and the related interface capabilities for the first one, and the supported
     commands for a specific domain for the second one.
 
@@ -115,7 +119,7 @@ supported domain by sending multiple *DeviceDomainInfoQuery* messages.
 
 Each of these messages must be answered by the WHAD interface with a
 *DeviceDomainInfoResp* specifying the supported commands for the requested
-domain. This message can be created through the :c:func:`whad_discovery_domain_info_resp`
+domain. This message can be created through the :cpp:func:`whad_discovery_domain_info_resp`
 function, as shown below:
 
 .. code-block:: c
@@ -160,7 +164,7 @@ function, as shown below:
 
 .. note::
 
-    :c:func:`whad_discovery_domain_info_resp` will pick the corresponding
+    :cpp:func:`whad_discovery_domain_info_resp` will pick the corresponding
     supported commands from the provided ``capabilities`` array and build
     a valid message from it.
 
@@ -299,4 +303,12 @@ The following code is a basic code template for processing discovery messages:
             }
             break;
         }
-    }   
+    }
+
+Discovery API reference
+-----------------------
+
+.. doxygenfile:: inc/discovery.h
+    :sections: define enum
+
+.. doxygenfile:: src/discovery.c
