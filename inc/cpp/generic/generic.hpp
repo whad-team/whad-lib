@@ -9,16 +9,17 @@ namespace whad
 {
     namespace generic
     {
+        /*! Generic message types. */
         enum MessageType {
-            UnknownMsg = WHAD_GENERIC_UNKNOWN,
-            CommandResultMsg = WHAD_GENERIC_CMDRESULT,
-            VerboseMsg = WHAD_GENERIC_VERBOSE,
-            DebugMsg = WHAD_GENERIC_DEBUG,
-            ProgressMsg = WHAD_GENERIC_PROGRESS
+            UnknownMsg = WHAD_GENERIC_UNKNOWN,          /*!< Unknown message type. */
+            CommandResultMsg = WHAD_GENERIC_CMDRESULT,  /*!< Command result. */
+            VerboseMsg = WHAD_GENERIC_VERBOSE,          /*!< Verbose message. */
+            DebugMsg = WHAD_GENERIC_DEBUG,              /*!< Debug message. */
+            ProgressMsg = WHAD_GENERIC_PROGRESS         /*!< Progress message. */
         };
 
 
-        /* Default generic message class. */
+        /*! Default generic message class. */
         class GenericMsg : public NanoPbMsg
         {
             public:

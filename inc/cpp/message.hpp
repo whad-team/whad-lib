@@ -6,33 +6,36 @@
 namespace whad
 {
     /**
-     * @brief   Message type enumeration.
+     * Message type enumeration.
      */
 
     enum MessageType {
-        UnknownMsg,
-        GenericMsg,
-        DiscoveryMsg,
-        DomainMsg
-    };
-
-    enum MessageDomain {
-        DomainNone,
-        DomainBle,
-        DomainEsb,
-        DomainPhy,
-        DomainUnifying,
-        DomainDot15d4
+        UnknownMsg,     /*!< Unkown message type. */
+        GenericMsg,     /*!< Generic message type. */
+        DiscoveryMsg,   /*!< Discovery message type. */
+        DomainMsg       /*!< Domain-related message type. */
     };
 
     /**
-     * @brief   Whad Nanopb message wrapper class.
+     * Message domain (if any)
+     */
+    enum MessageDomain {
+        DomainNone,     /*!< No domain defined. */
+        DomainBle,      /*!< Related to Bluetooth Low Energy domain. */
+        DomainEsb,      /*!< Related to Enhanced ShockBurst domain. */
+        DomainPhy,      /*!< Related to PHY domain. */
+        DomainUnifying, /*!< Related to Logitech Unifying domain. */
+        DomainDot15d4   /*!< Related to IEEE 802.15.4 domain. */
+    };
+
+    /**
+     * Whad Nanopb message wrapper class.
      **/
 
     class NanoPbMsg
     {
         protected:
-            Message *p_nanopbMessage;
+            Message *p_nanopbMessage;       /*!< Pointer to the underlying NanoPb message structure. */
 
         public:
 

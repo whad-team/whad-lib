@@ -8,14 +8,15 @@
 
 namespace whad::generic {
 
+/*! Command result code. */
 enum ResultCode {
-    ResultSuccess = WHAD_RESULT_SUCCESS,
-    ResultError = WHAD_RESULT_ERROR,
-    ResultParameterError = WHAD_RESULT_PARAMETER_ERROR,
-    ResultDisconnected = WHAD_RESULT_DISCONNECTED,
-    ResultWrongMode = WHAD_RESULT_WRONG_MODE,
-    ResultUnsupportedDomain = WHAD_RESULT_UNSUPPORTED_DOMAIN,
-    ResultBusy = WHAD_RESULT_BUSY
+    ResultSuccess = WHAD_RESULT_SUCCESS,                        /*!< Request succeeded. */
+    ResultError = WHAD_RESULT_ERROR,                            /*!< An error occurred. */
+    ResultParameterError = WHAD_RESULT_PARAMETER_ERROR,         /*!< Invalid parameter. */
+    ResultDisconnected = WHAD_RESULT_DISCONNECTED,              /*!< Device has disconnected. */
+    ResultWrongMode = WHAD_RESULT_WRONG_MODE,                   /*!< Invalid current mode. */
+    ResultUnsupportedDomain = WHAD_RESULT_UNSUPPORTED_DOMAIN,   /*!< Unsupported domain. */
+    ResultBusy = WHAD_RESULT_BUSY                               /*!< Interface is busy and cannot process request. */
 };
 
 /**
@@ -47,49 +48,49 @@ class CommandResult : public GenericMsg
  * setting the correct error code into the parent CommandResult object.
  */
 
-/* Success command result.  */
+/*! Success command result.  */
 class Success : public CommandResult
 {
     public:
         Success(void);
 };
 
-/* Error command result.  */
+/*! Error command result.  */
 class Error : public CommandResult
 {
     public:
         Error(void);
 };
 
-/* Parameter error command result. */
+/*! Parameter error command result. */
 class ParameterError : public CommandResult
 {
     public:
         ParameterError(void);
 };
 
-/* Disconnected command result. */
+/*! Disconnected command result. */
 class Disconnected : public CommandResult
 {
     public:
         Disconnected(void);
 };
 
-/* Wrong mode command result. */
+/*! Wrong mode command result. */
 class WrongMode : public CommandResult
 {
     public:
         WrongMode(void);
 };
 
-/* Unsupported domain command result. */
+/*! Unsupported domain command result. */
 class UnsupportedDomain : public CommandResult
 {
     public:
         UnsupportedDomain(void);
 };
 
-/* Busy command result. */
+/*! Busy command result. */
 class Busy : public CommandResult
 {
     public:

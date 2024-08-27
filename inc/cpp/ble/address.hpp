@@ -8,9 +8,10 @@
 
 namespace whad::ble {
 
+    /*! Bluetooth Device address type. */
     enum AddressType {
-        AddressRandom = BLE_ADDR_RANDOM,
-        AddressPublic = BLE_ADDR_PUBLIC
+        AddressRandom = BLE_ADDR_RANDOM,    /*!< Device address is random. */
+        AddressPublic = BLE_ADDR_PUBLIC     /*!< Device address is public. */
     };
 
     class BDAddress
