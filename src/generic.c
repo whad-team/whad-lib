@@ -263,7 +263,6 @@ whad_result_t whad_generic_debug_message(Message *p_message, uint32_t level, cha
  * 
  * @param[in,out]   p_message     Pointer to a `Messsage` structure
  * @param[in]       value         Progress value
- * @param[in]       psz_message   Pointer to a text string corresponding to the debug message to send
  * 
  * @retval          WHAD_SUCCESS  Success.
  * @retval          WHAD_ERROR    Invalid message pointer.
@@ -288,3 +287,37 @@ whad_result_t whad_generic_progress_message(Message *p_message, uint32_t value)
     return WHAD_SUCCESS;
 }
 
+
+/**
+ * @brief Initialize a generic progress message.
+ * 
+ * @param[in]       p_message     Pointer to a `Messsage` structure
+ * @param[in, out]  p_value       Pointer to a progress value
+ * 
+ * @retval          WHAD_SUCCESS  Success.
+ * @retval          WHAD_ERROR    Invalid message pointer.
+ **/
+
+whad_result_t whad_generic_progress_message_parse(Message *p_message, uint32_t *p_value)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_value == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if (p_message->which_msg == Message_generic_tag)
+    {
+        if (p_message->msg.generic.which_msg == generic_Message_progress_tag)
+        {
+            /* Save progress value. */
+            *p_value = p_message->msg.generic.msg.progress.value;
+
+            /* Success. */
+            return WHAD_SUCCESS;
+        }
+    }
+
+    /* Nope. */
+    return WHAD_ERROR;        
+}

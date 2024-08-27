@@ -1,3 +1,7 @@
+/** \file generic,h
+ * WHAD generic messages crafting and parsing.
+ */
+
 #ifndef __INC_GENERIC_H
 #define __INC_GENERIC_H
 
@@ -12,32 +16,32 @@ extern "C" {
  ********************************/
 
 /**
- * @brief Generic command result codes.
+ * Generic command result codes.
  * 
  */
 typedef enum {
-    WHAD_RESULT_SUCCESS = 0, 
-    WHAD_RESULT_ERROR = 1, 
-    WHAD_RESULT_PARAMETER_ERROR = 2, 
-    WHAD_RESULT_DISCONNECTED = 3, 
-    WHAD_RESULT_WRONG_MODE = 4, 
-    WHAD_RESULT_UNSUPPORTED_DOMAIN = 5, 
-    WHAD_RESULT_BUSY = 6 
+    WHAD_RESULT_SUCCESS = 0,            /*!< Operation succeeded. */
+    WHAD_RESULT_ERROR = 1,              /*!< An error occurred. */
+    WHAD_RESULT_PARAMETER_ERROR = 2,    /*!< A wrong parameter has been supplied. */
+    WHAD_RESULT_DISCONNECTED = 3,       /*!< Device has disconnected. */
+    WHAD_RESULT_WRONG_MODE = 4,         /*!< Requested operation does not match current operating mode. */
+    WHAD_RESULT_UNSUPPORTED_DOMAIN = 5, /*!< Domain is not supported by this interface. */
+    WHAD_RESULT_BUSY = 6                /*!< Interface is busy and cannot handle the requested operation. */
 } whad_result_code_t;
 
 
 /**
- * @brief Generic message types
+ * Generic message types
  * 
  * This enumeration is an alias for NanoPb generated constants.
  */
 
 typedef enum {
-    WHAD_GENERIC_UNKNOWN=0,
-    WHAD_GENERIC_CMDRESULT=generic_Message_cmd_result_tag,
-    WHAD_GENERIC_VERBOSE=generic_Message_verbose_tag,
-    WHAD_GENERIC_DEBUG=generic_Message_debug_tag,
-    WHAD_GENERIC_PROGRESS=generic_Message_progress_tag
+    WHAD_GENERIC_UNKNOWN=0,                                 /*!< Unknown generic message */
+    WHAD_GENERIC_CMDRESULT=generic_Message_cmd_result_tag,  /*!< Command result */
+    WHAD_GENERIC_VERBOSE=generic_Message_verbose_tag,       /*!< Verbose message */
+    WHAD_GENERIC_DEBUG=generic_Message_debug_tag,           /*!< Debug message */
+    WHAD_GENERIC_PROGRESS=generic_Message_progress_tag      /*!< Progress message */
 } whad_generic_msgtype_t;
 
 /* Get generic message type from NanoPb message. */
@@ -55,6 +59,7 @@ whad_result_t whad_generic_debug_message(Message *p_message, uint32_t level, cha
 
 /* Populate a progress message. */
 whad_result_t whad_generic_progress_message(Message *p_message, uint32_t value);
+whad_result_t whad_generic_progress_message_parse(Message *p_message, uint32_t *p_value);
 
 /* Verbose message helper. */
 whad_result_t whad_verbose(char *psz_message);
