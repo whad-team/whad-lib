@@ -1,3 +1,5 @@
+import subprocess, os
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -30,3 +32,8 @@ html_static_path = ['_static']
 # -- Options for breathe
 breathe_projects = {"WHAD": "../doxygen_doc/xml/"}
 breathe_default_project = "WHAD"
+
+# Run Doxygen to generate/refresh XML files if built on RTD
+read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+if read_the_docs_build:
+     subprocess.call('cd ../doxygen; doxygen', shell=True)
