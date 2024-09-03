@@ -31,3 +31,7 @@ WHAD C/C++ Library documentation
     cpp/parsing
     cpp/generic
     cpp/ble
+    cpp/dot15d4
+    cpp/esb
+    cpp/phy
+    cpp/unifying
