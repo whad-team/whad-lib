@@ -15,8 +15,7 @@ Jammed::Jammed(UnifyingMsg &message) : UnifyingMsg(message)
 /**
  * @brief       Jammed message constructor.
  * 
- * @param[in]   AddressType     Unifying device address
- * @param[in]   address         Specify the device address to use
+ * @param[in]   timestamp       Timestamp at which the jamming has been detected
  **/
 
 Jammed::Jammed(uint32_t timestamp) : UnifyingMsg()

@@ -16,7 +16,7 @@ EnergySample::EnergySample(Dot15d4Msg &message) : Dot15d4Msg(message)
  * @brief       EnergySample message constructor.
  * 
  * @param[in]   timestamp         Specify the sample timestamp
- * @param[in]   sample            Sample value
+ * @param[in]   value             Sample value
  **/
 
 EnergySample::EnergySample(uint32_t timestamp, uint32_t value) : Dot15d4Msg()

@@ -15,8 +15,7 @@ JamMode::JamMode(UnifyingMsg &message) : UnifyingMsg(message)
 /**
  * @brief       JamMode message constructor.
  * 
- * @param[in]   AddressType     Unifying device address
- * @param[in]   address         Specify the device address to use
+ * @param[in]   channel     Channel to use
  **/
 
 JamMode::JamMode(uint32_t channel) : UnifyingMsg()

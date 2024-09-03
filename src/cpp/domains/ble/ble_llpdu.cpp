@@ -10,9 +10,11 @@ LinkLayerPdu::LinkLayerPdu(BleMsg &message) : BleMsg(message)
 /**
  * @brief   Create a LinkLayerPdu object from a BLE PDU.
  * 
- * @param[in]   pdu         Pointer to a byte array containing the PDU
- * @param[in]   length      Size in bytes of the PDU
+ * @param[in]   conn_handle Connection handle
+ * @param[in]   pdu         BLE PDU
  * @param[in]   direction   Direction of the PDU (host to slave, slave to host, ...)
+ * @param[in]   processed   Set to `true` if this PDU has already been processed
+ * @param[in]   decrypted   Set to `true` if PDU has been decrypted
  **/
 
 LinkLayerPdu::LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted) : BleMsg()

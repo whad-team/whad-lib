@@ -15,8 +15,9 @@ SniffMode::SniffMode(UnifyingMsg &message) : UnifyingMsg(message)
 /**
  * @brief       SniffMode message constructor.
  * 
- * @param[in]   AddressType     Unifying device address
  * @param[in]   address         Specify the device address to use
+ * @param[in]   channel         Channel to sniff
+ * @param[in]   showAcks        If set to `true`, interface will report packet acknowledgements
  **/
 
 SniffMode::SniffMode(UnifyingAddress &address, uint32_t channel, bool showAcks) : UnifyingMsg()

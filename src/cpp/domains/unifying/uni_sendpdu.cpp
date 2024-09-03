@@ -15,8 +15,10 @@ SendPdu::SendPdu(UnifyingMsg &message) : UnifyingMsg(message)
 /**
  * @brief       SendPdu message constructor.
  * 
- * @param[in]   AddressType     Unifying device address
- * @param[in]   address         Specify the device address to use
+ * @param[in]   channel         Channel on which the PDU will be sent
+ * @param[in]   retryCount      Maximum number of PDU retransmission
+ * @param[in]   pPdu            Pointer to the byte buffer to send
+ * @param[in]   length          PDU length in bytes
  **/
 
 SendPdu::SendPdu(uint32_t channel, int retryCount, uint8_t *pPdu, int length) : UnifyingMsg()

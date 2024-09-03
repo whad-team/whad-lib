@@ -14,20 +14,21 @@ namespace whad
     {   
         typedef whad::Packet<255> Packet;
 
+        /*! ESB Message type */
         enum MessageType {
-            UnknownMsg = WHAD_ESB_UNKNOWN,
-            SetNodeAddrMsg = WHAD_ESB_SET_NODE_ADDRESS,
-            SniffMsg = WHAD_ESB_SNIFF,
-            JamMsg = WHAD_ESB_JAM,
-            SendMsg = WHAD_ESB_SEND,
-            SendRawMsg = WHAD_ESB_SEND_RAW,
-            PrxMsg = WHAD_ESB_PRX,
-            PtxMsg = WHAD_ESB_PTX,
-            StartMsg = WHAD_ESB_START,
-            StopMsg = WHAD_ESB_STOP,
-            JammedMsg = WHAD_ESB_JAMMED,
-            RawPduReceivedMsg = WHAD_ESB_RAW_PDU_RECEIVED,
-            PduReceivedMsg = WHAD_ESB_PDU_RECEIVED
+            UnknownMsg = WHAD_ESB_UNKNOWN,                      /*!< Unknown message. */
+            SetNodeAddrMsg = WHAD_ESB_SET_NODE_ADDRESS,         /*!< Set node address message. */
+            SniffMsg = WHAD_ESB_SNIFF,                          /*!< Set interface in sniffing mode. */
+            JamMsg = WHAD_ESB_JAM,                              /*!< Set interface in jamming mode. */
+            SendMsg = WHAD_ESB_SEND,                            /*!< Send PDU. */
+            SendRawMsg = WHAD_ESB_SEND_RAW,                     /*!< Send raw PDU. */
+            PrxMsg = WHAD_ESB_PRX,                              /*!< Set interface in Primary Receiver mode. */
+            PtxMsg = WHAD_ESB_PTX,                              /*!< Set interface in Primary Transmitter mode. */
+            StartMsg = WHAD_ESB_START,                          /*!< Start current mode. */
+            StopMsg = WHAD_ESB_STOP,                            /*!< Stop current mode. */
+            JammedMsg = WHAD_ESB_JAMMED,                        /*!< Jamming result notification. */
+            RawPduReceivedMsg = WHAD_ESB_RAW_PDU_RECEIVED,      /*!< Raw PDU received notification. */
+            PduReceivedMsg = WHAD_ESB_PDU_RECEIVED              /*!< PDU received notification. */
         };
 
 

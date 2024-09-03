@@ -15,8 +15,7 @@ MouseMode::MouseMode(UnifyingMsg &message) : UnifyingMsg(message)
 /**
  * @brief       MouseMode message constructor.
  * 
- * @param[in]   AddressType     Unifying device address
- * @param[in]   address         Specify the device address to use
+ * @param[in]   channel     Channel to use
  **/
 
 MouseMode::MouseMode(uint32_t channel) : UnifyingMsg()

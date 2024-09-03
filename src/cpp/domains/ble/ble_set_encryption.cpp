@@ -16,6 +16,7 @@ SetEncryption::SetEncryption(BleMsg &message) : BleMsg(message)
  * @param[in]   key             Encryption key
  * @param[in]   rand            Random buffer used in link-layer key derivation
  * @param[in]   eDiv            Diversifier used in link-layer key derivation
+ * @param[in]   enabled         If set to `true`, enable encryption
  **/
 
 SetEncryption::SetEncryption(uint32_t connHandle, uint8_t llKey[16],

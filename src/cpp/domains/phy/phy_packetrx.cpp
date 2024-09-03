@@ -21,9 +21,17 @@ PacketReceived::PacketReceived(NanoPbMsg &message) : PhyMsg(message)
  * @param[in]   rssi        Received signal strength indicator
  * @param[in]   ts          Timestamp at which the packet has been received
  * @param[in]   packet      Packet received
+ * @param[in]   syncword    Synchronization word
+ * @param[in]   endian      Current packet endianness
+ * @param[in]   datarate    Current datarate
+ * @param[in]   deviation   Current frequency deviation
+ * @param[in]   modulation  Current modulation type
  **/
 
-PacketReceived::PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts, Packet &packet, SyncWord &syncword, Endianness endian, uint32_t datarate, uint32_t deviation, ModulationType modulation)
+PacketReceived::PacketReceived(uint32_t frequency, int32_t rssi, Timestamp &ts,
+                               Packet &packet, SyncWord &syncword, Endianness endian,
+                               uint32_t datarate, uint32_t deviation,
+                               ModulationType modulation)
 {
     m_frequency = frequency;
     m_rssi = rssi;

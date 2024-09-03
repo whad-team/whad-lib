@@ -15,7 +15,7 @@ DeviceReset::DeviceReset() : DiscoveryMsg()
 /**
  * @brief       Build a device reset message from a NanoPb message.
  * 
- * @param[in]   NanoPb message to wrap as a DeviceReset message
+ * @param[in]   message     message to wrap as a DeviceReset message
  **/
 
 DeviceReset::DeviceReset(NanoPbMsg &message) : DiscoveryMsg(message)

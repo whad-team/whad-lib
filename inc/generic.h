@@ -1,4 +1,4 @@
-/** \file generic,h
+/** \file generic.h
  * WHAD generic messages crafting and parsing.
  */
 

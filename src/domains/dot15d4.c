@@ -242,6 +242,7 @@ whad_result_t whad_dot15d4_energy_detect_parse(Message *p_message, uint32_t *p_c
  * @brief   Create a SendCmd message
  *
  * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   channel     Channel on which the packet will be sent
  * @param[in]   p_packet    Pointer to a Zigbee packet
  * @param[in]   length      Packet length in bytes
  * 
@@ -321,6 +322,7 @@ whad_result_t whad_dot15d4_send_parse(Message *p_message, whad_dot15d4_send_para
  * @brief   Create a SendRawCmd message
  *
  * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   channel     Channel on which the packet will be sent
  * @param[in]   p_packet    Pointer to a Zigbee packet
  * @param[in]   length      Packet length in bytes
  * @param[in]   fcs         Frame Control Sequence
@@ -669,6 +671,7 @@ whad_result_t whad_dot15d4_stop(Message *p_message)
  * @brief   Create a Jammed message
  *
  * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   timestamp   Timestamp at which the jamming has been detected
  *
  * @retval      WHAD_SUCCESS        Success.
  * @retval      WHAD_ERROR          Invalid message or packet pointer.

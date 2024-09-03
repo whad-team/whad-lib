@@ -15,8 +15,9 @@ SendPdu::SendPdu(Dot15d4Msg &message) : Dot15d4Msg(message)
 /**
  * @brief       SendPdu message constructor.
  * 
- * @param[in]   channel         Specify the ZigBee channel to use
- * @param[in]   pdu             PDU to send
+ * @param[in]   channel         Specify the 802.15.4 channel to use
+ * @param[in]   pPdu            Pointer to a byte buffer to send
+ * @param[in]   length          PDU length in bytes
  **/
 
 SendPdu::SendPdu(uint32_t channel, uint8_t *pPdu, int length) : Dot15d4Msg()

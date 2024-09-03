@@ -15,8 +15,7 @@ DongleMode::DongleMode(UnifyingMsg &message) : UnifyingMsg(message)
 /**
  * @brief       DongleMode message constructor.
  * 
- * @param[in]   AddressType     Unifying device address
- * @param[in]   address         Specify the device address to use
+ * @param[in]   channel     Channel to use
  **/
 
 DongleMode::DongleMode(uint32_t channel) : UnifyingMsg()

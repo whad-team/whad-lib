@@ -10,22 +10,24 @@
 
 namespace whad::phy {
 
+    /*! LoRa spreading factor. */
     enum LoRaSpreadingFactor {
         LoraSfError = -1,
-        LoraSf7 = PHY_LORA_SF7,
-        LoraSf8 = PHY_LORA_SF8,
-        LoraSf9 = PHY_LORA_SF9,
-        LoraSf10 = PHY_LORA_SF10,
-        LoraSf11 = PHY_LORA_SF11,
-        LoraSf12 = PHY_LORA_SF12
+        LoraSf7 = PHY_LORA_SF7,     /*!< spreading factor: 7 */
+        LoraSf8 = PHY_LORA_SF8,     /*!< spreading factor: 8 */
+        LoraSf9 = PHY_LORA_SF9,     /*!< spreading factor: 9 */
+        LoraSf10 = PHY_LORA_SF10,   /*!< spreading factor: 10 */
+        LoraSf11 = PHY_LORA_SF11,   /*!< spreading factor: 11 */
+        LoraSf12 = PHY_LORA_SF12    /*!< spreading factor: 12 */
     };
 
+    /*! LoRa coding rate */
     enum LoRaCodingRate {
         LoraCrError = -1,
-        LoraCr45 = PHY_LORA_CR45,
-        LoraCr46 = PHY_LORA_CR46,
-        LoraCr47 = PHY_LORA_CR47,
-        LoraCr48 = PHY_LORA_CR48
+        LoraCr45 = PHY_LORA_CR45,   /*!< coding rate: 4/5 */
+        LoraCr46 = PHY_LORA_CR46,   /*!< coding rate: 4/6 */
+        LoraCr47 = PHY_LORA_CR47,   /*!< coding rate: 4/7 */
+        LoraCr48 = PHY_LORA_CR48    /*!< coding rate: 4/8 */
     };
 
     class SetLoraMod : public PhyMsg

@@ -18,7 +18,7 @@ CommandResult::CommandResult(ResultCode resultCode) : GenericMsg()
 /**
  * @brief   Build a generic commmand result message.
  * 
- * @param[in]   resultCode Command result code.
+ * @param[in]   message     Underlying NanoPb message.
  **/
 
 CommandResult::CommandResult(NanoPbMsg message) : GenericMsg(message)

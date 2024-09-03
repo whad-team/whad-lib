@@ -62,6 +62,7 @@ uint8_t *EsbAddress::getAddressBuf(void)
  * @brief   Set ESB address.
  * 
  * @param[in]   pAddress    Pointer to a 6-byte BD address buffer
+ * @param[in]   size        Address size in bytes (0-5 bytes)
  **/
 
 void EsbAddress::setAddress(uint8_t *pAddress, uint8_t size)

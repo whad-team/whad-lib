@@ -6,7 +6,6 @@ using namespace whad::phy;
  * @brief       Create a SupportedFreqs message with the provided frequency ranges.
  * 
  * @param[in]   pFreqRanges     Pointer to an array containing the supported frequency ranges
- * @param[in]   nRanges         Number of supported frequency ranges
  **/
 
 SupportedFreqsResp::SupportedFreqsResp(const whad_phy_frequency_range_t *pFreqRanges) : PhyMsg()

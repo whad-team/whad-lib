@@ -60,7 +60,7 @@ SniffMode::SniffMode(EsbAddress &address) : SniffMode(WHAD_ESB_CHANNEL_AUTO, add
  * @brief   Constructor, create a SniffMode message to sniff a specific channel.
  *           Acks are not reported.
  * 
- * @param[in]   address     Target ESB address
+ * @param[in]   channel     Channel to sniff
  */
 
 SniffMode::SniffMode(uint32_t channel) : SniffMode(channel, PromiscAddr, false)

@@ -15,7 +15,7 @@ SetNodeAddress::SetNodeAddress(Dot15d4Msg &message) : Dot15d4Msg(message)
 /**
  * @brief       SetNodeAddress message constructor.
  * 
- * @param[in]   AddressType     ZigBee device address type (short or extended)
+ * @param[in]   addrType        ZigBee device address type (short or extended)
  * @param[in]   address         Specify the device address to use
  **/
 

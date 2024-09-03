@@ -254,9 +254,9 @@ whad_result_t whad_ble_notify_disconnected(Message *p_message, uint32_t conn_han
 /**
  * @brief Parse a message reporting a BLE disconnection
  * 
- * @param[in,out]   p_message           Pointer to the message structure to initialize
- * @param[in]       conn_handle         Connection handle of the connection this PDU has been captured from
- * @param[in]       reason              Disconnection reason (as defined in the BLE specification)
+ * @param[in]       p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_parameters        Pointer to a structure that will contain the disconnection
+ *                                      parameters
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
@@ -781,7 +781,7 @@ whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan)
  * @param[in]       p_adv_data          Pointer to a byte array containing the advertising data
  * @param[in]       adv_data_length     Length of advertising data
  * @param[in]       p_scanrsp_data      Pointer to a byte array containing the scan response data
- * @param[in]       adv_data_length     Length of scan response data
+ * @param[in]       scanrsp_data_length Length of scan response data
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.

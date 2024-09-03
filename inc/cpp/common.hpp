@@ -4,8 +4,6 @@
 #include <string.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-
 #define WHAD_COMMON_DEF_PACKET_SIZE     255
 
 namespace whad {
@@ -210,8 +208,5 @@ namespace whad {
             int m_length;
     };
 }
-
-
-#endif /* __cplusplus */
 
 #endif /* __INC_WHAD_COMMON_HPP */

@@ -14,8 +14,7 @@ RawPdu::RawPdu(BleMsg &message) : BleMsg(message)
  * @param[in]       rssi                Received Signal Strength Indicator
  * @param[in]       conn_handle         Connection handle
  * @param[in]       access_address      Access Address of the connection
- * @param[in]       p_pdu               Pointer to a byte array containing the PDU
- * @param[in]       length              Length of the data PDU, in bytes
+ * @param[in]       pdu                 PDU received
  * @param[in]       crc                 PDU CRC value
  * @param[in]       crc_validity        Set to true if CRC matches the expected value, false otherwise
  * @param[in]       timestamp           PDU timestamp (in micro-seconds)
@@ -58,8 +57,7 @@ RawPdu::RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t ac
  * @param[in]       rssi                Received Signal Strength Indicator
  * @param[in]       conn_handle         Connection handle
  * @param[in]       access_address      Access Address of the connection
- * @param[in]       p_pdu               Pointer to a byte array containing the PDU
- * @param[in]       length              Length of the data PDU, in bytes
+ * @param[in]       pdu                 Received PDU
  * @param[in]       crc                 PDU CRC value
  * @param[in]       crc_validity        Set to true if CRC matches the expected value, false otherwise
  * @param[in]       direction           Direction of the PDU (master -> slave / slave -> master)

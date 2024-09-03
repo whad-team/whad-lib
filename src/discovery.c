@@ -284,7 +284,7 @@ whad_result_t whad_discovery_domain_info_query_parse(Message *p_message, whad_do
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       domain              Device supported domain
- * @param[in]       supported_commands  Supported commands as a 64-bits integer (bitmap)
+ * @param[in]       p_capabilities      Pointer to a `whad_domain_desc_t` structure defining the supported capabilities
  *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
@@ -314,6 +314,7 @@ whad_result_t whad_discovery_domain_info_resp(Message *p_message, whad_domain_t 
  * 
  * @param[in]       p_message           Pointer to the message to parse
  * @param[in,out]   p_domain            Pointer to the domain contained in the query
+ * @param[in,out]   p_supp_commands     Pointer to a supported commands field
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message or domain pointer.
@@ -376,8 +377,6 @@ whad_result_t whad_discovery_device_reset(Message *p_message)
  * @brief Initialize a discovery ready response message.
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
- * @param[in]       domain              Device supported domain
- * @param[in]       supported_commands  Supported commands as a 64-bits integer (bitmap)
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
@@ -429,10 +428,10 @@ whad_result_t whad_discovery_set_speed(Message *p_message, uint32_t speed)
 
 
 /**
- * @brief Parse a domain info query.
+ * @brief Parse a speed configuration message.
  * 
  * @param[in]       p_message           Pointer to the message to parse
- * @param[in,out]   p_domain            Pointer to the domain contained in the query
+ * @param[in,out]   p_speed             Pointer to a uint32_t that will contain the specified speed
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message or domain pointer.

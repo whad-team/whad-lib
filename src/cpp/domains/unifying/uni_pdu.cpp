@@ -15,8 +15,7 @@ PduReceived::PduReceived(UnifyingMsg &message) : UnifyingMsg(message)
 /**
  * @brief       PduReceived message constructor.
  * 
- * @param[in]   AddressType     Unifying device address
- * @param[in]   address         Specify the device address to use
+ * @param[in]   packet          Unifying packet received
  **/
 
 PduReceived::PduReceived(UnifyingPacket& packet) : UnifyingMsg()

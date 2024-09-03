@@ -506,6 +506,7 @@ whad_result_t whad_esb_stop(Message *p_message)
  * @brief   Create a Jammed message
  *
  * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   timestamp   Timestamp at which the jamming has been detected
  *
  * @retval      WHAD_SUCCESS        Success.
  * @retval      WHAD_ERROR          Invalid message or packet pointer.

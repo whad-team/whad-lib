@@ -305,7 +305,7 @@ whad_result_t whad_phy_set_bpsk_mod(Message *p_message)
  * @brief Initialize a message specifying the Quadrature Phase Shift Keying modulation
  *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
- * @param[in]       offset              QPSK offset
+ * @param[in]       b_offset            QPSK offset
  *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
@@ -413,7 +413,7 @@ whad_result_t whad_phy_set_msk_mod_parse(Message *p_message, uint32_t *p_deviati
  * @brief Initialize a message specifying the LoRa modulation
  *
  * @param[in,out]   p_message           Pointer to the message structure to initialize
- * @param[in]       bandwith            Bandwidth in Hz
+ * @param[in]       bandwidth            Bandwidth in Hz
  * @param[in]       spreading_factor    Spreading factor to use
  * @param[in]       coding_rate         Coding rate to use
  * @param[in]       preamble_length     Preamble length in symbols

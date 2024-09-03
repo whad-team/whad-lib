@@ -80,6 +80,7 @@ AdvPdu::AdvPdu(BleMsg &message) : BleMsg(message)
  * @brief       Notify an advertising PDU
  * 
  * @param[in]   advType             Advertisement type
+ * @param[in]   rssi                Received signal strength indicator
  * @param[in]   address             Advertiser BD address
  * @param[in]   pAdvData            Pointer to the advertising data byte buffer
  * @param[in]   advDataLength       Advertising data length in bytes

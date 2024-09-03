@@ -15,8 +15,7 @@ KeyboardMode::KeyboardMode(UnifyingMsg &message) : UnifyingMsg(message)
 /**
  * @brief       KeyboardMode message constructor.
  * 
- * @param[in]   AddressType     Unifying device address
- * @param[in]   address         Specify the device address to use
+ * @param[in]   channel     Channel to use
  **/
 
 KeyboardMode::KeyboardMode(uint32_t channel) : UnifyingMsg()
