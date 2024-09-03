@@ -29,6 +29,7 @@ WHAD C/C++ Library documentation
 
     cpp/api
     cpp/parsing
+    cpp/discovery
     cpp/generic
     cpp/ble
     cpp/dot15d4

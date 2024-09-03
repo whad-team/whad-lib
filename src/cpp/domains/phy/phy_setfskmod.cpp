@@ -6,7 +6,7 @@ using namespace whad::phy;
 /** FSK modulation **/
 
 /**
- * @brief   Create a SetFskMod message from a NanoPbMessage.
+ * @brief   Create a SetFskMod message from a NanoPbMsg.
  * 
  * @param[in]   message     NanoPb message
  */

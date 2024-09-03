@@ -69,6 +69,7 @@ related to.
             case WHAD_MSGTYPE_DISCOVERY:
             {
                 /* Handle discovery message ... */
+                process_discovery_message(&msg);
             }
             break;        
 

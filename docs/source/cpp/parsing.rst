@@ -13,7 +13,7 @@ enum values:
 
  - :cpp:enumerator:`whad::MessageType::UnknownMsg`: unknown message type, message must be discarded
  - :cpp:enumerator:`whad::MessageType::GenericMsg`: generic message, must be dispatched to generic messages handler
- - :cpp:enumerator:`whad::MessageType::DiscoveryMsg`: discovery message, see :ref:`whad_discovery`
+ - :cpp:enumerator:`whad::MessageType::DiscoveryMsg`: discovery message, see :ref:`cpp_whad_discovery`
  - :cpp:enumerator:`whad::MessageType::DomainMsg`: domain-related message, must be dispatched to domain handler
 
 Handling generic messages
@@ -86,7 +86,7 @@ a dispatching process can be implemented:
 
 .. code-block:: C
 
-    void dispatch_domain_message(NanoPbMessage message)
+    void dispatch_domain_message(NanoPbMsg message)
     {
         Message response;
 

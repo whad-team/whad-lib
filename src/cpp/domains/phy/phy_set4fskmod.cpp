@@ -4,7 +4,7 @@ using namespace whad::phy;
 
 
 /**
- * @brief   Create a Set4FskMod message from a NanoPbMessage.
+ * @brief   Create a Set4FskMod message from a NanoPbMsg.
  * 
  * @param[in]   message     NanoPb message
  */

@@ -8,15 +8,16 @@
 
 namespace whad::discovery
 {
+    /*! Discovery message type */
     enum MessageType {
-        UnknownMsg = WHAD_DISCOVERY_UNKNOWN,
-        DeviceInfoQueryMsg = WHAD_DISCOVERY_DEVICE_INFO_QUERY,
-        DeviceInfoRespMsg = WHAD_DISCOVERY_DEVICE_INFO_RESP,
-        DeviceResetMsg = WHAD_DISCOVERY_DEVICE_RESET,
-        ReadyRespMsg = WHAD_DISCOVERY_READY_RESP,
-        DomainInfoQueryMsg = WHAD_DISCOVERY_DOMAIN_INFO_QUERY,
-        DomainInfoRespMsg = WHAD_DISCOVERY_DOMAIN_INFO_RESP,
-        SetSpeedMsg = WHAD_DISCOVERY_SET_SPEED
+        UnknownMsg = WHAD_DISCOVERY_UNKNOWN,                    /*!< Unknown message type */
+        DeviceInfoQueryMsg = WHAD_DISCOVERY_DEVICE_INFO_QUERY,  /*!< Device info query */
+        DeviceInfoRespMsg = WHAD_DISCOVERY_DEVICE_INFO_RESP,    /*!< Device info response */
+        DeviceResetMsg = WHAD_DISCOVERY_DEVICE_RESET,           /*!< Device reset query */
+        ReadyRespMsg = WHAD_DISCOVERY_READY_RESP,               /*!< Device ready notification */
+        DomainInfoQueryMsg = WHAD_DISCOVERY_DOMAIN_INFO_QUERY,  /*!< Device domain info query */
+        DomainInfoRespMsg = WHAD_DISCOVERY_DOMAIN_INFO_RESP,    /*!< Device domain info response */
+        SetSpeedMsg = WHAD_DISCOVERY_SET_SPEED                  /*!< Set device speed query */
     };
 
     /* Default discovery message class. */

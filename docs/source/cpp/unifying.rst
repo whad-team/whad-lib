@@ -13,7 +13,7 @@ to process and parse the incoming message.
 The following example code shows a message processing function defined for a
 compatible interface that only supports Logitech Unifying packet sniffing. The supported
 commands must also be indicated in the interface's capabilities as described
-in :ref:`whad_discovery_cap`.
+in cpp__cap`.
 
 .. code-block:: c
 

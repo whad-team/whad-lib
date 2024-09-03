@@ -20,12 +20,12 @@ Verbose messages
 
 Verbose messages contain text that will be sent to the host and that will be
 displayed when verbose mode is enabled by the user. These messages can be
-created using the :cpp:class:`whad::generic::VerboseMsg` class:
+created using the :cpp:class:`whad::generic::Verbose` class:
 
 .. code-block:: C
 
     /* Create and send a verbose message. */
-    whad::generic::VerboseMsg verb_msg("This is some information for the user.");
+    whad::generic::Verbose verb_msg("This is some information for the user.");
     whad::send(verb_msg);
 
 
@@ -34,12 +34,12 @@ Debug messages
 
 Debug messages are not intended to be displayed to the user and will only be
 showed when debug mode is enabled on host-side. These messages can be created
-through the :cpp:class:`whad::generic::DebugMsg` function:
+through the :cpp:class:`whad::generic::Debug` function:
 
 .. code-block:: C
 
     /* Create and send a debug message. */
-    whad::generic::DebugMsg debug_msg(1, "This is some information for the user.");
+    whad::generic::Debug debug_msg(1, "This is some information for the user.");
     whad::send(verb_msg); 
 
 

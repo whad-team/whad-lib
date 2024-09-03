@@ -10,10 +10,10 @@ namespace whad::discovery {
 
     /* Available devices. */
     enum Devices {
-        Esp32BleFuzzer = discovery_DeviceType_Esp32BleFuzzer,
-        Butterfly = discovery_DeviceType_Butterfly,
-        Btlejack = discovery_DeviceType_BtleJack,
-        VirtualDevice = discovery_DeviceType_VirtualDevice
+        Esp32BleFuzzer = discovery_DeviceType_Esp32BleFuzzer,   /*!< Espressif ESP32 BLE fuzzer */
+        Butterfly = discovery_DeviceType_Butterfly,             /*!< nRF52 running ButteRFly firmware. */
+        Btlejack = discovery_DeviceType_BtleJack,               /*!< Btlejack (nRF52-based Micro:Bit or DK) */
+        VirtualDevice = discovery_DeviceType_VirtualDevice      /*!< Virtual device */
     };
 
     /* Device domain information query. */

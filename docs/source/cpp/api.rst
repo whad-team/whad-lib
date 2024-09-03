@@ -69,6 +69,7 @@ related to.
             case whad::MessageType::DiscoveryMsg:
             {
                 /* Handle discovery message ... */
+                discovery_handler(whad_message)
             }
             break;        
 
