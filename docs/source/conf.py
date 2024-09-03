@@ -21,6 +21,10 @@ extensions = ["breathe", "sphinx_rtd_theme", "sphinx_design"]
 templates_path = ['_templates']
 exclude_patterns = []
 
+html_logo = "images/logo.png"
+html_theme_options = {
+     "logo_only": True,
+}
 
 
 # -- Options for HTML output -------------------------------------------------
