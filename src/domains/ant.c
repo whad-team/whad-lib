@@ -1128,6 +1128,7 @@ whad_result_t whad_ant_list_channels(Message *p_message)
     return WHAD_SUCCESS;
 }
 
+
 /**
  * @brief   Create a ListNetworksCmd message
  *
@@ -1548,6 +1549,7 @@ whad_result_t whad_ant_pdu_received_parse(Message *p_message, whad_ant_recvd_pac
     /* Success. */
     return WHAD_SUCCESS;
 }
+<<<<<<< HEAD
 
 
 /**
