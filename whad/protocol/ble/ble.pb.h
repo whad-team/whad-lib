@@ -560,9 +560,9 @@ typedef struct _ble_RawPduReceived {
     bool has_rssi;
     int32_t rssi;
     bool has_timestamp;
-    uint64_t timestamp;
+    uint32_t timestamp;
     bool has_relative_timestamp;
-    uint64_t relative_timestamp;
+    uint32_t relative_timestamp;
     bool has_crc_validity;
     bool crc_validity;
     uint32_t access_address;
@@ -1347,7 +1347,7 @@ X(a, STATIC,   SINGULAR, UINT32,   id,                1)
 #define ble_AccessAddressDiscovered_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   access_address,    1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3)
+X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3)
 #define ble_AccessAddressDiscovered_CALLBACK NULL
 #define ble_AccessAddressDiscovered_DEFAULT NULL
 
@@ -1411,8 +1411,8 @@ X(a, STATIC,   SINGULAR, UINT32,   injection_attempts,   3)
 X(a, STATIC,   SINGULAR, UENUM,    direction,         1) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           2) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              3) \
-X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         4) \
-X(a, STATIC,   OPTIONAL, UINT64,   relative_timestamp,   5) \
+X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         4) \
+X(a, STATIC,   OPTIONAL, UINT32,   relative_timestamp,   5) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      6) \
 X(a, STATIC,   SINGULAR, UINT32,   access_address,    7) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               8) \
