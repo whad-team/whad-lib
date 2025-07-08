@@ -25,7 +25,8 @@ namespace whad
         DomainEsb,      /*!< Related to Enhanced ShockBurst domain. */
         DomainPhy,      /*!< Related to PHY domain. */
         DomainUnifying, /*!< Related to Logitech Unifying domain. */
-        DomainDot15d4   /*!< Related to IEEE 802.15.4 domain. */
+        DomainDot15d4,  /*!< Related to IEEE 802.15.4 domain. */
+        DomainAnt       /*!< Related to ANT domain. */
     };
 
     /**
