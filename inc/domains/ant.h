@@ -45,8 +45,6 @@ typedef enum {
     WHAD_ANT_STOP=ant_Message_stop_tag,
     WHAD_ANT_LIST_CHANNELS=ant_Message_list_channels_tag,
     WHAD_ANT_LIST_NETWORKS=ant_Message_list_networks_tag,
-    WHAD_ANT_STOP=ant_Message_stop_tag,
-
     WHAD_ANT_JAMMED=ant_Message_jammed_tag,
     WHAD_ANT_RAW_PDU_RECEIVED=ant_Message_raw_pdu_tag,
     WHAD_ANT_PDU_RECEIVED=ant_Message_pdu_tag, 
@@ -117,7 +115,7 @@ typedef struct {
 
 typedef struct {
     uint32_t rf_channel;
-    uint32_t channel;
+    uint32_t channel_number;
     whad_ant_packet_t packet;
 } whad_ant_send_params_t;
 
