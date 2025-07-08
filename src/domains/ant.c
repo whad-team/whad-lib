@@ -293,7 +293,7 @@ whad_result_t whad_ant_set_channel_period_parse(Message *p_message, uint32_t *p_
 whad_result_t whad_ant_set_network_key(Message *p_message, uint32_t network_number, uint8_t *p_network_key)
 {
     /* Sanity checks. */
-    if ((p_message == NULL) || (network_key == NULL) )
+    if ((p_message == NULL) || (p_network_key == NULL) )
     {
         return WHAD_ERROR;
     }
@@ -374,7 +374,7 @@ whad_result_t whad_ant_assign_channel(
 )
 {
     /* Sanity checks. */
-    if ((p_message == NULL) || (network_key == NULL) )
+    if (p_message == NULL)
     {
         return WHAD_ERROR;
     }
@@ -423,7 +423,7 @@ whad_result_t whad_ant_assign_channel_parse(Message *p_message, whad_ant_assign_
         return WHAD_ERROR;
     }
 
-    if (p_message->msg.ant.which_msg == ant_Message_set_assign_channel_tag)
+    if (p_message->msg.ant.which_msg == ant_Message_assign_channel_tag)
     {
         p_params->channel_number = p_message->msg.ant.msg.assign_channel.channel_number;
         p_params->network_number = p_message->msg.ant.msg.assign_channel.network_number;
@@ -709,7 +709,8 @@ whad_result_t whad_ant_sniff(Message *p_message, uint32_t rf_channel, uint8_t *n
     p_message->msg.ant.which_msg = ant_Message_sniff_tag;
 
     p_message->msg.ant.msg.sniff.rf_channel = rf_channel;
-    memcpy(p_message->msg.ant.msg.sniff.network_key, network_key, ANT_NETWORK_KEY_SIZE);
+    p_message->msg.ant.msg.sniff.network_key.size = ANT_NETWORK_KEY_SIZE;
+    memcpy(p_message->msg.ant.msg.sniff.network_key.bytes, network_key, ANT_NETWORK_KEY_SIZE);
     p_message->msg.ant.msg.sniff.device_number = device_number;
     p_message->msg.ant.msg.sniff.device_type = device_type;
     p_message->msg.ant.msg.sniff.transmission_type = transmission_type;
@@ -739,7 +740,7 @@ whad_result_t whad_ant_sniff_parse(Message *p_message, whad_ant_sniff_params_t *
     if (p_message->msg.ant.which_msg == ant_Message_sniff_tag)
     {
         p_params->rf_channel = p_message->msg.ant.msg.sniff.rf_channel;
-        memcpy(p_params->network_key, p_message->msg.ant.msg.sniff.network_key, ANT_NETWORK_KEY_SIZE);
+        memcpy(p_params->network_key, p_message->msg.ant.msg.sniff.network_key.bytes, ANT_NETWORK_KEY_SIZE);
         p_params->device_number = p_message->msg.ant.msg.sniff.device_number;
         p_params->device_type = p_message->msg.ant.msg.sniff.device_type;
         p_params->transmission_type = p_message->msg.ant.msg.sniff.transmission_type;
