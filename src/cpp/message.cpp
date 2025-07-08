@@ -128,6 +128,10 @@ whad::MessageDomain whad::NanoPbMsg::getDomain(void)
                 domain = DomainDot15d4;
                 break;
 
+            case DOMAIN_ANT:
+                domain = DomainAnt;
+                break;
+
             default:
                 break;
         }
