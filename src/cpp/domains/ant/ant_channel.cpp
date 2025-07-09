@@ -592,7 +592,7 @@ void UnassignChannel::pack()
  * @brief   Extract parameters from AntMsg.
  */
 
-void AssignChannel::unpack()
+void UnassignChannel::unpack()
 {
     uint32_t channel_number;
 
