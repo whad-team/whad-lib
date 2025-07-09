@@ -38,7 +38,8 @@ namespace whad::ant {
             void unpack();
             void pack();
 
-            uint32_t m_channel;
+            uint32_t m_rf_channel;
+            uint32_t m_channel_number;
             
             int32_t m_rssi;
             bool m_hasRssi;
