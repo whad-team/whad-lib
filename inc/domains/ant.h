@@ -192,8 +192,8 @@ whad_result_t whad_ant_available_channels(Message *p_message, uint32_t number_of
 whad_result_t whad_ant_available_channels_parse(Message *p_message, uint32_t *p_number_of_channels);
 whad_result_t whad_ant_available_networks(Message *p_message, uint32_t number_of_networks);
 whad_result_t whad_ant_available_networks_parse(Message *p_message, uint32_t *p_number_of_networks);
-whad_result_t whad_ant_raw_pdu_received(Message *p_message, whad_ant_recvd_packet_t *p_pdu);
-whad_result_t whad_ant_raw_pdu_received_parse(Message *p_message, whad_ant_recvd_packet_t *p_pdu);
+whad_result_t whad_ant_raw_pdu_received(Message *p_message, whad_ant_recvd_packet_t *p_pdu, uint32_t crc);
+whad_result_t whad_ant_raw_pdu_received_parse(Message *p_message, whad_ant_recvd_packet_t *p_pdu,  uint32_t *p_crc);
 whad_result_t whad_ant_pdu_received(Message *p_message, whad_ant_recvd_packet_t *p_pdu);
 whad_result_t whad_ant_pdu_received_parse(Message *p_message, whad_ant_recvd_packet_t *p_pdu);
 
