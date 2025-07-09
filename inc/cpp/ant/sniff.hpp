@@ -33,5 +33,5 @@ namespace whad::ant {
             void pack();
             void unpack();
     };
-
+}
 #endif /* __INC_WHAD_ANT_SNIFF_HPP */
