@@ -1340,7 +1340,7 @@ whad_result_t whad_ant_raw_pdu_received(Message *p_message, whad_ant_recvd_packe
     /* Set message properties. */
     p_message->which_msg = Message_ant_tag;
     p_message->msg.ant.which_msg = ant_Message_raw_pdu_tag;
-    p_message->msg.ant.msg.raw_pdu.crc = p_pdu->crc;
+    p_message->msg.ant.msg.raw_pdu.crc = crc;
 
     p_message->msg.ant.msg.raw_pdu.channel_number = p_pdu->channel_number;
     p_message->msg.ant.msg.raw_pdu.rf_channel = p_pdu->rf_channel;
