@@ -1,4 +1,4 @@
-#include <ant/channel.hpp>
+#include <ant/network.hpp>
 
 using namespace whad::ant;
 
