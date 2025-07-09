@@ -24,5 +24,5 @@ namespace whad::ant {
             void pack();
             void unpack();
     };
-
+}
 #endif /* __INC_WHAD_ANT_JAM_HPP */
