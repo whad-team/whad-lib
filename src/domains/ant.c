@@ -1322,12 +1322,13 @@ whad_result_t whad_ant_available_networks_parse(Message *p_message, uint32_t *p_
  *
  * @param[in,out]   p_message   Pointer to a NanoPb Message structure
  * @param[in]       p_pdu       Pointer to a `whad_ant_recvd_packet_t` structure
+ * @param[in]       crc         Integer indicating the CRC value
  *
  * @retval      WHAD_SUCCESS        Success.
  * @retval      WHAD_ERROR          Invalid message or packet pointer.
  **/
 
-whad_result_t whad_ant_raw_pdu_received(Message *p_message, whad_ant_recvd_packet_t *p_pdu)
+whad_result_t whad_ant_raw_pdu_received(Message *p_message, whad_ant_recvd_packet_t *p_pdu, uint32_t crc)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL))
@@ -1339,6 +1340,8 @@ whad_result_t whad_ant_raw_pdu_received(Message *p_message, whad_ant_recvd_packe
     /* Set message properties. */
     p_message->which_msg = Message_ant_tag;
     p_message->msg.ant.which_msg = ant_Message_raw_pdu_tag;
+    p_message->msg.ant.msg.raw_pdu.crc = p_pdu->crc;
+
     p_message->msg.ant.msg.raw_pdu.channel_number = p_pdu->channel_number;
     p_message->msg.ant.msg.raw_pdu.rf_channel = p_pdu->rf_channel;
 
@@ -1386,12 +1389,13 @@ whad_result_t whad_ant_raw_pdu_received(Message *p_message, whad_ant_recvd_packe
  *
  * @param[in]       p_message   Pointer to a NanoPb Message structure
  * @param[in,out]   p_pdu       Pointer to a `whad_ant_recvd_packet_t` structure
+ * @param[in,out]   p_crc       Pointer to an integer to get CRC value
  *
  * @retval      WHAD_SUCCESS        Success.
  * @retval      WHAD_ERROR          Invalid message or packet pointer.
  **/
 
-whad_result_t whad_ant_raw_pdu_received_parse(Message *p_message, whad_ant_recvd_packet_t *p_pdu)
+whad_result_t whad_ant_raw_pdu_received_parse(Message *p_message, whad_ant_recvd_packet_t *p_pdu, uint32_t *p_crc)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL))
@@ -1400,6 +1404,7 @@ whad_result_t whad_ant_raw_pdu_received_parse(Message *p_message, whad_ant_recvd
         return WHAD_ERROR;
     }
 
+    *p_crc = p_message->msg.ant.msg.raw_pdu.crc;
     /* Parse message properties. */
     p_pdu->channel_number = p_message->msg.ant.msg.raw_pdu.channel_number;
     p_pdu->rf_channel = p_message->msg.ant.msg.raw_pdu.rf_channel;

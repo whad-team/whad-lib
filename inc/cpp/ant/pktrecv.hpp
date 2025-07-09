@@ -7,11 +7,11 @@
 #include "ant/base.hpp"
 
 namespace whad::ant {
-    class RawPacketReceived : public AntMsg
+    class PacketReceived : public AntMsg
     {
         public:
-            RawPacketReceived(AntMsg &message);
-            RawPacketReceived(uint32_t rf_channel, uint32_t channel_number, Packet &packet);
+            PacketReceived(AntMsg &message);
+            PacketReceived(uint32_t rf_channel, uint32_t channel_number, Packet &packet);
 
             /* Setters. */
             void setRFChannel(uint32_t rf_channel);
@@ -50,14 +50,19 @@ namespace whad::ant {
             Packet m_packet;
     };
 
-    class PacketReceived : public RawPacketReceived
+    class RawPacketReceived : public PacketReceived
     {
         public:
             /* Constructors. */
-            PacketReceived(AntMsg &message);
-            PacketReceived(uint32_t rf_channel, uint32_t channel_number, Packet &packet);
+            RawPacketReceived(AntMsg &message);
+            RawPacketReceived(uint32_t rf_channel, uint32_t channel_number, Packet &packet);
+
+            void setCrc(uint32_t crc);
+            uint32_t getCrc();
 
         private:
+            uint32_t m_crc;
+
             void pack();
             void unpack();
     };
