@@ -200,7 +200,7 @@ whad_result_t whad_ant_set_transmission_type_parse(Message *p_message, uint32_t 
         return WHAD_ERROR;
     }
 
-    if (p_message->msg.ant.which_msg == ant_Message_set_device_type_tag)
+    if (p_message->msg.ant.which_msg == ant_Message_set_transmission_type_tag)
     {
         *p_channel_number = p_message->msg.ant.msg.set_transmission_type.channel_number;
         *p_transmission_type = p_message->msg.ant.msg.set_transmission_type.transmission_type;
