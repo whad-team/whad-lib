@@ -928,3 +928,81 @@ void AvailableChannels::unpack()
         throw WhadMessageParsingError();
     }
 }
+
+/**************************************** */
+
+/**
+ * @brief   Constructor, parses an AntMsg as a ChannelEvent message.
+ *
+ * @param[in]   message Message to parse
+ */
+
+ChannelEvent::ChannelEvent(AntMsg &message) : AntMsg(message)
+{
+    this->unpack();
+}
+
+
+/**
+ * @brief   Constructor, create a new ChannelEvent message
+ * 
+ * @param[in]   channel_number   Channel number assigned to the event.
+ * @param[in]   event            Event code 
+ * 
+ */
+
+ChannelEvent::ChannelEvent(uint32_t channel_number, ChannelEventCode event) : AntMsg()
+{
+    this->m_channel_number = channel_number;
+    this->m_event = event;
+}
+
+
+/**
+ * @brief   Retrieve the channel number.
+ * 
+ * @retval  Channel number
+*/
+uint32_t ChannelEvent::getChannelNumber()
+{
+    return this->m_channel_number;
+}
+
+/**
+ * @brief   Retrieve the event code.
+ * 
+ * @retval  Event code
+*/
+uint32_t ChannelEvent::getEvent()
+{
+    return this->m_event;
+}
+
+
+
+/**
+ * Pack parameters into an AntMsg.
+ */
+
+void ChannelEvent::pack()
+{
+    whad_ant_channel_event(
+        this->getMessage(),
+        this->m_channel_number, 
+        (whad_ant_channel_event_t)this->m_event
+    );
+}
+
+
+/**
+ * Extract parameters from an AntMsg.
+ */
+
+void ChannelEvent::unpack()
+{
+     
+    if (whad_ant_available_channels_parse(this->getMessage(), &m_channel_number, (whad_ant_channel_event_t *)(&m_event)) == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
+}

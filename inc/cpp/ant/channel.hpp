@@ -225,6 +225,25 @@ namespace whad::ant {
 
             uint32_t m_number_of_channels;
     };
+
+
+    class ChannelEvent : public AntMsg
+    {
+        public:
+            ChannelEvent(AntMsg &message);
+            ChannelEvent(uint32_t channel_number, ChannelEventCode event);
+
+            uint32_t getCHannelNumber();
+            ChannelEventCode getEvent();
+
+
+        private:
+            void pack();
+            void unpack();
+
+            uint32_t m_channel_number;
+            ChannelEventCode m_event;
+    };
 }
 
 #endif /* __INC_WHAD_ANT_CHANNEL_HPP */
