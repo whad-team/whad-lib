@@ -973,7 +973,7 @@ uint32_t ChannelEvent::getChannelNumber()
  * 
  * @retval  Event code
 */
-uint32_t ChannelEvent::getEvent()
+ChannelEventCode ChannelEvent::getEvent()
 {
     return this->m_event;
 }
