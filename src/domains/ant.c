@@ -1592,7 +1592,7 @@ whad_result_t whad_ant_channel_event(Message *p_message, uint32_t channel_number
 whad_result_t whad_ant_channel_event_parse(Message *p_message, uint32_t *p_channel_number, whad_ant_channel_event_t *p_event)
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_number_of_networks == NULL))
+    if ((p_message == NULL) || (p_channel_number == NULL) || (p_event == NULL))
     {
         /* Error. */
         return WHAD_ERROR;
