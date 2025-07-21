@@ -1128,7 +1128,6 @@ whad_result_t whad_ant_list_channels(Message *p_message)
     return WHAD_SUCCESS;
 }
 
-
 /**
  * @brief   Create a ListNetworksCmd message
  *
@@ -1549,3 +1548,62 @@ whad_result_t whad_ant_pdu_received_parse(Message *p_message, whad_ant_recvd_pac
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+/**
+ * @brief   Create a ChannelEvent message
+ *
+ * @param[in]   p_message       Pointer to a NanoPb Message structure
+ * @param[in]   channel_number  Integer indicating the channel number of the concerned event
+ * @param[in]   event           Code indicating the type of event
+ *
+ * @retval      WHAD_SUCCESS        Success.
+ * @retval      WHAD_ERROR          Invalid message or packet pointer.
+ **/
+
+whad_result_t whad_ant_channel_event(Message *p_message, uint32_t channel_number, whad_ant_channel_event_t event)
+{
+        /* Sanity checks. */
+    if (p_message == NULL) {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_ant_tag;
+    p_message->msg.ant.which_msg = ant_Message_channel_event_tag;
+
+    p_message->msg.ant.msg.channel_event.channel_number = channel_number;
+    p_message->msg.ant.msg.channel_event.event = (ant_AntChannelEvent)event;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief   Parse a ChannelEvent message
+ *
+ * @param[in]       p_message            Pointer to a NanoPb Message structure
+ * @param[in,out]   p_channel_number     Pointer to an integer indicating the channel number
+ * @param[in,out]   p_event              Pointer to the event type
+ *
+ * @retval      WHAD_SUCCESS        Success.
+ * @retval      WHAD_ERROR          Invalid message or channel pointer.
+ **/
+
+whad_result_t whad_ant_channel_event_parse(Message *p_message, uint32_t *p_channel_number, whad_ant_channel_event_t *p_event)
+{
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_number_of_networks == NULL))
+    {
+        /* Error. */
+        return WHAD_ERROR;
+    }
+
+    /* Set output channel. */
+    *p_channel_number = p_message->msg.ant.msg.channel_event.channel_number;
+    /* Set event. */
+    *p_event = (whad_ant_channel_event_t)p_message->msg.ant.msg.channel_event.event;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+

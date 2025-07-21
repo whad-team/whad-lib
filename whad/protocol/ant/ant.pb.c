@@ -81,7 +81,11 @@ PB_BIND(ant_RawPduReceived, ant_RawPduReceived, 2)
 PB_BIND(ant_PduReceived, ant_PduReceived, 2)
 
 
+PB_BIND(ant_ChannelEvent, ant_ChannelEvent, AUTO)
+
+
 PB_BIND(ant_Message, ant_Message, 2)
+
 
 
 

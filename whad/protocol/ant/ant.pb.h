@@ -65,6 +65,32 @@ typedef enum _ant_AntChannelType {
     ant_AntChannelType_TRANSMIT_ONLY_CHANNEL = 5 
 } ant_AntChannelType;
 
+/* *
+ AntChannelEvent
+
+ enum listing the different channel events than can occurs. */
+typedef enum _ant_AntChannelEvent { 
+    ant_AntChannelEvent_EVENT_NO_ERROR = 0, 
+    ant_AntChannelEvent_EVENT_RX_SEARCH_TIMEOUT = 1, 
+    ant_AntChannelEvent_EVENT_RX_FAIL = 2, 
+    ant_AntChannelEvent_EVENT_TX = 3, 
+    ant_AntChannelEvent_EVENT_TRANSFER_RX_FAILED = 4, 
+    ant_AntChannelEvent_EVENT_TRANSFER_TX_COMPLETED = 5, 
+    ant_AntChannelEvent_EVENT_TRANSFER_TX_FAILED = 6, 
+    ant_AntChannelEvent_EVENT_CHANNEL_CLOSED = 7, 
+    ant_AntChannelEvent_EVENT_RX_FAIL_TO_GO_TO_SEARCH = 8, 
+    ant_AntChannelEvent_EVENT_CHANNEL_COLLISION = 9, 
+    ant_AntChannelEvent_EVENT_TRANSFER_TX_START = 10, 
+    ant_AntChannelEvent_EVENT_TRANSFER_NEXT_DATA_BLOCK = 17, 
+    ant_AntChannelEvent_EVENT_CHANNEL_IN_WRONG_STATE = 21, 
+    ant_AntChannelEvent_EVENT_CHANNEL_NOT_OPENED = 22, 
+    ant_AntChannelEvent_EVENT_CHANNEL_ID_NOT_SET = 24, 
+    ant_AntChannelEvent_EVENT_CLOSE_ALL_CHANNELS = 25, 
+    ant_AntChannelEvent_EVENT_TRANSFER_IN_PROGRESS = 31, 
+    ant_AntChannelEvent_EVENT_TRANSFER_SEQUENCE_NUMBER_ERROR = 32, 
+    ant_AntChannelEvent_EVENT_TRANSFER_IN_ERROR = 33 
+} ant_AntChannelEvent;
+
 /* Struct definitions */
 /* *
  ListChannelsCmd
@@ -119,6 +145,11 @@ typedef struct _ant_AvailableChannels {
 typedef struct _ant_AvailableNetworks { 
     uint32_t number_of_networks;
 } ant_AvailableNetworks;
+
+typedef struct _ant_ChannelEvent { 
+    uint32_t channel_number;
+    ant_AntChannelEvent event;
+} ant_ChannelEvent;
 
 /* *
  CloseChannelCmd
@@ -321,6 +352,8 @@ typedef struct _ant_Message {
         /* Management notifications */
         ant_AvailableChannels available_channels;
         ant_AvailableNetworks available_networks;
+        /* Events */
+        ant_ChannelEvent channel_event;
     } msg;
 } ant_Message;
 
@@ -333,6 +366,10 @@ typedef struct _ant_Message {
 #define _ant_AntChannelType_MIN ant_AntChannelType_BIDIRECTIONAL_RECEIVE_CHANNEL
 #define _ant_AntChannelType_MAX ant_AntChannelType_TRANSMIT_ONLY_CHANNEL
 #define _ant_AntChannelType_ARRAYSIZE ((ant_AntChannelType)(ant_AntChannelType_TRANSMIT_ONLY_CHANNEL+1))
+
+#define _ant_AntChannelEvent_MIN ant_AntChannelEvent_EVENT_NO_ERROR
+#define _ant_AntChannelEvent_MAX ant_AntChannelEvent_EVENT_TRANSFER_IN_ERROR
+#define _ant_AntChannelEvent_ARRAYSIZE ((ant_AntChannelEvent)(ant_AntChannelEvent_EVENT_TRANSFER_IN_ERROR+1))
 
 
 #ifdef __cplusplus
@@ -365,6 +402,7 @@ extern "C" {
 #define ant_AvailableNetworks_init_default       {0}
 #define ant_RawPduReceived_init_default          {0, false, 0, false, 0, false, 0, {0, {0}}, 0, 0}
 #define ant_PduReceived_init_default             {0, false, 0, false, 0, false, 0, {0, {0}}, 0}
+#define ant_ChannelEvent_init_default            {0, _ant_AntChannelEvent_MIN}
 #define ant_Message_init_default                 {0, {ant_SetDeviceNumberCmd_init_default}}
 #define ant_SetDeviceNumberCmd_init_zero         {0, 0}
 #define ant_SetDeviceTypeCmd_init_zero           {0, 0}
@@ -391,6 +429,7 @@ extern "C" {
 #define ant_AvailableNetworks_init_zero          {0}
 #define ant_RawPduReceived_init_zero             {0, false, 0, false, 0, false, 0, {0, {0}}, 0, 0}
 #define ant_PduReceived_init_zero                {0, false, 0, false, 0, false, 0, {0, {0}}, 0}
+#define ant_ChannelEvent_init_zero               {0, _ant_AntChannelEvent_MIN}
 #define ant_Message_init_zero                    {0, {ant_SetDeviceNumberCmd_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -403,6 +442,8 @@ extern "C" {
 #define ant_AssignChannelCmd_asynchronous_transmission_tag 7
 #define ant_AvailableChannels_number_of_channels_tag 1
 #define ant_AvailableNetworks_number_of_networks_tag 1
+#define ant_ChannelEvent_channel_number_tag      1
+#define ant_ChannelEvent_event_tag               2
 #define ant_CloseChannelCmd_channel_number_tag   1
 #define ant_JamCmd_rf_channel_tag                1
 #define ant_Jammed_timestamp_tag                 1
@@ -471,6 +512,7 @@ extern "C" {
 #define ant_Message_list_networks_tag            23
 #define ant_Message_available_channels_tag       24
 #define ant_Message_available_networks_tag       25
+#define ant_Message_channel_event_tag            26
 
 /* Struct field encoding specification for nanopb */
 #define ant_SetDeviceNumberCmd_FIELDLIST(X, a) \
@@ -629,6 +671,12 @@ X(a, STATIC,   SINGULAR, UINT32,   rf_channel,        6)
 #define ant_PduReceived_CALLBACK NULL
 #define ant_PduReceived_DEFAULT NULL
 
+#define ant_ChannelEvent_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   channel_number,    1) \
+X(a, STATIC,   SINGULAR, UENUM,    event,             2)
+#define ant_ChannelEvent_CALLBACK NULL
+#define ant_ChannelEvent_DEFAULT NULL
+
 #define ant_Message_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,set_device_number,msg.set_device_number),   1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,set_device_type,msg.set_device_type),   2) \
@@ -654,7 +702,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,pdu,msg.pdu),  21) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,list_channels,msg.list_channels),  22) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,list_networks,msg.list_networks),  23) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,available_channels,msg.available_channels),  24) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,available_networks,msg.available_networks),  25)
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,available_networks,msg.available_networks),  25) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,channel_event,msg.channel_event),  26)
 #define ant_Message_CALLBACK NULL
 #define ant_Message_DEFAULT NULL
 #define ant_Message_msg_set_device_number_MSGTYPE ant_SetDeviceNumberCmd
@@ -682,6 +731,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,available_networks,msg.available_network
 #define ant_Message_msg_list_networks_MSGTYPE ant_ListNetworksCmd
 #define ant_Message_msg_available_channels_MSGTYPE ant_AvailableChannels
 #define ant_Message_msg_available_networks_MSGTYPE ant_AvailableNetworks
+#define ant_Message_msg_channel_event_MSGTYPE ant_ChannelEvent
 
 extern const pb_msgdesc_t ant_SetDeviceNumberCmd_msg;
 extern const pb_msgdesc_t ant_SetDeviceTypeCmd_msg;
@@ -708,6 +758,7 @@ extern const pb_msgdesc_t ant_AvailableChannels_msg;
 extern const pb_msgdesc_t ant_AvailableNetworks_msg;
 extern const pb_msgdesc_t ant_RawPduReceived_msg;
 extern const pb_msgdesc_t ant_PduReceived_msg;
+extern const pb_msgdesc_t ant_ChannelEvent_msg;
 extern const pb_msgdesc_t ant_Message_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
@@ -736,12 +787,14 @@ extern const pb_msgdesc_t ant_Message_msg;
 #define ant_AvailableNetworks_fields &ant_AvailableNetworks_msg
 #define ant_RawPduReceived_fields &ant_RawPduReceived_msg
 #define ant_PduReceived_fields &ant_PduReceived_msg
+#define ant_ChannelEvent_fields &ant_ChannelEvent_msg
 #define ant_Message_fields &ant_Message_msg
 
 /* Maximum encoded size of messages (where known) */
 #define ant_AssignChannelCmd_size                22
 #define ant_AvailableChannels_size               6
 #define ant_AvailableNetworks_size               6
+#define ant_ChannelEvent_size                    8
 #define ant_CloseChannelCmd_size                 6
 #define ant_JamCmd_size                          6
 #define ant_Jammed_size                          6

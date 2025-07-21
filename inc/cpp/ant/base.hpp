@@ -55,6 +55,28 @@ namespace whad
             SharedBidirectionalTransmitChannel = ANT_CHANNEL_TYPE_SHARED_BIDIRECTIONAL_TRANSMIT_CHANNEL
         };
 
+        /*! Channel event code. */
+        enum ChannelEventCode {
+            NoError = ANT_CHANNEL_EVENT_NO_ERROR,
+            RxSearchTimeout = ANT_CHANNEL_EVENT_RX_SEARCH_TIMEOUT,
+            RxFail = ANT_CHANNEL_EVENT_RX_FAIL,
+            Tx = ANT_CHANNEL_EVENT_TX,
+            RxFailed = ANT_CHANNEL_EVENT_TRANSFER_RX_FAILED,
+            TransferTxCompleted = ANT_CHANNEL_EVENT_TRANSFER_TX_COMPLETED,
+            TransferTxFailed = ANT_CHANNEL_EVENT_TRANSFER_TX_FAILED,
+            ChannelClosed = ANT_CHANNEL_EVENT_CHANNEL_CLOSED,
+            RxFailToGoToSearch = ANT_CHANNEL_EVENT_RX_FAIL_TO_GO_TO_SEARCH,
+            ChannelCollision = ANT_CHANNEL_EVENT_CHANNEL_COLLISION,
+            TransferTxStart = ANT_CHANNEL_EVENT_TRANSFER_TX_START,
+            TransferNextDataBlock = ANT_CHANNEL_EVENT_TRANSFER_NEXT_DATA_BLOCK,
+            ChannelInWrongState = ANT_CHANNEL_EVENT_CHANNEL_IN_WRONG_STATE,
+            ChannelNotOpened = ANT_CHANNEL_EVENT_CHANNEL_NOT_OPENED,
+            ChannelIdNotSet = ANT_CHANNEL_EVENT_CHANNEL_ID_NOT_SET,
+            CloseAllChannels = ANT_CHANNEL_EVENT_CLOSE_ALL_CHANNELS,
+            TransferInProgress = ANT_CHANNEL_EVENT_TRANSFER_IN_PROGRESS,
+            TransferSequenceNumberError = ANT_CHANNEL_EVENT_TRANSFER_SEQUENCE_NUMBER_ERROR,
+            TransferInError = ANT_CHANNEL_EVENT_TRANSFER_IN_ERROR
+        };
 
         /* Default ANT message class. */
         class AntMsg : public NanoPbMsg

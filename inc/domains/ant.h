@@ -63,6 +63,29 @@ typedef enum {
     ANT_CHANNEL_TYPE_TRANSMIT_ONLY_CHANNEL = ant_AntChannelType_TRANSMIT_ONLY_CHANNEL
 } whad_ant_channel_type_t;
 
+
+typedef enum {
+    ANT_CHANNEL_EVENT_NO_ERROR = ant_AntChannelEvent_EVENT_NO_ERROR, 
+    ANT_CHANNEL_EVENT_RX_SEARCH_TIMEOUT = ant_AntChannelEvent_EVENT_RX_SEARCH_TIMEOUT, 
+    ANT_CHANNEL_EVENT_RX_FAIL = ant_AntChannelEvent_EVENT_RX_FAIL, 
+    ANT_CHANNEL_EVENT_TX = ant_AntChannelEvent_EVENT_TX, 
+    ANT_CHANNEL_EVENT_TRANSFER_RX_FAILED = ant_AntChannelEvent_EVENT_TRANSFER_RX_FAILED, 
+    ANT_CHANNEL_EVENT_TRANSFER_TX_COMPLETED = ant_AntChannelEvent_EVENT_TRANSFER_TX_COMPLETED, 
+    ANT_CHANNEL_EVENT_TRANSFER_TX_FAILED = ant_AntChannelEvent_EVENT_TRANSFER_TX_FAILED, 
+    ANT_CHANNEL_EVENT_CHANNEL_CLOSED = ant_AntChannelEvent_EVENT_CHANNEL_CLOSED , 
+    ANT_CHANNEL_EVENT_RX_FAIL_TO_GO_TO_SEARCH = ant_AntChannelEvent_EVENT_RX_FAIL_TO_GO_TO_SEARCH , 
+    ANT_CHANNEL_EVENT_CHANNEL_COLLISION = ant_AntChannelEvent_EVENT_CHANNEL_COLLISION , 
+    ANT_CHANNEL_EVENT_TRANSFER_TX_START = ant_AntChannelEvent_EVENT_TRANSFER_TX_START , 
+    ANT_CHANNEL_EVENT_TRANSFER_NEXT_DATA_BLOCK = ant_AntChannelEvent_EVENT_TRANSFER_NEXT_DATA_BLOCK, 
+    ANT_CHANNEL_EVENT_CHANNEL_IN_WRONG_STATE = ant_AntChannelEvent_EVENT_CHANNEL_IN_WRONG_STATE , 
+    ANT_CHANNEL_EVENT_CHANNEL_NOT_OPENED = ant_AntChannelEvent_EVENT_CHANNEL_NOT_OPENED, 
+    ANT_CHANNEL_EVENT_CHANNEL_ID_NOT_SET = ant_AntChannelEvent_EVENT_CHANNEL_ID_NOT_SET, 
+    ANT_CHANNEL_EVENT_CLOSE_ALL_CHANNELS = ant_AntChannelEvent_EVENT_CLOSE_ALL_CHANNELS, 
+    ANT_CHANNEL_EVENT_TRANSFER_IN_PROGRESS = ant_AntChannelEvent_EVENT_TRANSFER_IN_PROGRESS, 
+    ANT_CHANNEL_EVENT_TRANSFER_SEQUENCE_NUMBER_ERROR = ant_AntChannelEvent_EVENT_TRANSFER_SEQUENCE_NUMBER_ERROR, 
+    ANT_CHANNEL_EVENT_TRANSFER_IN_ERROR = ant_AntChannelEvent_EVENT_TRANSFER_IN_ERROR 
+} whad_ant_channel_event_t;
+
 /**
  * ANT packet structure 
  **/
@@ -196,6 +219,8 @@ whad_result_t whad_ant_raw_pdu_received(Message *p_message, whad_ant_recvd_packe
 whad_result_t whad_ant_raw_pdu_received_parse(Message *p_message, whad_ant_recvd_packet_t *p_pdu,  uint32_t *p_crc);
 whad_result_t whad_ant_pdu_received(Message *p_message, whad_ant_recvd_packet_t *p_pdu);
 whad_result_t whad_ant_pdu_received_parse(Message *p_message, whad_ant_recvd_packet_t *p_pdu);
+whad_result_t whad_ant_channel_event(Message *p_message, uint32_t channel_number, whad_ant_channel_event_t event);
+whad_result_t whad_ant_channel_event_parse(Message *p_message, uint32_t *p_channel_number, whad_ant_channel_event_t *p_event);
 
 
 #ifdef __cplusplus
