@@ -233,7 +233,7 @@ namespace whad::ant {
             ChannelEvent(AntMsg &message);
             ChannelEvent(uint32_t channel_number, ChannelEventCode event);
 
-            uint32_t getCHannelNumber();
+            uint32_t getChannelNumber();
             ChannelEventCode getEvent();
 
 
