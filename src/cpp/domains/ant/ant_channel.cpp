@@ -1001,7 +1001,7 @@ void ChannelEvent::pack()
 void ChannelEvent::unpack()
 {
      
-    if (whad_ant_available_channels_parse(this->getMessage(), &m_channel_number, (whad_ant_channel_event_t *)(&m_event)) == WHAD_ERROR)
+    if (whad_ant_channel_event_parse(this->getMessage(), &m_channel_number, (whad_ant_channel_event_t *)(&m_event)) == WHAD_ERROR)
     {
         throw WhadMessageParsingError();
     }
