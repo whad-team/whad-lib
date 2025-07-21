@@ -5,6 +5,7 @@
 #include "dot15d4/jam.hpp"
 #include "dot15d4/jammed.hpp"
 #include "dot15d4/mitm.hpp"
+#include "dot15d4/wirelesshart.hpp"
 #include "dot15d4/nrgdetect.hpp"
 #include "dot15d4/nrgsample.hpp"
 #include "dot15d4/packet.hpp"

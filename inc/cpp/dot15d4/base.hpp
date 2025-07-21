@@ -26,6 +26,12 @@ namespace whad::dot15d4 {
         StopMsg = WHAD_DOT15D4_STOP,                                    /*!< Stop current mode. */
         MitmModeMsg = WHAD_DOT15D4_MITM_MODE,                           /*!< Set interface in Man-in-the-Middle mode. */
         JammedMsg = WHAD_DOT15D4_JAMMED,                                /*!< Jamming result notification. */
+        HoppingMsg = WHAD_DOT15D4_HOPPING_CMD,                          /*!< Enable frequency hopping. */
+        AddLinksMsg = WHAD_DOT15D4_ADD_LINKS_CMD,                       /*!< Adds links to the superframes struct. */
+        DeleteLinkMsg = WHAD_DOT15D4_DELETE_LINK_CMD,                   /*!< Delete link from a superframe. */
+        WriteModifySuperframeMsg = WHAD_DOT15D4_WRITE_MODIFY_SUPERFRAME_CMD,    /*!< Add a new superframe or modify existing.*/
+        DeleteSuperframe = WHAD_DOT15D4_DELETE_SUPERFRAME_CMD,          /*!< Delete superframe. */
+        ChannelMapMsg = WHAD_DOT15D4_CHANNEL_MAP_CMD,                   /*!< Save channel map. */
         EnergyDetectionSampleMsg = WHAD_DOT15D4_NRG_DETECTION_SAMPLE,   /*!< Energy detection sample notification message. */
         RawPduReceivedMsg = WHAD_DOT15D4_RAW_PDU_RECEIVED,              /*!< Raw PDU received notification message. */
         PduReceivingMsg = WHAD_DOT15D4_PDU_RECEIVED                     /*!< PDU received notification message. */

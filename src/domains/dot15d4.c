@@ -1033,3 +1033,167 @@ whad_result_t whad_dot15d4_pdu_received_parse(Message *p_message, whad_dot15d4_r
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+/**
+ * @brief   Create an enable hopping message
+ *
+ * @param[in, out]   p_message   Pointer to a NanoPb Message structure
+ * @param[in] hopping bool val to set to frequency hopping
+ * 
+ *
+ * @retval      WHAD_SUCCESS        Success.
+ * @retval      WHAD_ERROR          Invalid message or packet pointer.
+ **/
+whad_result_t whad_dot15d4_enable_hopping(Message *p_message, bool *hopping)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        /* Error. */
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_hopping_tag;
+    *hopping = p_message->msg.dot15d4.msg.hopping.hopping ;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief Returns true if the link defined by its join_slot exists in the suerframe given as parameter.
+ * 
+ * @param[in] sf Pointer to a `whad_dot15d4_superframe_t` structure
+ * @param[in] join_slot uint16_t of the looked for link
+ * 
+ * @return boolean
+ **/
+bool link_exists_in_sf(whad_dot15d4_superframe_t *sf, uint16_t join_slot) {
+    if (!sf || !sf->links) return false;
+
+    for (whad_dot15d4_link_t *l = sf->links->first; l != NULL; l = l->next) {
+        if (l->join_slot == join_slot) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * @brief   Returns a pointer to the superframe corresponding to the id given else null
+ *
+ * @param[in] superframes    Pointer to a `whad_dot15d4_superframes_t` structure
+ * @param[in] id int val to select the id
+ * @param[out] superframe structure pointer corresponding to the given id or null
+ * 
+ *
+ * @retval      WHAD_SUCCESS        Success.
+ * @retval      WHAD_ERROR          Invalid message or packet pointer.
+ **/
+whad_dot15d4_superframe_t *whad_dot15d4_get_superframe(whad_dot15d4_superframes_t *superframes, uint8_t id) {
+    whad_dot15d4_superframes_t* curr = superframes;
+    do
+    {
+       if(curr->superframe != NULL){
+        if (curr->superframe->id == id) return curr->superframe;
+       }
+       curr = curr->next;
+    } while (curr != NULL);
+    return NULL;
+}
+
+
+/**
+ * @brief   Parse a message into the superframes links
+ *
+ * @param[in]       p_message   Pointer to a NanoPb Message structure
+ * @param[in,out]   superframes    Pointer to a `whad_dot15d4_superframes_t` structure
+ *
+ * @retval      WHAD_SUCCESS        Success.
+ * @retval      WHAD_ERROR          Invalid message or packet pointer.
+ */
+whad_result_t whad_dot15d4_add_links(Message *p_message, whad_dot15d4_superframes_t *superframes) {
+    if (!p_message || !superframes) return WHAD_ERROR;
+
+    dot15d4_AddLinksCmd_links_t links = p_message->msg.dot15d4.msg.addLinks.links;
+    uint8_t nb_links = p_message->msg.dot15d4.msg.addLinks.nb_links;
+
+    for (int i = 0; i < nb_links; i++) {
+        uint8_t *raw = &(links.bytes[8 * i]);
+
+        uint8_t id_superframe = raw[0];
+        uint16_t join_slot = (raw[1] << 8) | raw[2]; 
+        uint8_t offset = raw[3];
+        uint16_t neighbor = (raw[4] << 8) | raw[5];
+        uint8_t options = raw[6];
+        uint8_t type = raw[7];
+
+        whad_dot15d4_superframe_t *sf = whad_dot15d4_get_superframe(superframes, id_superframe);
+        if (!sf) return WHAD_ERROR;
+
+        if (link_exists_in_sf(sf, join_slot)) {
+            //if the link already exists, this message is discarded, as to modify a link one should delete it then create a one one
+            continue;
+        }
+
+        whad_dot15d4_link_t *new_link = malloc(sizeof(whad_dot15d4_link_t));
+        if (!new_link) return WHAD_ERROR;
+
+        new_link->join_slot = join_slot;
+        new_link->offset = offset;
+        new_link->neighbor = neighbor;
+        new_link->options = options;
+        new_link->type = type;
+        new_link->next = sf->links->first;
+
+        sf->links->first = new_link;
+        sf->links->nb_links++; 
+    }
+
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief   Parse a message into the channel map
+ *
+ * @param[in]       p_message   Pointer to a NanoPb Message structure
+ * @param[in,out]   channel_map    Pointer to a uint16_t representing the map
+ *
+ * @retval      WHAD_SUCCESS        Success.
+ * @retval      WHAD_ERROR          Invalid message or packet pointer.
+ **/
+whad_result_t whad_dot15d4_channel_map(Message *p_message, uint16_t *channel_map){
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        /* Error. */
+        return WHAD_ERROR;
+    }
+
+    *channel_map = (uint16_t)(p_message->msg.dot15d4.msg.channelMap.channelMap);
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief   Parse a message into the 'whad_dot15d4_write_modify_superframes_packet_t' structure
+ *
+ * @param[in]       p_message   Pointer to a NanoPb Message structure
+ * @param[in,out]   p_packet    Pointer to a 'whad_dot15d4_write_modify_superframes_packet_t' 
+ *
+ * @retval      WHAD_SUCCESS        Success.
+ * @retval      WHAD_ERROR          Invalid message or packet pointer.
+ */
+whad_result_t whad_dot15d4_write_modify_superframe(Message *p_message, whad_dot15d4_write_modify_superframes_packet_t *p_packet){
+    if (!p_message || !p_packet) return WHAD_ERROR;
+
+    p_packet->superframeId = p_message->msg.dot15d4.msg.writeModifySuperframeCmd.superframeId;
+    p_packet->numberOfSlots = p_message->msg.dot15d4.msg.writeModifySuperframeCmd.numberOfSlots;
+    p_packet->flags = p_message->msg.dot15d4.msg.writeModifySuperframeCmd.flags;
+    p_packet->has_asn = p_message->msg.dot15d4.msg.writeModifySuperframeCmd.has_asn;
+    if (p_packet->has_asn){
+        p_packet->asn = p_message->msg.dot15d4.msg.writeModifySuperframeCmd.asn;
+    }    
+    /* Success. */
+    return WHAD_SUCCESS;
+}

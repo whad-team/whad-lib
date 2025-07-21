@@ -27,6 +27,12 @@ typedef enum {
     WHAD_DOT15D4_START=dot15d4_Message_start_tag,
     WHAD_DOT15D4_STOP=dot15d4_Message_stop_tag,
     WHAD_DOT15D4_MITM_MODE=dot15d4_Message_mitm_tag,
+    WHAD_DOT15D4_HOPPING_CMD = dot15d4_Message_hopping_tag,
+    WHAD_DOT15D4_ADD_LINKS_CMD = dot15d4_Message_addLinks_tag,
+    WHAD_DOT15D4_DELETE_LINK_CMD = dot15d4_Message_deleteLink_tag,
+    WHAD_DOT15D4_WRITE_MODIFY_SUPERFRAME_CMD = dot15d4_Message_writeModifySuperframeCmd_tag,
+    WHAD_DOT15D4_DELETE_SUPERFRAME_CMD = dot15d4_Message_deleteSuperframeCmd_tag,
+    WHAD_DOT15D4_CHANNEL_MAP_CMD = dot15d4_Message_channelMap_tag,
     WHAD_DOT15D4_JAMMED=dot15d4_Message_jammed_tag,
     WHAD_DOT15D4_NRG_DETECTION_SAMPLE=dot15d4_Message_ed_sample_tag,
     WHAD_DOT15D4_RAW_PDU_RECEIVED=dot15d4_Message_raw_pdu_tag,
@@ -82,6 +88,57 @@ typedef struct {
     whad_dot15d4_packet_t packet;
 } whad_dot15d4_recvd_packet_t;
 
+/**
+ * Link configuration 
+ */
+typedef struct whad_dot15d4_link_t whad_dot15d4_link_t;
+
+struct whad_dot15d4_link_t{
+    uint16_t join_slot;
+    uint8_t offset;
+    uint16_t neighbor;
+    uint8_t options;
+    uint8_t type;
+    whad_dot15d4_link_t* next;
+};
+
+/**
+ * Links chained list
+ */
+typedef struct{
+    uint8_t nb_links;
+    whad_dot15d4_link_t* first;
+} whad_dot15d4_chained_link_list_t;
+
+
+/**
+ * Superframe configuration
+ */
+typedef struct {
+    uint8_t id;
+    uint16_t size;
+    uint8_t flags;
+    whad_dot15d4_chained_link_list_t* links;
+} whad_dot15d4_superframe_t;
+
+/**
+ * Superframes stucture
+ */
+typedef struct whad_dot15d4_superframes_t whad_dot15d4_superframes_t;
+
+struct whad_dot15d4_superframes_t{
+    whad_dot15d4_superframe_t *superframe;
+    whad_dot15d4_superframes_t *next;
+};
+
+typedef struct {
+    uint32_t superframeId;
+    uint32_t numberOfSlots;
+    uint32_t flags;
+    bool has_asn;
+    uint64_t asn;
+} whad_dot15d4_write_modify_superframes_packet_t;
+
 whad_dot15d4_msgtype_t whad_dot15d4_get_message_type(Message *p_message);
 
 
@@ -120,6 +177,11 @@ whad_result_t whad_dot15d4_raw_pdu_received_parse(Message *p_message, whad_dot15
 whad_result_t whad_dot15d4_pdu_received(Message *p_message, whad_dot15d4_recvd_packet_t *p_packet);
 whad_result_t whad_dot15d4_pdu_received_parse(Message *p_message, whad_dot15d4_recvd_packet_t *p_packet);
 
+whad_result_t whad_dot15d4_enable_hopping(Message *p_message, bool* hopping);
+whad_result_t whad_dot15d4_add_links(Message *p_message, whad_dot15d4_superframes_t *superframes);
+whad_result_t whad_dot15d4_channel_map(Message *p_message, uint16_t* channel_map);
+whad_result_t whad_dot15d4_write_modify_superframe(Message *p_message, whad_dot15d4_write_modify_superframes_packet_t *p_packet);
+whad_dot15d4_superframe_t *whad_dot15d4_get_superframe(whad_dot15d4_superframes_t *superframes, uint8_t id);
 
 #ifdef __cplusplus
 }

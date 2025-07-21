@@ -52,6 +52,23 @@ in :ref:`whad_discovery_cap`.
             }
             break;
 
+            case WHAD_DOT15D4_HOPPING_CMD:
+            {
+                /* Enables frequency hopping. */
+                /* ... */
+
+                /* Return a success message. */
+                whad_generic_cmd_result(&response, WHAD_RESULT_SUCCESS);                
+            }
+            break;
+
+            case WHAD_DOT15D4_ADD_LINKS_CMD:
+            {
+                /** Adds the given links into the superframe structure*/
+                whad_generic_cmd_result(&response, WHAD_RESULT_SUCCESS);
+            }
+            break;
+
             default:
             {
                 /* Return an error message. */
