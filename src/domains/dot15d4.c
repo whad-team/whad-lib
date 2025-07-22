@@ -1253,6 +1253,15 @@ void whad_dot15d4_free_superframe_struct(whad_dot15d4_superframe_t* superframe){
     }
 }
 
+/**
+ * @brief   Parse a message and delete the corresponding superframe if it exists
+ *
+ * @param[in]       p_message   Pointer to a NanoPb Message structure
+ * @param[in,out]   superframes    Pointer to a pointer to the 'whad_dot15d4_superframes_t' that contains all links
+ *
+ * @retval      WHAD_SUCCESS        Success.
+ * @retval      WHAD_ERROR          Invalid message.
+ */
 whad_result_t whad_dot15d4_delete_superframe(Message *p_message, whad_dot15d4_superframes_t **superframes){
     if (!p_message) return WHAD_ERROR;
     uint8_t id = p_message->msg.dot15d4.msg.deleteSuperframeCmd.superframeId;
@@ -1283,6 +1292,13 @@ whad_result_t whad_dot15d4_delete_superframe(Message *p_message, whad_dot15d4_su
     return WHAD_SUCCESS;    
 }
 
+/**
+ * @brief   Add the corresponding superframe from 'whad_dot15d4_write_modify_superframes_packet_t' to 'whad_dot15d4_superframes_t'
+ *
+ * @param[in,out]   superframes     Pointer to 'whad_dot15d4_superframes_t' struct
+ * @param[in]       pkt             Pointer to a 'whad_dot15d4_write_modify_superframes_packet_t' that contains superframes details
+ *
+ */
 void whad_dot15d4_add_superframe( whad_dot15d4_superframes_t *superframes, whad_dot15d4_write_modify_superframes_packet_t *pkt){
     whad_dot15d4_superframes_t *curr = superframes;
     whad_dot15d4_superframe_t * superframe = (whad_dot15d4_superframe_t*) malloc(sizeof(whad_dot15d4_superframe_t));
@@ -1304,6 +1320,13 @@ void whad_dot15d4_add_superframe( whad_dot15d4_superframes_t *superframes, whad_
     }
 }
 
+/**
+ * @brief   Update the corresponding superframe from 'whad_dot15d4_write_modify_superframes_packet_t' to 'whad_dot15d4_superframes_t'
+ *
+ * @param[in,out]   superframes     Pointer to 'whad_dot15d4_superframes_t' struct
+ * @param[in]       pkt             Pointer to a 'whad_dot15d4_write_modify_superframes_packet_t' that contains superframes details
+ *
+ */
 void whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superframe, whad_dot15d4_write_modify_superframes_packet_t *pkt){
     if (superframe != NULL){
         superframe->size = pkt->numberOfSlots;
