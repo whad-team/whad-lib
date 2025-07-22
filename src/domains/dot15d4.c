@@ -1155,6 +1155,42 @@ whad_result_t whad_dot15d4_add_links(Message *p_message, whad_dot15d4_superframe
 }
 
 /**
+ * @brief   Delete a link from a superframes struct
+ *
+ * @param[in]       p_message   Pointer to a NanoPb Message structure
+ * @param[in,out]   superframes    Pointer to a `whad_dot15d4_superframes_t` structure
+ *
+ * @retval      WHAD_SUCCESS        Success.
+ * @retval      WHAD_ERROR          Invalid message or packet pointer.
+ */
+whad_result_t whad_dot15d4_delete_link(Message *p_message, whad_dot15d4_superframes_t *superframes) {
+    if (!p_message || !superframes) return WHAD_ERROR;
+    uint8_t superframeId = (uint8_t)p_message->msg.dot15d4.msg.deleteLink.superframeId;
+    uint16_t join_slot = (uint16_t)p_message->msg.dot15d4.msg.deleteLink.slotNumber;
+    uint16_t neighbor = (uint16_t)p_message->msg.dot15d4.msg.deleteLink.neighbor;
+    whad_dot15d4_superframe_t *sf = whad_dot15d4_get_superframe(superframes, superframeId);
+    if (!sf) return WHAD_ERROR;
+    sf->links->nb_links--;
+    if (!sf->links) return WHAD_ERROR;
+    whad_dot15d4_link_t* prev = NULL;
+    whad_dot15d4_link_t* link = sf->links->first;
+    while(link){
+        if (link->join_slot == join_slot && link->neighbor == neighbor){
+            if(!prev){
+                sf->links->first = link->next;
+            }else{
+                prev->next = link->next;
+            }
+            free(link);
+            return WHAD_SUCCESS;
+        }
+        prev = link;
+        link = link->next;
+    }
+    return WHAD_ERROR;
+}
+
+/**
  * @brief   Parse a message into the channel map
  *
  * @param[in]       p_message   Pointer to a NanoPb Message structure
@@ -1196,4 +1232,95 @@ whad_result_t whad_dot15d4_write_modify_superframe(Message *p_message, whad_dot1
     }    
     /* Success. */
     return WHAD_SUCCESS;
+}
+
+void whad_dot15d4_free_superframe_struct(whad_dot15d4_superframe_t* superframe){
+    if(superframe != NULL){
+        whad_dot15d4_chained_link_list_t* links = superframe->links;
+        if(links!=NULL){
+            whad_dot15d4_link_t *link = links->first;
+            whad_dot15d4_link_t *to_free;
+            while(link!=NULL){
+                to_free = link;
+                link = link->next;
+                
+                free(to_free);
+            }
+            free(links);
+        }
+        free(superframe);
+        
+    }
+}
+
+whad_result_t whad_dot15d4_delete_superframe(Message *p_message, whad_dot15d4_superframes_t **superframes){
+    if (!p_message) return WHAD_ERROR;
+    uint8_t id = p_message->msg.dot15d4.msg.deleteSuperframeCmd.superframeId;
+    whad_dot15d4_superframes_t *prev = NULL;
+    whad_dot15d4_superframes_t *curr = *superframes;
+
+    while (curr != NULL) {
+        if (curr->superframe != NULL && curr->superframe->id == id) {
+            if (prev != NULL) {
+                prev->next = curr->next;
+            } else {
+                whad_dot15d4_free_superframe_struct(curr->superframe);
+                if (curr->next==NULL){
+                    (*superframes)->superframe = NULL;
+                    (*superframes)->next = NULL;
+
+                }else{
+                    *superframes = curr->next;
+                    free(curr);
+                }
+                
+            }
+            return WHAD_SUCCESS;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+    return WHAD_SUCCESS;    
+}
+
+void whad_dot15d4_add_superframe( whad_dot15d4_superframes_t *superframes, whad_dot15d4_write_modify_superframes_packet_t *pkt){
+    whad_dot15d4_superframes_t *curr = superframes;
+    whad_dot15d4_superframe_t * superframe = (whad_dot15d4_superframe_t*) malloc(sizeof(whad_dot15d4_superframe_t));
+    superframe->id = pkt->superframeId;
+    superframe->size = pkt->numberOfSlots;
+    superframe->links = (whad_dot15d4_chained_link_list_t*) malloc(sizeof(whad_dot15d4_chained_link_list_t));
+    superframe->links->first = NULL;
+    superframe->links->nb_links = 0;
+
+    if (superframes->superframe == NULL && superframes->next == NULL){
+        superframes->superframe = superframe;
+    }else{
+        while (curr->next != NULL){
+            curr = curr->next;
+        }
+        curr->next = (whad_dot15d4_superframes_t*) malloc (sizeof(whad_dot15d4_superframes_t));
+        curr->next->superframe = superframe;
+        curr->next->next = NULL;
+    }
+}
+
+void whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superframe, whad_dot15d4_write_modify_superframes_packet_t *pkt){
+    if (superframe != NULL){
+        superframe->size = pkt->numberOfSlots;
+        superframe->flags = pkt->flags;
+        if (superframe->links != NULL){
+            whad_dot15d4_link_t* link = superframe->links->first;
+            while (link!=NULL)
+            {
+                if(link->join_slot > pkt->numberOfSlots){
+                    whad_dot15d4_link_t *link_to_free = link;
+                    link = link->next;
+                    free(link_to_free);
+                }
+                else{
+                    link = link->next;
+                }
+            }
+        }
+    }
 }

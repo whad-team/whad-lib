@@ -179,9 +179,13 @@ whad_result_t whad_dot15d4_pdu_received_parse(Message *p_message, whad_dot15d4_r
 
 whad_result_t whad_dot15d4_enable_hopping(Message *p_message, bool* hopping);
 whad_result_t whad_dot15d4_add_links(Message *p_message, whad_dot15d4_superframes_t *superframes);
+whad_result_t whad_dot15d4_delete_link(Message *p_message, whad_dot15d4_superframes_t *superframes);
 whad_result_t whad_dot15d4_channel_map(Message *p_message, uint16_t* channel_map);
 whad_result_t whad_dot15d4_write_modify_superframe(Message *p_message, whad_dot15d4_write_modify_superframes_packet_t *p_packet);
 whad_dot15d4_superframe_t *whad_dot15d4_get_superframe(whad_dot15d4_superframes_t *superframes, uint8_t id);
+void whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superframe, whad_dot15d4_write_modify_superframes_packet_t *pkt);
+void whad_dot15d4_add_superframe(whad_dot15d4_superframes_t *superframes, whad_dot15d4_write_modify_superframes_packet_t *pkt);
+whad_result_t whad_dot15d4_delete_superframe(Message *p_message, whad_dot15d4_superframes_t **superframes);
 
 #ifdef __cplusplus
 }

@@ -13,9 +13,13 @@ namespace whad::dot15d4 {
         public:
             Superframes();
 
-            void writeModifySuperframe(Dot15d4Msg *message);
+            void writeModifySuperframe(Dot15d4Msg &message);
             void addSuperframe(int superframeId, int numberOfSlots, int flags);
             void modifySuperframe(whad_dot15d4_superframe_t *superframe, int numberOfSlots,int flags);
+            void deleteSuperframe(Dot15d4Msg &message);
+
+            void addLinks(Dot15d4Msg &message);
+            void deleteLink(Dot15d4Msg &message);
 
             /* Getters. */
             whad_dot15d4_superframes_t* getSuperframes();
