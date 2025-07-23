@@ -1120,14 +1120,15 @@ whad_result_t whad_dot15d4_add_links(Message *p_message, whad_dot15d4_superframe
     uint8_t nb_links = p_message->msg.dot15d4.msg.addLinks.nb_links;
 
     for (int i = 0; i < nb_links; i++) {
-        uint8_t *raw = &(links.bytes[8 * i]);
+        uint8_t *raw = &(links.bytes[10 * i]);
 
         uint8_t id_superframe = raw[0];
-        uint16_t join_slot = (raw[1] << 8) | raw[2]; 
-        uint8_t offset = raw[3];
-        uint16_t neighbor = (raw[4] << 8) | raw[5];
-        uint8_t options = raw[6];
-        uint8_t type = raw[7];
+        uint16_t src = (raw[1] << 8) | raw[2]; 
+        uint16_t join_slot = (raw[3] << 8) | raw[4]; 
+        uint8_t offset = raw[5];
+        uint16_t neighbor = (raw[6] << 8) | raw[7];
+        uint8_t options = raw[8];
+        uint8_t type = raw[9];
 
         whad_dot15d4_superframe_t *sf = whad_dot15d4_get_superframe(superframes, id_superframe);
         if (!sf) return WHAD_ERROR;
@@ -1140,6 +1141,7 @@ whad_result_t whad_dot15d4_add_links(Message *p_message, whad_dot15d4_superframe
         whad_dot15d4_link_t *new_link = malloc(sizeof(whad_dot15d4_link_t));
         if (!new_link) return WHAD_ERROR;
 
+        new_link->src = src;
         new_link->join_slot = join_slot;
         new_link->offset = offset;
         new_link->neighbor = neighbor;

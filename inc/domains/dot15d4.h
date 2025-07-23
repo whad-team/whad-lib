@@ -94,6 +94,7 @@ typedef struct {
 typedef struct whad_dot15d4_link_t whad_dot15d4_link_t;
 
 struct whad_dot15d4_link_t{
+    uint16_t src;
     uint16_t join_slot;
     uint8_t offset;
     uint16_t neighbor;
