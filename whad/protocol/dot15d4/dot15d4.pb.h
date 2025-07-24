@@ -228,6 +228,18 @@ typedef struct _dot15d4_PduReceived {
     uint32_t lqi;
 } dot15d4_PduReceived;
 
+/* *
+ DiscoveredCommunication
+
+ Notifies the discovery of a communication on an unknown link
+ This message is to be used to discover existing links and add them to the superframes */
+typedef struct _dot15d4_DiscoveredCommunication {
+    uint32_t src;
+    uint32_t dst;
+    uint32_t slot;
+    uint32_t offset;
+} dot15d4_DiscoveredCommunication;
+
 typedef struct _dot15d4_Message {
     pb_size_t which_msg;
     union _dot15d4_Message_msg {
@@ -255,6 +267,7 @@ typedef struct _dot15d4_Message {
         dot15d4_ChannelMapCmd channelMap;
         dot15d4_WriteModifySuperframeCmd writeModifySuperframeCmd;
         dot15d4_DeleteSuperframeCmd deleteSuperframeCmd;
+        dot15d4_DiscoveredCommunication discovered_communication;
     } msg;
 } dot15d4_Message;
 
@@ -302,6 +315,7 @@ extern "C" {
 
 
 
+
 /* Initializer values for message structs */
 #define dot15d4_SetNodeAddressCmd_init_default   {0, _dot15d4_AddressType_MIN}
 #define dot15d4_SniffCmd_init_default            {0}
@@ -325,6 +339,7 @@ extern "C" {
 #define dot15d4_EnergyDetectionSample_init_default {0, 0}
 #define dot15d4_RawPduReceived_init_default      {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0}
 #define dot15d4_PduReceived_init_default         {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0}
+#define dot15d4_DiscoveredCommunication_init_default {0, 0, 0, 0}
 #define dot15d4_Message_init_default             {0, {dot15d4_SetNodeAddressCmd_init_default}}
 #define dot15d4_SetNodeAddressCmd_init_zero      {0, _dot15d4_AddressType_MIN}
 #define dot15d4_SniffCmd_init_zero               {0}
@@ -348,6 +363,7 @@ extern "C" {
 #define dot15d4_EnergyDetectionSample_init_zero  {0, 0}
 #define dot15d4_RawPduReceived_init_zero         {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0}
 #define dot15d4_PduReceived_init_zero            {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0}
+#define dot15d4_DiscoveredCommunication_init_zero {0, 0, 0, 0}
 #define dot15d4_Message_init_zero                {0, {dot15d4_SetNodeAddressCmd_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -393,6 +409,10 @@ extern "C" {
 #define dot15d4_PduReceived_fcs_validity_tag     4
 #define dot15d4_PduReceived_pdu_tag              5
 #define dot15d4_PduReceived_lqi_tag              6
+#define dot15d4_DiscoveredCommunication_src_tag  1
+#define dot15d4_DiscoveredCommunication_dst_tag  2
+#define dot15d4_DiscoveredCommunication_slot_tag 3
+#define dot15d4_DiscoveredCommunication_offset_tag 4
 #define dot15d4_Message_set_node_addr_tag        1
 #define dot15d4_Message_sniff_tag                2
 #define dot15d4_Message_jam_tag                  3
@@ -415,6 +435,7 @@ extern "C" {
 #define dot15d4_Message_channelMap_tag           20
 #define dot15d4_Message_writeModifySuperframeCmd_tag 21
 #define dot15d4_Message_deleteSuperframeCmd_tag  22
+#define dot15d4_Message_discovered_communication_tag 23
 
 /* Struct field encoding specification for nanopb */
 #define dot15d4_SetNodeAddressCmd_FIELDLIST(X, a) \
@@ -549,6 +570,14 @@ X(a, STATIC,   OPTIONAL, UINT32,   lqi,               6)
 #define dot15d4_PduReceived_CALLBACK NULL
 #define dot15d4_PduReceived_DEFAULT NULL
 
+#define dot15d4_DiscoveredCommunication_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   src,               1) \
+X(a, STATIC,   SINGULAR, UINT32,   dst,               2) \
+X(a, STATIC,   SINGULAR, UINT32,   slot,              3) \
+X(a, STATIC,   SINGULAR, UINT32,   offset,            4)
+#define dot15d4_DiscoveredCommunication_CALLBACK NULL
+#define dot15d4_DiscoveredCommunication_DEFAULT NULL
+
 #define dot15d4_Message_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,set_node_addr,msg.set_node_addr),   1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,sniff,msg.sniff),   2) \
@@ -571,7 +600,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,addLinks,msg.addLinks),  18) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,deleteLink,msg.deleteLink),  19) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,channelMap,msg.channelMap),  20) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,writeModifySuperframeCmd,msg.writeModifySuperframeCmd),  21) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,deleteSuperframeCmd,msg.deleteSuperframeCmd),  22)
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,deleteSuperframeCmd,msg.deleteSuperframeCmd),  22) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,discovered_communication,msg.discovered_communication),  23)
 #define dot15d4_Message_CALLBACK NULL
 #define dot15d4_Message_DEFAULT NULL
 #define dot15d4_Message_msg_set_node_addr_MSGTYPE dot15d4_SetNodeAddressCmd
@@ -596,6 +626,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,deleteSuperframeCmd,msg.deleteSuperframe
 #define dot15d4_Message_msg_channelMap_MSGTYPE dot15d4_ChannelMapCmd
 #define dot15d4_Message_msg_writeModifySuperframeCmd_MSGTYPE dot15d4_WriteModifySuperframeCmd
 #define dot15d4_Message_msg_deleteSuperframeCmd_MSGTYPE dot15d4_DeleteSuperframeCmd
+#define dot15d4_Message_msg_discovered_communication_MSGTYPE dot15d4_DiscoveredCommunication
 
 extern const pb_msgdesc_t dot15d4_SetNodeAddressCmd_msg;
 extern const pb_msgdesc_t dot15d4_SniffCmd_msg;
@@ -619,6 +650,7 @@ extern const pb_msgdesc_t dot15d4_DeleteSuperframeCmd_msg;
 extern const pb_msgdesc_t dot15d4_EnergyDetectionSample_msg;
 extern const pb_msgdesc_t dot15d4_RawPduReceived_msg;
 extern const pb_msgdesc_t dot15d4_PduReceived_msg;
+extern const pb_msgdesc_t dot15d4_DiscoveredCommunication_msg;
 extern const pb_msgdesc_t dot15d4_Message_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
@@ -644,6 +676,7 @@ extern const pb_msgdesc_t dot15d4_Message_msg;
 #define dot15d4_EnergyDetectionSample_fields &dot15d4_EnergyDetectionSample_msg
 #define dot15d4_RawPduReceived_fields &dot15d4_RawPduReceived_msg
 #define dot15d4_PduReceived_fields &dot15d4_PduReceived_msg
+#define dot15d4_DiscoveredCommunication_fields &dot15d4_DiscoveredCommunication_msg
 #define dot15d4_Message_fields &dot15d4_Message_msg
 
 /* Maximum encoded size of messages (where known) */
@@ -653,6 +686,7 @@ extern const pb_msgdesc_t dot15d4_Message_msg;
 #define dot15d4_CoordinatorCmd_size              6
 #define dot15d4_DeleteLinkCmd_size               18
 #define dot15d4_DeleteSuperframeCmd_size         6
+#define dot15d4_DiscoveredCommunication_size     24
 #define dot15d4_EnableHopCmd_size                2
 #define dot15d4_EndDeviceCmd_size                6
 #define dot15d4_EnergyDetectionCmd_size          6

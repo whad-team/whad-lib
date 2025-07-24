@@ -34,6 +34,7 @@ typedef enum {
     WHAD_DOT15D4_DELETE_SUPERFRAME_CMD = dot15d4_Message_deleteSuperframeCmd_tag,
     WHAD_DOT15D4_CHANNEL_MAP_CMD = dot15d4_Message_channelMap_tag,
     WHAD_DOT15D4_JAMMED=dot15d4_Message_jammed_tag,
+    WHAD_DOT15D4_DISCOVERED_COMMUNICATION=dot15d4_Message_discovered_communication_tag,
     WHAD_DOT15D4_NRG_DETECTION_SAMPLE=dot15d4_Message_ed_sample_tag,
     WHAD_DOT15D4_RAW_PDU_RECEIVED=dot15d4_Message_raw_pdu_tag,
     WHAD_DOT15D4_PDU_RECEIVED=dot15d4_Message_pdu_tag
@@ -184,9 +185,11 @@ whad_result_t whad_dot15d4_delete_link(Message *p_message, whad_dot15d4_superfra
 whad_result_t whad_dot15d4_channel_map(Message *p_message, uint16_t* channel_map);
 whad_result_t whad_dot15d4_write_modify_superframe(Message *p_message, whad_dot15d4_write_modify_superframes_packet_t *p_packet);
 whad_dot15d4_superframe_t *whad_dot15d4_get_superframe(whad_dot15d4_superframes_t *superframes, uint8_t id);
-void whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superframe, whad_dot15d4_write_modify_superframes_packet_t *pkt);
-void whad_dot15d4_add_superframe(whad_dot15d4_superframes_t *superframes, whad_dot15d4_write_modify_superframes_packet_t *pkt);
+whad_result_t whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superframe, whad_dot15d4_write_modify_superframes_packet_t *pkt);
+whad_result_t whad_dot15d4_add_superframe(whad_dot15d4_superframes_t *superframes, whad_dot15d4_write_modify_superframes_packet_t *pkt);
 whad_result_t whad_dot15d4_delete_superframe(Message *p_message, whad_dot15d4_superframes_t **superframes);
+
+whad_result_t whad_dot15d4_discovery(Message *p_message, uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset);
 
 #ifdef __cplusplus
 }

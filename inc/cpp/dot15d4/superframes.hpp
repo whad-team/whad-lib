@@ -24,10 +24,15 @@ namespace whad::dot15d4 {
             /* Getters. */
             whad_dot15d4_superframes_t* getSuperframes();
             whad_dot15d4_superframe_t* getSuperframe(int id);
+            uint32_t getMaximumSuperframeSize();
 
         private:
             void unpack(Dot15d4Msg *message);
+            uint32_t lookForMaximumSuperframeSize();
+
             whad_dot15d4_superframes_t* m_superframes ;
+            uint32_t max_size;
+            uint8_t* discoveryTable;
     };
 
 }

@@ -9,10 +9,12 @@ Superframes::Superframes(){
     m_superframes = (whad_dot15d4_superframes_t*) malloc(sizeof(whad_dot15d4_superframes_t));
     m_superframes->next = nullptr;
     m_superframes->superframe = nullptr;
+    max_size = 0;
 }
 
 void Superframes::deleteSuperframe(Dot15d4Msg &message){
     whad_dot15d4_delete_superframe(message.getMessage(), &m_superframes);
+    max_size = lookForMaximumSuperframeSize();
 }
 
 void Superframes::writeModifySuperframe(Dot15d4Msg &message){
@@ -33,6 +35,9 @@ void Superframes::writeModifySuperframe(Dot15d4Msg &message){
     {
 
         whad_dot15d4_superframe_t *superframe = this->getSuperframe(superframe_pkt->superframeId);
+
+        //Update the maximum size of superframe
+        if (superframe_pkt->numberOfSlots > max_size) max_size = superframe_pkt->numberOfSlots;
 
         if(superframe_pkt->has_asn){
             // todo add this function addSuperframe with its parameters to a queue that the timer is going to check its time
@@ -76,4 +81,20 @@ whad_dot15d4_superframes_t* Superframes::getSuperframes(){
 
 whad_dot15d4_superframe_t* Superframes::getSuperframe(int id){
     return whad_dot15d4_get_superframe(m_superframes, id);
+}
+
+uint32_t Superframes::getMaximumSuperframeSize(){
+    return max_size;
+}
+
+uint32_t Superframes::lookForMaximumSuperframeSize(){
+    uint32_t max = 0;
+    whad_dot15d4_superframes_t *sf = m_superframes;
+    while(sf!=nullptr){
+        if(sf->superframe!=nullptr and sf->superframe->size > max){
+            max = sf->superframe->size;
+        }
+        sf = sf->next;
+    }
+    return max;
 }

@@ -1301,7 +1301,7 @@ whad_result_t whad_dot15d4_delete_superframe(Message *p_message, whad_dot15d4_su
  * @param[in]       pkt             Pointer to a 'whad_dot15d4_write_modify_superframes_packet_t' that contains superframes details
  *
  */
-void whad_dot15d4_add_superframe( whad_dot15d4_superframes_t *superframes, whad_dot15d4_write_modify_superframes_packet_t *pkt){
+whad_result_t whad_dot15d4_add_superframe( whad_dot15d4_superframes_t *superframes, whad_dot15d4_write_modify_superframes_packet_t *pkt){
     whad_dot15d4_superframes_t *curr = superframes;
     whad_dot15d4_superframe_t * superframe = (whad_dot15d4_superframe_t*) malloc(sizeof(whad_dot15d4_superframe_t));
     superframe->id = pkt->superframeId;
@@ -1320,6 +1320,7 @@ void whad_dot15d4_add_superframe( whad_dot15d4_superframes_t *superframes, whad_
         curr->next->superframe = superframe;
         curr->next->next = NULL;
     }
+    return WHAD_SUCCESS;
 }
 
 /**
@@ -1329,7 +1330,7 @@ void whad_dot15d4_add_superframe( whad_dot15d4_superframes_t *superframes, whad_
  * @param[in]       pkt             Pointer to a 'whad_dot15d4_write_modify_superframes_packet_t' that contains superframes details
  *
  */
-void whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superframe, whad_dot15d4_write_modify_superframes_packet_t *pkt){
+whad_result_t whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superframe, whad_dot15d4_write_modify_superframes_packet_t *pkt){
     if (superframe != NULL){
         superframe->size = pkt->numberOfSlots;
         superframe->flags = pkt->flags;
@@ -1348,4 +1349,33 @@ void whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superframe, whad_
             }
         }
     }
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief   Create a DiscoveredCommunication message
+ *
+ * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   src         Source  of the message discovered
+ * @param[in]   dst         Destination  of the message discovered
+ * @param[in]   slot        Slot in which the communication was got
+ * @param[in]   offset      Calculated offset based on number of active channels
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+whad_result_t whad_dot15d4_discovery(Message *p_message, uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset){
+    /* Sanity check */
+    if (!p_message) return WHAD_ERROR;
+
+    /* Set parameters*/
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_discovered_communication_tag;
+    p_message->msg.dot15d4.msg.discovered_communication.src = src;
+    p_message->msg.dot15d4.msg.discovered_communication.dst = dst;
+    p_message->msg.dot15d4.msg.discovered_communication.slot = slot;
+    p_message->msg.dot15d4.msg.discovered_communication.offset = offset;
+
+    /*Success*/
+    return WHAD_SUCCESS;
 }
