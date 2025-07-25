@@ -1364,7 +1364,7 @@ whad_result_t whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superfra
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message or address pointer.
  **/
-whad_result_t whad_dot15d4_discovery(Message *p_message, uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset){
+whad_result_t whad_dot15d4_discovered_communication(Message *p_message, uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset){
     /* Sanity check */
     if (!p_message) return WHAD_ERROR;
 

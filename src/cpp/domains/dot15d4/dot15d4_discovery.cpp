@@ -11,7 +11,7 @@ using namespace whad::dot15d4;
  * @param[in]   offset         Specify the offset of the discovered message
  **/
 
-Discovery::Discovery(uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset) : Dot15d4Msg()
+DiscoveredCommunication::DiscoveredCommunication(uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset) : Dot15d4Msg()
 {
     /* Save parameters. */
     m_src = src;
@@ -20,25 +20,25 @@ Discovery::Discovery(uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset)
     m_offset = offset;
 }
 
-uint16_t Discovery::getSrc(){
+uint16_t DiscoveredCommunication::getSrc(){
     return m_src;
 }
 
-uint16_t Discovery::getDst(){
+uint16_t DiscoveredCommunication::getDst(){
     return m_dst;
 }
 
-uint16_t Discovery::getSlot(){
+uint16_t DiscoveredCommunication::getSlot(){
     return m_slot;
 }
 
-uint16_t Discovery::getOffset(){
+uint16_t DiscoveredCommunication::getOffset(){
     return m_offset;
 }
 
-void Discovery::pack()
+void DiscoveredCommunication::pack()
 {
-    whad_dot15d4_discovery(
+    whad_dot15d4_discovered_communication(
         this->getMessage(),
         m_src,
         m_dst,

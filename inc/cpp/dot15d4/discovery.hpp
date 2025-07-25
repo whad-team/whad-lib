@@ -8,10 +8,10 @@
 
 namespace whad::dot15d4 {
 
-    class Discovery : public Dot15d4Msg
+    class DiscoveredCommunication : public Dot15d4Msg
     {
         public:
-            Discovery(uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset);
+            DiscoveredCommunication(uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset);
 
             /* Getters. */
             uint16_t getSrc();
