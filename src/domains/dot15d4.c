@@ -1081,6 +1081,25 @@ bool link_exists_in_sf(whad_dot15d4_superframe_t *sf, uint16_t join_slot) {
 }
 
 /**
+ * @brief Returns the link defined by its join_slot exists in the suerframe given as parameter if it exists else NULL.
+ * 
+ * @param[in] sf Pointer to a `whad_dot15d4_superframe_t` structure
+ * @param[in] join_slot uint16_t of the looked for link
+ * 
+ * @return whad_dot15d4_link_t* link
+ **/
+whad_dot15d4_link_t *whad_dot15d4_get_link_from_sf(whad_dot15d4_superframe_t *sf, uint16_t join_slot){
+    if (!sf || !sf->links) return false;
+
+    for (whad_dot15d4_link_t *l = sf->links->first; l != NULL; l = l->next) {
+        if (l->join_slot == join_slot) {
+            return l;
+        }
+    }
+    return NULL;
+}
+
+/**
  * @brief   Returns a pointer to the superframe corresponding to the id given else null
  *
  * @param[in] superframes    Pointer to a `whad_dot15d4_superframes_t` structure
@@ -1133,8 +1152,17 @@ whad_result_t whad_dot15d4_add_links(Message *p_message, whad_dot15d4_superframe
         whad_dot15d4_superframe_t *sf = whad_dot15d4_get_superframe(superframes, id_superframe);
         if (!sf) return WHAD_ERROR;
 
-        if (link_exists_in_sf(sf, join_slot)) {
-            //if the link already exists, this message is discarded, as to modify a link one should delete it then create a one one
+        whad_dot15d4_link_t *link = whad_dot15d4_get_link_from_sf(sf, join_slot); 
+        if (link!=NULL) {
+            //if the link already exists and is not a of type discovery, this message is discarded, as to modify a link one should delete it then create a one one
+            if (link->type==0x1){
+                //link is discovery => can be overwritten
+                link->neighbor = neighbor;
+                link->type = type;
+                link->src = src;
+                link->offset = offset;
+                link->options = options;
+            }
             continue;
         }
 
