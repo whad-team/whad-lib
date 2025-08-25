@@ -400,6 +400,83 @@ whad_result_t whad_dot15d4_send_raw_parse(Message *p_message, whad_dot15d4_send_
 
 
 /**
+ * @brief   Create a SendInSlotCmd message
+ *
+ * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   slot        Slot on which the packet will be sent
+ * @param[in]   p_packet    Pointer to a WirelessHart packet
+ * @param[in]   length      Packet length in bytes
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint8_t *p_packet, int length)
+{
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_packet == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_send_tag;
+
+    p_message->msg.dot15d4.msg.send_in_slot.slot = slot;
+
+    if ((length >= 0) && (length <= 255))
+    {
+        /* Copy packet into our message structure. */
+        p_message->msg.dot15d4.msg.send.pdu.size = length;
+        memcpy(p_message->msg.dot15d4.msg.send.pdu.bytes, p_packet, length);
+
+        /* Success. */
+        return WHAD_SUCCESS;
+    }
+    else
+    {
+        /* Error, packet too big. */
+        return WHAD_ERROR;
+    }
+}
+
+
+/**
+ * @brief   Parse a SendInSlot message
+ *
+ * @param[in]       p_message   Pointer to a NanoPb Message structure
+ * @param[in,out]   p_params    Pointer to a `whad_dot15d4_send_params_t` structure
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_send_in_slot_parse(Message *p_message, whad_dot15d4_send_in_slot_params_t *p_params)
+{
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_params == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    p_params->slot = p_message->msg.dot15d4.msg.send_in_slot.slot;
+
+    /* Check packet size. */
+    if (p_message->msg.dot15d4.msg.send_in_slot.pdu.size > DOT15D4_PACKET_MAX_SIZE)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Copy packet bytes and length. */
+    p_params->packet.length = p_message->msg.dot15d4.msg.send_in_slot.pdu.size;
+    memcpy(p_params->packet.bytes, p_message->msg.dot15d4.msg.send_in_slot.pdu.bytes, p_params->packet.length);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief   Create a EndDeviceCmd message
  *
  * @param[in]   p_message   Pointer to a NanoPb Message structure

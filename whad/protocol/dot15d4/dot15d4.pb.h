@@ -23,6 +23,7 @@ typedef enum _dot15d4_Dot15d4Command { /* *
     /* Send packets. */
     dot15d4_Dot15d4Command_Send = 4,
     dot15d4_Dot15d4Command_SendRaw = 5,
+    dot15d4_Dot15d4Command_SendInSlot = 18,
     /* End Device mode. */
     dot15d4_Dot15d4Command_EndDeviceMode = 6,
     /* Coordinator mode. */
@@ -98,6 +99,12 @@ typedef struct _dot15d4_SendRawCmd {
     dot15d4_SendRawCmd_pdu_t pdu;
     uint32_t fcs;
 } dot15d4_SendRawCmd;
+
+typedef PB_BYTES_ARRAY_T(255) dot15d4_SendInSlotCmd_pdu_t;
+typedef struct _dot15d4_SendInSlotCmd {
+    uint64_t slot;
+    dot15d4_SendInSlotCmd_pdu_t pdu;
+} dot15d4_SendInSlotCmd;
 
 /* *
  EndDeviceCmd
@@ -268,6 +275,7 @@ typedef struct _dot15d4_Message {
         dot15d4_WriteModifySuperframeCmd writeModifySuperframeCmd;
         dot15d4_DeleteSuperframeCmd deleteSuperframeCmd;
         dot15d4_DiscoveredCommunication discovered_communication;
+        dot15d4_SendInSlotCmd send_in_slot;
     } msg;
 } dot15d4_Message;
 
@@ -278,8 +286,8 @@ extern "C" {
 
 /* Helper constants for enums */
 #define _dot15d4_Dot15d4Command_MIN dot15d4_Dot15d4Command_SetNodeAddress
-#define _dot15d4_Dot15d4Command_MAX dot15d4_Dot15d4Command_DeleteSuperframe
-#define _dot15d4_Dot15d4Command_ARRAYSIZE ((dot15d4_Dot15d4Command)(dot15d4_Dot15d4Command_DeleteSuperframe+1))
+#define _dot15d4_Dot15d4Command_MAX dot15d4_Dot15d4Command_SendInSlot
+#define _dot15d4_Dot15d4Command_ARRAYSIZE ((dot15d4_Dot15d4Command)(dot15d4_Dot15d4Command_SendInSlot+1))
 
 #define _dot15d4_Dot15d4MitmRole_MIN dot15d4_Dot15d4MitmRole_REACTIVE_JAMMER
 #define _dot15d4_Dot15d4MitmRole_MAX dot15d4_Dot15d4MitmRole_CORRECTOR
@@ -290,6 +298,7 @@ extern "C" {
 #define _dot15d4_AddressType_ARRAYSIZE ((dot15d4_AddressType)(dot15d4_AddressType_EXTENDED+1))
 
 #define dot15d4_SetNodeAddressCmd_address_type_ENUMTYPE dot15d4_AddressType
+
 
 
 
@@ -323,6 +332,7 @@ extern "C" {
 #define dot15d4_JamCmd_init_default              {0}
 #define dot15d4_SendCmd_init_default             {0, {0, {0}}}
 #define dot15d4_SendRawCmd_init_default          {0, {0, {0}}, 0}
+#define dot15d4_SendInSlotCmd_init_default       {0, {0, {0}}}
 #define dot15d4_EndDeviceCmd_init_default        {0}
 #define dot15d4_RouterCmd_init_default           {0}
 #define dot15d4_CoordinatorCmd_init_default      {0}
@@ -347,6 +357,7 @@ extern "C" {
 #define dot15d4_JamCmd_init_zero                 {0}
 #define dot15d4_SendCmd_init_zero                {0, {0, {0}}}
 #define dot15d4_SendRawCmd_init_zero             {0, {0, {0}}, 0}
+#define dot15d4_SendInSlotCmd_init_zero          {0, {0, {0}}}
 #define dot15d4_EndDeviceCmd_init_zero           {0}
 #define dot15d4_RouterCmd_init_zero              {0}
 #define dot15d4_CoordinatorCmd_init_zero         {0}
@@ -377,6 +388,8 @@ extern "C" {
 #define dot15d4_SendRawCmd_channel_tag           1
 #define dot15d4_SendRawCmd_pdu_tag               2
 #define dot15d4_SendRawCmd_fcs_tag               3
+#define dot15d4_SendInSlotCmd_slot_tag           1
+#define dot15d4_SendInSlotCmd_pdu_tag            2
 #define dot15d4_EndDeviceCmd_channel_tag         1
 #define dot15d4_RouterCmd_channel_tag            1
 #define dot15d4_CoordinatorCmd_channel_tag       1
@@ -436,6 +449,7 @@ extern "C" {
 #define dot15d4_Message_writeModifySuperframeCmd_tag 21
 #define dot15d4_Message_deleteSuperframeCmd_tag  22
 #define dot15d4_Message_discovered_communication_tag 23
+#define dot15d4_Message_send_in_slot_tag         24
 
 /* Struct field encoding specification for nanopb */
 #define dot15d4_SetNodeAddressCmd_FIELDLIST(X, a) \
@@ -471,6 +485,12 @@ X(a, STATIC,   SINGULAR, BYTES,    pdu,               2) \
 X(a, STATIC,   SINGULAR, UINT32,   fcs,               3)
 #define dot15d4_SendRawCmd_CALLBACK NULL
 #define dot15d4_SendRawCmd_DEFAULT NULL
+
+#define dot15d4_SendInSlotCmd_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT64,   slot,              1) \
+X(a, STATIC,   SINGULAR, BYTES,    pdu,               2)
+#define dot15d4_SendInSlotCmd_CALLBACK NULL
+#define dot15d4_SendInSlotCmd_DEFAULT NULL
 
 #define dot15d4_EndDeviceCmd_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           1)
@@ -601,7 +621,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,deleteLink,msg.deleteLink),  19) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,channelMap,msg.channelMap),  20) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,writeModifySuperframeCmd,msg.writeModifySuperframeCmd),  21) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,deleteSuperframeCmd,msg.deleteSuperframeCmd),  22) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,discovered_communication,msg.discovered_communication),  23)
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,discovered_communication,msg.discovered_communication),  23) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,send_in_slot,msg.send_in_slot),  24)
 #define dot15d4_Message_CALLBACK NULL
 #define dot15d4_Message_DEFAULT NULL
 #define dot15d4_Message_msg_set_node_addr_MSGTYPE dot15d4_SetNodeAddressCmd
@@ -627,6 +648,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,discovered_communication,msg.discovered_
 #define dot15d4_Message_msg_writeModifySuperframeCmd_MSGTYPE dot15d4_WriteModifySuperframeCmd
 #define dot15d4_Message_msg_deleteSuperframeCmd_MSGTYPE dot15d4_DeleteSuperframeCmd
 #define dot15d4_Message_msg_discovered_communication_MSGTYPE dot15d4_DiscoveredCommunication
+#define dot15d4_Message_msg_send_in_slot_MSGTYPE dot15d4_SendInSlotCmd
 
 extern const pb_msgdesc_t dot15d4_SetNodeAddressCmd_msg;
 extern const pb_msgdesc_t dot15d4_SniffCmd_msg;
@@ -634,6 +656,7 @@ extern const pb_msgdesc_t dot15d4_EnergyDetectionCmd_msg;
 extern const pb_msgdesc_t dot15d4_JamCmd_msg;
 extern const pb_msgdesc_t dot15d4_SendCmd_msg;
 extern const pb_msgdesc_t dot15d4_SendRawCmd_msg;
+extern const pb_msgdesc_t dot15d4_SendInSlotCmd_msg;
 extern const pb_msgdesc_t dot15d4_EndDeviceCmd_msg;
 extern const pb_msgdesc_t dot15d4_RouterCmd_msg;
 extern const pb_msgdesc_t dot15d4_CoordinatorCmd_msg;
@@ -660,6 +683,7 @@ extern const pb_msgdesc_t dot15d4_Message_msg;
 #define dot15d4_JamCmd_fields &dot15d4_JamCmd_msg
 #define dot15d4_SendCmd_fields &dot15d4_SendCmd_msg
 #define dot15d4_SendRawCmd_fields &dot15d4_SendRawCmd_msg
+#define dot15d4_SendInSlotCmd_fields &dot15d4_SendInSlotCmd_msg
 #define dot15d4_EndDeviceCmd_fields &dot15d4_EndDeviceCmd_msg
 #define dot15d4_RouterCmd_fields &dot15d4_RouterCmd_msg
 #define dot15d4_CoordinatorCmd_fields &dot15d4_CoordinatorCmd_msg
@@ -699,6 +723,7 @@ extern const pb_msgdesc_t dot15d4_Message_msg;
 #define dot15d4_RawPduReceived_size              300
 #define dot15d4_RouterCmd_size                   6
 #define dot15d4_SendCmd_size                     264
+#define dot15d4_SendInSlotCmd_size               269
 #define dot15d4_SendRawCmd_size                  270
 #define dot15d4_SetNodeAddressCmd_size           13
 #define dot15d4_SniffCmd_size                    6

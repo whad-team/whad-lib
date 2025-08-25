@@ -19,6 +19,7 @@ namespace whad::dot15d4 {
         EnergyDetectionMsg = WHAD_DOT15D4_NRG_DETECTION,                /*!< Set interface in energy detection mode. */
         SendMsg = WHAD_DOT15D4_SEND,                                    /*!< Send a PDU. */
         SendRawMsg = WHAD_DOT15D4_SEND_RAW,                             /*!< Send a raw PDU. */
+        SendInSlotMsg = WHAD_DOT15D4_SEND_IN_SLOT,                      /*!< Program to send a pdu in a specified slot. */
         EndDeviceModeMsg = WHAD_DOT15D4_END_DEVICE_MODE,                /*!< Set interface in end device mode. */
         RouterModeMsg = WHAD_DOT15D4_ROUTER_MODE,                       /*!< Set interface in router mode. */
         CoordModeMsg = WHAD_DOT15D4_COORD_MODE,                         /*!< Set interface in coordinator mode. */

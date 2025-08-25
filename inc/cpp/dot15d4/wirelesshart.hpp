@@ -3,3 +3,4 @@
 #include "dot15d4/channelmap.hpp"
 #include "dot15d4/superframes.hpp"
 #include "dot15d4/discovery.hpp"
+#include "dot15d4/sendinslot.hpp"

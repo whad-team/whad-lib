@@ -24,6 +24,9 @@ PB_BIND(dot15d4_SendCmd, dot15d4_SendCmd, 2)
 PB_BIND(dot15d4_SendRawCmd, dot15d4_SendRawCmd, 2)
 
 
+PB_BIND(dot15d4_SendInSlotCmd, dot15d4_SendInSlotCmd, 2)
+
+
 PB_BIND(dot15d4_EndDeviceCmd, dot15d4_EndDeviceCmd, AUTO)
 
 

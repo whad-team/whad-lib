@@ -37,7 +37,8 @@ typedef enum {
     WHAD_DOT15D4_DISCOVERED_COMMUNICATION=dot15d4_Message_discovered_communication_tag,
     WHAD_DOT15D4_NRG_DETECTION_SAMPLE=dot15d4_Message_ed_sample_tag,
     WHAD_DOT15D4_RAW_PDU_RECEIVED=dot15d4_Message_raw_pdu_tag,
-    WHAD_DOT15D4_PDU_RECEIVED=dot15d4_Message_pdu_tag
+    WHAD_DOT15D4_PDU_RECEIVED=dot15d4_Message_pdu_tag,
+    WHAD_DOT15D4_SEND_IN_SLOT=dot15d4_Message_send_in_slot_tag
 } whad_dot15d4_msgtype_t;
 
 typedef enum {
@@ -65,6 +66,11 @@ typedef struct {
     whad_dot15d4_packet_t packet;
     uint32_t fcs;
 } whad_dot15d4_send_params_t;
+
+typedef struct {
+    uint64_t slot;
+    whad_dot15d4_packet_t packet;
+} whad_dot15d4_send_in_slot_params_t;
 
 typedef struct {
     uint32_t timestamp;
@@ -156,6 +162,8 @@ whad_result_t whad_dot15d4_send(Message *p_message, uint32_t channel, uint8_t *p
 whad_result_t whad_dot15d4_send_parse(Message *p_message, whad_dot15d4_send_params_t *p_params);
 whad_result_t whad_dot15d4_send_raw(Message *p_message, uint32_t channel, uint8_t *p_packet, int length, uint32_t fcs);
 whad_result_t whad_dot15d4_send_raw_parse(Message *p_message, whad_dot15d4_send_params_t *p_params);
+whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint8_t *p_packet, int length);
+whad_result_t whad_dot15d4_send_in_slot_parse(Message *p_message, whad_dot15d4_send_in_slot_params_t *p_params);
 
 whad_result_t whad_dot15d4_end_device_mode(Message *p_message, uint32_t channel);
 whad_result_t whad_dot15d4_end_device_mode_parse(Message *p_message, uint32_t *p_channel);
