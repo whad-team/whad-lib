@@ -198,7 +198,7 @@ whad_result_t whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superfra
 whad_result_t whad_dot15d4_add_superframe(whad_dot15d4_superframes_t *superframes, whad_dot15d4_write_modify_superframes_packet_t *pkt);
 whad_result_t whad_dot15d4_delete_superframe(Message *p_message, whad_dot15d4_superframes_t **superframes);
 
-whad_result_t whad_dot15d4_discovered_communication(Message *p_message, uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset);
+whad_result_t whad_dot15d4_discovered_communication(Message *p_message, uint8_t* pkt, size_t size, uint16_t slot, uint16_t offset);
 
 #ifdef __cplusplus
 }

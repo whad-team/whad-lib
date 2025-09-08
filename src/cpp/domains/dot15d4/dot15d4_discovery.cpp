@@ -5,27 +5,27 @@ using namespace whad::dot15d4;
 /**
  * @brief       Discovery message constructor.
  * 
- * @param[in]   src         Specify the source of the discovered message
- * @param[in]   dst         Specify the destination of the discovered message
+ * @param[in]   pkt         the received pkt on the communication
+ * @param[in]   size        the size of the discovered message
  * @param[in]   slot         Specify the slot of the discovered message
  * @param[in]   offset         Specify the offset of the discovered message
  **/
 
-DiscoveredCommunication::DiscoveredCommunication(uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset) : Dot15d4Msg()
+DiscoveredCommunication::DiscoveredCommunication(uint8_t* pkt, size_t size, uint16_t slot, uint16_t offset) : Dot15d4Msg()
 {
     /* Save parameters. */
-    m_src = src;
-    m_dst = dst;
+    m_pkt = pkt;
+    m_size = size;
     m_slot = slot;
     m_offset = offset;
 }
 
-uint16_t DiscoveredCommunication::getSrc(){
-    return m_src;
+uint8_t* DiscoveredCommunication::getPkt(){
+    return m_pkt;
 }
 
-uint16_t DiscoveredCommunication::getDst(){
-    return m_dst;
+size_t DiscoveredCommunication::getSize(){
+    return m_size;
 }
 
 uint16_t DiscoveredCommunication::getSlot(){
@@ -40,8 +40,8 @@ void DiscoveredCommunication::pack()
 {
     whad_dot15d4_discovered_communication(
         this->getMessage(),
-        m_src,
-        m_dst,
+        m_pkt,
+        m_size,
         m_slot,
         m_offset
     );

@@ -1461,23 +1461,23 @@ whad_result_t whad_dot15d4_modify_superframe(whad_dot15d4_superframe_t *superfra
  * @brief   Create a DiscoveredCommunication message
  *
  * @param[in]   p_message   Pointer to a NanoPb Message structure
- * @param[in]   src         Source  of the message discovered
- * @param[in]   dst         Destination  of the message discovered
+ * @param[in]   pkt         Received pkt
+ * @param[in]   size        size of the received pkt
  * @param[in]   slot        Slot in which the communication was got
  * @param[in]   offset      Calculated offset based on number of active channels
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message or address pointer.
  **/
-whad_result_t whad_dot15d4_discovered_communication(Message *p_message, uint16_t src, uint16_t dst, uint16_t slot, uint16_t offset){
+whad_result_t whad_dot15d4_discovered_communication(Message *p_message, uint8_t* pkt, size_t size, uint16_t slot, uint16_t offset){
     /* Sanity check */
     if (!p_message) return WHAD_ERROR;
 
     /* Set parameters*/
     p_message->which_msg = Message_dot15d4_tag;
     p_message->msg.dot15d4.which_msg = dot15d4_Message_discovered_communication_tag;
-    p_message->msg.dot15d4.msg.discovered_communication.src = src;
-    p_message->msg.dot15d4.msg.discovered_communication.dst = dst;
+    p_message->msg.dot15d4.msg.discovered_communication.pdu.size = size;
+    memcpy(p_message->msg.dot15d4.msg.discovered_communication.pdu.bytes, pkt, size);
     p_message->msg.dot15d4.msg.discovered_communication.slot = slot;
     p_message->msg.dot15d4.msg.discovered_communication.offset = offset;
 

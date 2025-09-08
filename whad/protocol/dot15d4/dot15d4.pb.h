@@ -101,6 +101,9 @@ typedef struct _dot15d4_SendRawCmd {
 } dot15d4_SendRawCmd;
 
 typedef PB_BYTES_ARRAY_T(255) dot15d4_SendInSlotCmd_pdu_t;
+/* *
+ SendInSlotCmd
+ Sends 802.15.4 packets on a single channel on a specified slot corresponding to the wirelessHART protocol.. */
 typedef struct _dot15d4_SendInSlotCmd {
     uint64_t slot;
     dot15d4_SendInSlotCmd_pdu_t pdu;
@@ -235,16 +238,16 @@ typedef struct _dot15d4_PduReceived {
     uint32_t lqi;
 } dot15d4_PduReceived;
 
+typedef PB_BYTES_ARRAY_T(255) dot15d4_DiscoveredCommunication_pdu_t;
 /* *
  DiscoveredCommunication
 
  Notifies the discovery of a communication on an unknown link
  This message is to be used to discover existing links and add them to the superframes */
 typedef struct _dot15d4_DiscoveredCommunication {
-    uint32_t src;
-    uint32_t dst;
     uint32_t slot;
     uint32_t offset;
+    dot15d4_DiscoveredCommunication_pdu_t pdu;
 } dot15d4_DiscoveredCommunication;
 
 typedef struct _dot15d4_Message {
@@ -349,7 +352,7 @@ extern "C" {
 #define dot15d4_EnergyDetectionSample_init_default {0, 0}
 #define dot15d4_RawPduReceived_init_default      {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0}
 #define dot15d4_PduReceived_init_default         {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0}
-#define dot15d4_DiscoveredCommunication_init_default {0, 0, 0, 0}
+#define dot15d4_DiscoveredCommunication_init_default {0, 0, {0, {0}}}
 #define dot15d4_Message_init_default             {0, {dot15d4_SetNodeAddressCmd_init_default}}
 #define dot15d4_SetNodeAddressCmd_init_zero      {0, _dot15d4_AddressType_MIN}
 #define dot15d4_SniffCmd_init_zero               {0}
@@ -374,7 +377,7 @@ extern "C" {
 #define dot15d4_EnergyDetectionSample_init_zero  {0, 0}
 #define dot15d4_RawPduReceived_init_zero         {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0}
 #define dot15d4_PduReceived_init_zero            {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0}
-#define dot15d4_DiscoveredCommunication_init_zero {0, 0, 0, 0}
+#define dot15d4_DiscoveredCommunication_init_zero {0, 0, {0, {0}}}
 #define dot15d4_Message_init_zero                {0, {dot15d4_SetNodeAddressCmd_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -422,10 +425,9 @@ extern "C" {
 #define dot15d4_PduReceived_fcs_validity_tag     4
 #define dot15d4_PduReceived_pdu_tag              5
 #define dot15d4_PduReceived_lqi_tag              6
-#define dot15d4_DiscoveredCommunication_src_tag  1
-#define dot15d4_DiscoveredCommunication_dst_tag  2
-#define dot15d4_DiscoveredCommunication_slot_tag 3
-#define dot15d4_DiscoveredCommunication_offset_tag 4
+#define dot15d4_DiscoveredCommunication_slot_tag 1
+#define dot15d4_DiscoveredCommunication_offset_tag 2
+#define dot15d4_DiscoveredCommunication_pdu_tag  3
 #define dot15d4_Message_set_node_addr_tag        1
 #define dot15d4_Message_sniff_tag                2
 #define dot15d4_Message_jam_tag                  3
@@ -591,10 +593,9 @@ X(a, STATIC,   OPTIONAL, UINT32,   lqi,               6)
 #define dot15d4_PduReceived_DEFAULT NULL
 
 #define dot15d4_DiscoveredCommunication_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   src,               1) \
-X(a, STATIC,   SINGULAR, UINT32,   dst,               2) \
-X(a, STATIC,   SINGULAR, UINT32,   slot,              3) \
-X(a, STATIC,   SINGULAR, UINT32,   offset,            4)
+X(a, STATIC,   SINGULAR, UINT32,   slot,              1) \
+X(a, STATIC,   SINGULAR, UINT32,   offset,            2) \
+X(a, STATIC,   SINGULAR, BYTES,    pdu,               3)
 #define dot15d4_DiscoveredCommunication_CALLBACK NULL
 #define dot15d4_DiscoveredCommunication_DEFAULT NULL
 
@@ -710,7 +711,7 @@ extern const pb_msgdesc_t dot15d4_Message_msg;
 #define dot15d4_CoordinatorCmd_size              6
 #define dot15d4_DeleteLinkCmd_size               18
 #define dot15d4_DeleteSuperframeCmd_size         6
-#define dot15d4_DiscoveredCommunication_size     24
+#define dot15d4_DiscoveredCommunication_size     270
 #define dot15d4_EnableHopCmd_size                2
 #define dot15d4_EndDeviceCmd_size                6
 #define dot15d4_EnergyDetectionCmd_size          6
