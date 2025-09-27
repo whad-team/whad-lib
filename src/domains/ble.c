@@ -801,6 +801,11 @@ whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv
         return WHAD_ERROR;
     }
 
+    if ((inter_min < 0x20) || (inter_min > inter_max) || (inter_max <= inter_min) || (inter_max > 0x4000))
+    {
+        return WHAD_ERROR;
+    }
+
     /* Populate message fields. */
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_adv_mode_tag;
@@ -1354,10 +1359,16 @@ whad_result_t whad_ble_disconnect_parse(Message *p_message, uint32_t *p_conn_han
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
+        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max)
 {
-    /* Sanity check. */
+    /* Sanity checks. */
     if ((p_message == NULL) || (p_adv_data == NULL) || (p_scanrsp_data == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if ((inter_min < 0x20) || (inter_min > inter_max) || (inter_max <= inter_min) || (inter_max > 0x4000))
     {
         return WHAD_ERROR;
     }
@@ -1391,6 +1402,31 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, 
         memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
     }
 
+    /* Set advertisement type. */
+    p_message->msg.ble.msg.adv_mode.adv_type = adv_type;
+
+    /* Set channel map if provided, else set default channel map. */
+    memset(p_message->msg.ble.msg.adv_mode.channel_map, 0, 5);
+    if (p_channelmap == NULL)
+    {
+        p_message->msg.ble.msg.adv_mode.channel_map[4] = 0xe0;
+    }
+    else
+    {
+        if ((p_channelmap[4] & 0xe0) > 0)
+        {
+            p_message->msg.ble.msg.adv_mode.channel_map[4] = p_channelmap[4] & 0xe0;
+        }
+        else
+        {
+            return WHAD_ERROR;
+        }
+    }
+
+    /* Set advertising interval. */
+    p_message->msg.ble.msg.adv_mode.inter_min = inter_min;
+    p_message->msg.ble.msg.adv_mode.inter_max = inter_max;
+
     /* Success. */
     return WHAD_SUCCESS;   
 }
@@ -1404,7 +1440,7 @@ whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mo
         return WHAD_ERROR;
     }
 
- /* Extract advertising data from message. */
+    /* Extract advertising data from message. */
     p_parameters->adv_data_length = p_message->msg.ble.msg.periph_mode.adv_data.size;
     if ((p_parameters->adv_data_length > 0) && (p_parameters->adv_data_length < 31))
     {
@@ -1433,6 +1469,12 @@ whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mo
     {
         memset(p_parameters->scanrsp_data, 0, 31);
     }
+
+    /* Extract advertising parameters. */
+    p_parameters->adv_type = p_message->msg.ble.msg.adv_mode.adv_type;
+    p_parameters->inter_min = p_message->msg.ble.msg.adv_mode.inter_min;
+    p_parameters->inter_max = p_message->msg.ble.msg.adv_mode.inter_max;
+    memcpy(p_parameters->channel_map, p_message->msg.ble.msg.adv_mode.channel_map, 5);
 
     /* Success. */
     return WHAD_SUCCESS;
