@@ -263,7 +263,8 @@ whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv
 whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 
-whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
+        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max);
 whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 /* No parsing functions for these three messages :) */
