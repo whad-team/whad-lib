@@ -48,8 +48,39 @@ AdvMode::AdvMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRs
         m_scanRspLength = 0;
         memset(m_scanRsp, 0, 31);
     }
+
+    /* Set default advertising parameters. */
+    m_type = AdvType::AdvInd;
+    m_channelMap = ChannelMap();
+    m_channelMap.enableChannel(37);
+    m_channelMap.enableChannel(38);
+    m_channelMap.enableChannel(39);
+    m_interMin = 0x20;
+    m_interMax = 0x4000;
 }
 
+/**
+ * @brief       AdvMode message constructor.
+ * 
+ * @param[in]   pAdvData        Pointer to a byte buffer containing the device advertising data
+ * @param[in]   advDataLength   Size in bytes of the advertising data
+ * @param[in]   pScanRsp        Pointer to a byte buffer containing the device scan response data
+ * @param[in]   scanRspLength   Size in bytes of the scan response data
+ * @param[in]   type            Advertisement type
+ * @param[in]   chanMap         Advertising channel map
+ * @param[in]   interMin        Minimum advertising interval value
+ * @param[in]   interMax        Maximum advertising interval value
+ **/
+
+AdvMode::AdvMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength,
+        AdvType type, ChannelMap channelMap, uint16_t interMin, uint16_t interMax)
+    : AdvMode(pAdvData, advDataLength, pScanRsp, scanRspLength)
+{
+    m_type = type;
+    m_channelMap = channelMap;
+    m_interMin = interMin;
+    m_interMax = interMax;
+}
 
 /**
  * @brief   Pack parameters into a BleMsg object.
@@ -62,7 +93,11 @@ void AdvMode::pack()
         m_advData,
         m_advDataLength,
         m_scanRsp,
-        m_scanRspLength
+        m_scanRspLength,
+        (whad_ble_advtype_t)m_type,
+        m_channelMap.getChannelMapBuf(),
+        m_interMin,
+        m_interMax
     );
 }
 
@@ -100,6 +135,16 @@ void AdvMode::unpack()
         {
             memcpy(m_scanRsp, params.scanrsp_data, m_scanRspLength);
         }
+
+        /* Save advertising type. */
+        m_type = (AdvType)params.adv_type;
+
+        /* Save advertising channel map. */
+        m_channelMap = ChannelMap(params.channel_map);
+
+        /* Save advertising interval. */
+        m_interMin = params.inter_min;
+        m_interMax = params.inter_max;
     }
 }
 
@@ -150,3 +195,47 @@ uint8_t *AdvMode::getScanRsp()
 {
     return m_scanRsp;
 }
+
+
+/**
+ * @brief   Get advertisement type
+ *
+ * @retval  Advertisement type
+ */
+AdvType AdvMode::getAdvType()
+{
+    return m_type;
+}
+
+
+/**
+ * @brief   Get advertising channel map
+ *
+ * @retval  Channel map
+ */
+ChannelMap &AdvMode::getChannelMap()
+{
+    return m_channelMap;
+}
+
+
+/**
+ * @brief   Get advertising mimimum interval
+ *
+ * @retval  Advertising minimum interval
+ */
+uint16_t AdvMode::getIntervalMin()
+{
+    return m_interMin;
+}
+
+/**
+ * @brief   Get advertising maximum interval
+ *
+ * @retval  Advertising maximum interval
+ */
+uint16_t AdvMode::getIntervalMax()
+{
+    return m_interMax;
+}
+
