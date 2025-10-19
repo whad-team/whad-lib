@@ -26,6 +26,8 @@
 /* Unifying messages. */
 #include <unifying/unifying.hpp>
 
+/* ANT messages. */
+#include <ant/ant.hpp>
 
 namespace whad
 {
