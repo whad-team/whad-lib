@@ -18,9 +18,10 @@ ScanMode::ScanMode(BleMsg &message) : BleMsg(message)
  * @param[in]   active      If set to true, adapter will perform an active scan
  **/
 
-ScanMode::ScanMode(bool active) : BleMsg()
+ScanMode::ScanMode(bool active, uint32_t interval) : BleMsg()
 {
     m_active = active;
+    m_interval = interval;
 }
 
 /**
@@ -34,13 +35,25 @@ bool ScanMode::isActiveModeEnabled()
     return m_active;
 }
 
+
+/**
+ * @brief   Get the scanning interval (in ms)
+ * 
+ * @retval  scanning interval in use, in ms.
+ */
+
+uint32_t ScanMode::getScanningInterval()
+{
+    return m_interval;
+}
+
 /**
  * @brief   Pack parameters into a BleMsg
  */
 
 void ScanMode::pack()
 {
-    whad_ble_scan_mode(this->getMessage(), m_active); 
+    whad_ble_scan_mode(this->getMessage(), m_active, m_interval); 
 }
 
 
@@ -54,7 +67,8 @@ void ScanMode::unpack()
 
     result = whad_ble_scan_mode_parse(
         this->getMessage(),
-        &m_active
+        &m_active,
+        &m_interval
     );
 
     if (result == WHAD_ERROR)

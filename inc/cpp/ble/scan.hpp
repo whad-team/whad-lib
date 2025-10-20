@@ -12,15 +12,17 @@ namespace whad::ble {
     {
         public:
             ScanMode(BleMsg &message);
-            ScanMode(bool active);
+            ScanMode(bool active, uint32_t interval);
 
             bool isActiveModeEnabled();
+            uint32_t getScanningInterval();
 
         private:
             void pack();
             void unpack();
 
             bool m_active;
+            bool m_interval;
     };
 
     class AdvPdu : public BleMsg

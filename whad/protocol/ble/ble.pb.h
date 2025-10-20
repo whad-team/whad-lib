@@ -313,6 +313,7 @@ typedef struct _ble_ReactiveJamCmd {
 
 typedef struct _ble_ScanModeCmd { 
     bool active_scan;
+    uint32_t interval;
 } ble_ScanModeCmd;
 
 typedef PB_BYTES_ARRAY_T(300) ble_SendPDUCmd_pdu_t;
@@ -521,7 +522,7 @@ extern "C" {
 #define ble_SniffAccessAddressCmd_init_default   {{0}}
 #define ble_SniffActiveConnCmd_init_default      {0, 0, {0}, 0, 0, {0}}
 #define ble_JamConnCmd_init_default              {0}
-#define ble_ScanModeCmd_init_default             {0}
+#define ble_ScanModeCmd_init_default             {0, 0}
 #define ble_AdvModeCmd_init_default              {{0, {0}}, {0, {0}}, {0}, _ble_BleAdvType_MIN, 0, 0}
 #define ble_SetAdvDataCmd_init_default           {{0, {0}}, {0, {0}}}
 #define ble_CentralModeCmd_init_default          {0}
@@ -565,7 +566,7 @@ extern "C" {
 #define ble_SniffAccessAddressCmd_init_zero      {{0}}
 #define ble_SniffActiveConnCmd_init_zero         {0, 0, {0}, 0, 0, {0}}
 #define ble_JamConnCmd_init_zero                 {0}
-#define ble_ScanModeCmd_init_zero                {0}
+#define ble_ScanModeCmd_init_zero                {0, 0}
 #define ble_AdvModeCmd_init_zero                 {{0, {0}}, {0, {0}}, {0}, _ble_BleAdvType_MIN, 0, 0}
 #define ble_SetAdvDataCmd_init_zero              {{0, {0}}, {0, {0}}}
 #define ble_CentralModeCmd_init_zero             {0}
@@ -677,6 +678,7 @@ extern "C" {
 #define ble_ReactiveJamCmd_pattern_tag           2
 #define ble_ReactiveJamCmd_position_tag          3
 #define ble_ScanModeCmd_active_scan_tag          1
+#define ble_ScanModeCmd_interval_tag             2
 #define ble_SendPDUCmd_direction_tag             1
 #define ble_SendPDUCmd_conn_handle_tag           2
 #define ble_SendPDUCmd_pdu_tag                   3
@@ -818,7 +820,8 @@ X(a, STATIC,   SINGULAR, UINT32,   access_address,    1)
 #define ble_JamConnCmd_DEFAULT NULL
 
 #define ble_ScanModeCmd_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, BOOL,     active_scan,       1)
+X(a, STATIC,   SINGULAR, BOOL,     active_scan,       1) \
+X(a, STATIC,   SINGULAR, UINT32,   interval,          2)
 #define ble_ScanModeCmd_CALLBACK NULL
 #define ble_ScanModeCmd_DEFAULT NULL
 
@@ -1272,7 +1275,7 @@ extern const pb_msgdesc_t ble_Message_msg;
 #define ble_PrepareSequenceCmd_size              7061
 #define ble_RawPduReceived_size                  323
 #define ble_ReactiveJamCmd_size                  34
-#define ble_ScanModeCmd_size                     2
+#define ble_ScanModeCmd_size                     8
 #define ble_SendPDUCmd_size                      313
 #define ble_SendRawPDUCmd_size                   325
 #define ble_SetAdvDataCmd_size                   66
