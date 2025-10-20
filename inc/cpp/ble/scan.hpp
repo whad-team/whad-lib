@@ -22,7 +22,7 @@ namespace whad::ble {
             void unpack();
 
             bool m_active;
-            bool m_interval;
+            uint32_t m_interval;
     };
 
     class AdvPdu : public BleMsg
