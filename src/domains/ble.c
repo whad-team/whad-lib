@@ -726,12 +726,13 @@ whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_acc
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       active_scan         If set to true, the adapter will send SCAN_REQ PDU to get additional data
+ * @param[in]       interval            Provide scanning interval (in ms).
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
+whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval)
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -743,6 +744,7 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_scan_mode_tag;
     p_message->msg.ble.msg.scan_mode.active_scan = active_scan; 
+    p_message->msg.ble.msg.scan_mode.interval = interval; 
 
     /* Success. */
     return WHAD_SUCCESS;   
@@ -754,10 +756,11 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
  * 
  * @param[in]   p_message         Pointer to the message to parse. 
  * @param[out]  p_active_scan     Pointer to a boolean value, if true an active scan has to be performed.
+ * @param[out]  p_interval        Pointer to an integer value, indicating the scanning interval.
  * @return whad_result_t 
  */
 
-whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan)
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_active_scan == NULL))
@@ -766,6 +769,7 @@ whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan)
     }    
 
     *p_active_scan = p_message->msg.ble.msg.scan_mode.active_scan;
+    *interval = p_message->msg.ble.msg.scan_mode.interval;
 
     /* Success. */
     return WHAD_SUCCESS;

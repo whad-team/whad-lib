@@ -245,8 +245,8 @@ whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_add
 whad_result_t whad_ble_sniff_active_conn_parse(Message *p_message, whad_ble_sniff_conn_params_t *p_parameters);
 
 /* Set BLE mode */
-whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan);
-whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan);
+whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval);
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval);
 
 typedef struct {
     uint8_t adv_data[31];
