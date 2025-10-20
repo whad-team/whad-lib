@@ -769,7 +769,7 @@ whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, 
     }    
 
     *p_active_scan = p_message->msg.ble.msg.scan_mode.active_scan;
-    *interval = p_message->msg.ble.msg.scan_mode.interval;
+    *p_interval = p_message->msg.ble.msg.scan_mode.interval;
 
     /* Success. */
     return WHAD_SUCCESS;
