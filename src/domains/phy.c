@@ -1136,8 +1136,10 @@ whad_result_t whad_phy_supported_frequencies(Message *p_message, whad_phy_freque
         return WHAD_ERROR;
     }
 
-    /* Convert WHAD freq ranges to protobuf freq ranges. */
-    p_freq_ranges = malloc(sizeof(phy_SupportedFrequencyRanges_FrequencyRange) * nb_ranges);
+    /* Convert WHAD freq ranges to protobuf freq ranges. Allocate an additional range
+     * to save the NULL range {0,0} to mark the end of this list.
+     */
+    p_freq_ranges = malloc(sizeof(phy_SupportedFrequencyRanges_FrequencyRange) * (nb_ranges + 1));
     if (p_freq_ranges != NULL)
     {
         for (i=0; i < nb_ranges; i++)
@@ -1145,6 +1147,10 @@ whad_result_t whad_phy_supported_frequencies(Message *p_message, whad_phy_freque
             p_freq_ranges[i].start = p_ranges[i].start;
             p_freq_ranges[i].end = p_ranges[i].end;
         }
+
+        /* Last item is {0,0} to mark end of list. */
+        p_freq_ranges[i].start = 0;
+        p_freq_ranges[i].end = 0;
 
         /* Populate field. */
         p_message->which_msg = Message_phy_tag;
