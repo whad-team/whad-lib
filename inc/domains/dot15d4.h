@@ -69,6 +69,7 @@ typedef struct {
 
 typedef struct {
     uint64_t slot;
+    uint64_t wait_offset;
     whad_dot15d4_packet_t packet;
 } whad_dot15d4_send_in_slot_params_t;
 
@@ -162,7 +163,7 @@ whad_result_t whad_dot15d4_send(Message *p_message, uint32_t channel, uint8_t *p
 whad_result_t whad_dot15d4_send_parse(Message *p_message, whad_dot15d4_send_params_t *p_params);
 whad_result_t whad_dot15d4_send_raw(Message *p_message, uint32_t channel, uint8_t *p_packet, int length, uint32_t fcs);
 whad_result_t whad_dot15d4_send_raw_parse(Message *p_message, whad_dot15d4_send_params_t *p_params);
-whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint8_t *p_packet, int length);
+whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint64_t wait_offset, uint8_t *p_packet, int length);
 whad_result_t whad_dot15d4_send_in_slot_parse(Message *p_message, whad_dot15d4_send_in_slot_params_t *p_params);
 
 whad_result_t whad_dot15d4_end_device_mode(Message *p_message, uint32_t channel);

@@ -16,14 +16,18 @@ SendInSlot::SendInSlot(Dot15d4Msg &message) : Dot15d4Msg(message)
  * @brief       SendInSlot message constructor.
  * 
  * @param[in]   slot            Specify the slot to send in
+ * @param[in]   wait_offset     Specif the wait duration before sending in the specified slot
  * @param[in]   pPdu            Pointer to a byte buffer to send
  * @param[in]   length          PDU length in bytes
  **/
 
-SendInSlot::SendInSlot(uint64_t slot, uint8_t *pPdu, int length) : Dot15d4Msg()
+SendInSlot::SendInSlot(uint64_t slot, uint64_t wait_offset, uint8_t *pPdu, int length) : Dot15d4Msg()
 {
     /* Save slot. */
     m_slot = slot;
+
+    /* Save offset*/
+    m_wait_offset = wait_offset;
 
     /* Save PDU. */
     m_pdu = PDU(pPdu, length);
@@ -41,6 +45,7 @@ void SendInSlot::pack()
     whad_dot15d4_send_in_slot(
         this->getMessage(),
         m_slot,
+        m_wait_offset,
         m_pdu.getBytes(),
         m_pdu.getSize()
     );
@@ -70,6 +75,7 @@ void SendInSlot::unpack()
     {
         /* Save parameters. */
         m_slot = params.slot;
+        m_wait_offset = params.wait_offset;
         m_pdu.setBytes(params.packet.bytes, params.packet.length);
     }
 }
@@ -86,6 +92,9 @@ uint64_t SendInSlot::getSlot()
     return m_slot;
 }
 
+uint64_t SendInSlot::getWaitOffset(){
+    return m_wait_offset;
+}
 
 /**
  * @brief   Retrieve the PDU to send

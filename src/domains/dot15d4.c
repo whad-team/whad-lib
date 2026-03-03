@@ -404,6 +404,7 @@ whad_result_t whad_dot15d4_send_raw_parse(Message *p_message, whad_dot15d4_send_
  *
  * @param[in]   p_message   Pointer to a NanoPb Message structure
  * @param[in]   slot        Slot on which the packet will be sent
+ * @param[in]   wait_offset Time to wait before sending the packet
  * @param[in]   p_packet    Pointer to a WirelessHart packet
  * @param[in]   length      Packet length in bytes
  * 
@@ -411,7 +412,7 @@ whad_result_t whad_dot15d4_send_raw_parse(Message *p_message, whad_dot15d4_send_
  * @retval          WHAD_ERROR          Invalid message or address pointer.
  **/
 
-whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint8_t *p_packet, int length)
+whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint64_t wait_offset, uint8_t *p_packet, int length)
 {
     /* Sanity checks. */
     if ((p_message == NULL) || (p_packet == NULL))
@@ -423,6 +424,7 @@ whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint8
     p_message->msg.dot15d4.which_msg = dot15d4_Message_send_tag;
 
     p_message->msg.dot15d4.msg.send_in_slot.slot = slot;
+    p_message->msg.dot15d4.msg.send_in_slot.wait_offset = wait_offset;
 
     if ((length >= 0) && (length <= 255))
     {
@@ -460,6 +462,7 @@ whad_result_t whad_dot15d4_send_in_slot_parse(Message *p_message, whad_dot15d4_s
     }
 
     p_params->slot = p_message->msg.dot15d4.msg.send_in_slot.slot;
+    p_params->wait_offset = p_message->msg.dot15d4.msg.send_in_slot.wait_offset;
 
     /* Check packet size. */
     if (p_message->msg.dot15d4.msg.send_in_slot.pdu.size > DOT15D4_PACKET_MAX_SIZE)

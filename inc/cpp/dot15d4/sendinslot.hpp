@@ -12,10 +12,11 @@ namespace whad::dot15d4 {
     {
         public:
             SendInSlot(Dot15d4Msg &message);
-            SendInSlot(uint64_t slot, uint8_t *pPdu, int length);
+            SendInSlot(uint64_t slot, uint64_t wait_offset, uint8_t *pPdu, int length);
 
             /* Getters. */
             uint64_t getSlot();
+            uint64_t getWaitOffset();
             PDU& getPdu();
 
         private:
@@ -23,6 +24,7 @@ namespace whad::dot15d4 {
             void unpack();
 
             uint64_t m_slot;
+            uint64_t m_wait_offset;
             PDU m_pdu; 
     };
 

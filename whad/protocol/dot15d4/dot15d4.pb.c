@@ -42,6 +42,9 @@ PB_BIND(dot15d4_StartCmd, dot15d4_StartCmd, AUTO)
 PB_BIND(dot15d4_StopCmd, dot15d4_StopCmd, AUTO)
 
 
+PB_BIND(dot15d4_SyncCmd, dot15d4_SyncCmd, AUTO)
+
+
 PB_BIND(dot15d4_ManInTheMiddleCmd, dot15d4_ManInTheMiddleCmd, AUTO)
 
 
