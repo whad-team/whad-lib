@@ -81,7 +81,7 @@ namespace whad {
             /* Setters. */
             void setBytes(uint8_t *pBytes, int size)
             {
-                if (size < maxSize)
+                if (size <= maxSize)
                 {
                     m_size = size;
                     memcpy(m_bytes, pBytes, size);
@@ -95,7 +95,7 @@ namespace whad {
 
             void set(Packet<maxSize> &packet)
             {
-                if (packet.getSize() < this->getMaxSize())
+                if (packet.getSize() <= this->getMaxSize())
                 {
                     m_size = packet.getSize();
                     memcpy(m_bytes, packet.getBytes(), packet.getSize());
