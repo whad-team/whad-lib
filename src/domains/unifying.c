@@ -149,6 +149,10 @@ whad_result_t whad_unifying_sniff_parse(Message *p_message, whad_unifying_sniff_
     p_params->channel = p_message->msg.unifying.msg.sniff.channel;
     p_params->show_acks = p_message->msg.unifying.msg.sniff.show_acknowledgements;
     p_params->address.size = p_message->msg.unifying.msg.sniff.address.size;
+    if (p_params->address.size > UNIFYING_ADDR_MAX_SIZE)
+    {
+        return WHAD_ERROR;
+    }
     memcpy(p_params->address.address, p_message->msg.unifying.msg.sniff.address.bytes, p_params->address.size);
 
     /* Success. */
