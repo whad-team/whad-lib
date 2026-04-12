@@ -275,6 +275,10 @@ whad_result_t whad_esb_send_parse(Message *p_message, whad_esb_send_params_t *p_
     p_params->channel = p_message->msg.esb.msg.send.channel;
     p_params->retr_count = p_message->msg.esb.msg.send.retransmission_count;
     p_params->packet.length = p_message->msg.esb.msg.send.pdu.size;
+    if (p_params->packet.length > ESB_PACKET_MAX_SIZE)
+    {
+        return WHAD_ERROR;
+    }
     memcpy(p_params->packet.bytes, p_message->msg.esb.msg.send.pdu.bytes, p_message->msg.esb.msg.send.pdu.size);
 
     /* Success. */
@@ -340,6 +344,10 @@ whad_result_t whad_esb_send_raw_parse(Message *p_message, whad_esb_send_params_t
     p_params->channel = p_message->msg.esb.msg.send_raw.channel;
     p_params->retr_count = p_message->msg.esb.msg.send_raw.retransmission_count;
     p_params->packet.length = p_message->msg.esb.msg.send_raw.pdu.size;
+    if (p_params->packet.length > ESB_PACKET_MAX_SIZE)
+    {
+        return WHAD_ERROR;
+    }
     memcpy(p_params->packet.bytes, p_message->msg.esb.msg.send_raw.pdu.bytes, p_message->msg.esb.msg.send_raw.pdu.size);
 
     /* Success. */
