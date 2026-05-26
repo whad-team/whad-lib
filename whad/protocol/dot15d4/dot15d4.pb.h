@@ -412,7 +412,6 @@ extern "C" {
 
 
 
-
 /* Initializer values for message structs */
 #define dot15d4_SetNodeAddressCmd_init_default   {0, _dot15d4_AddressType_MIN}
 #define dot15d4_SniffCmd_init_default            {0}
