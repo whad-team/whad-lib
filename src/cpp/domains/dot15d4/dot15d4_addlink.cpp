@@ -42,7 +42,6 @@ AddLink::AddLink(uint32_t superframe_id, uint16_t src, uint32_t time_slot, uint3
     /* Save join slot. */
     m_time_slot = time_slot;
 
-
     /* Save link options. */
     m_options = options;
 

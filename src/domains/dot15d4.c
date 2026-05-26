@@ -1501,7 +1501,6 @@ whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, 
  * @param[in,out]       p_superframe_id   Pointer to the identifier of the associated superframe
  * @param[in,out]       p_time_slot       Time slot of the link to delete
  * @param[in,out]       p_channel_offset  Channel offset associated to the link
-
  *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message or address pointer.
