@@ -30,7 +30,19 @@ typedef enum {
     WHAD_DOT15D4_JAMMED=dot15d4_Message_jammed_tag,
     WHAD_DOT15D4_NRG_DETECTION_SAMPLE=dot15d4_Message_ed_sample_tag,
     WHAD_DOT15D4_RAW_PDU_RECEIVED=dot15d4_Message_raw_pdu_tag,
-    WHAD_DOT15D4_PDU_RECEIVED=dot15d4_Message_pdu_tag
+    WHAD_DOT15D4_PDU_RECEIVED=dot15d4_Message_pdu_tag,
+
+    /* TSCH related commands, included in version 3. */
+    WHAD_DOT15D4_CONFIG_TSCH=dot15d4_Message_config_tsch_tag, 
+    WHAD_DOT15D4_SEND_IN_SLOT=dot15d4_Message_send_in_slot_tag, 
+    WHAD_DOT15D4_ADD_LINK=dot15d4_Message_add_link_tag, 
+    WHAD_DOT15D4_DEL_LINK=dot15d4_Message_del_link_tag, 
+    WHAD_DOT15D4_UPDATE_SUPERFRAME=dot15d4_Message_update_superframe_tag, 
+    WHAD_DOT15D4_DEL_SUPERFRAME=dot15d4_Message_del_superframe_tag, 
+    WHAD_DOT15D4_SET_CHANNEL_MAP=dot15d4_Message_set_chm_tag, 
+
+    /* TSCH related notifications, included in version 3. */
+    WHAD_DOT15D4_DISCOVERED_COMMUNICATION = dot15d4_Message_discovered_comm_tag
 } whad_dot15d4_msgtype_t;
 
 typedef enum {
@@ -42,6 +54,31 @@ typedef enum {
     WHAD_DOT15D4_MITM_REACTIVE=dot15d4_Dot15d4MitmRole_REACTIVE_JAMMER,
     WHAD_DOT15D4_MITM_CORRECTOR=dot15d4_Dot15d4MitmRole_CORRECTOR
 } whad_dot15d4_mitm_role_t;
+
+
+typedef enum {
+    WHAD_DOT15D4_LINK_TYPE_NORMAL=dot15d4_LinkType_NORMAL,
+    WHAD_DOT15D4_LINK_TYPE_DISCOVERY=dot15d4_LinkType_DISCOVERY,
+    WHAD_DOT15D4_LINK_TYPE_BROADCAST=dot15d4_LinkType_BROADCAST,
+    WHAD_DOT15D4_LINK_TYPE_JOIN=dot15d4_LinkType_JOIN
+} whad_dot15d4_link_type_t;
+
+typedef enum {
+    WHAD_DOT15D4_LINK_OPTIONS_UNKNOWN=dot15d4_LinkOptions_UNKNOWN,
+    WHAD_DOT15D4_LINK_OPTIONS_SHARED=dot15d4_LinkOptions_SHARED,
+    WHAD_DOT15D4_LINK_OPTIONS_RECEIVE=dot15d4_LinkOptions_RECEIVE,
+    WHAD_DOT15D4_LINK_OPTIONS_TRANSMIT=dot15d4_LinkOptions_TRANSMIT,
+} whad_dot15d4_link_options_t;
+
+typedef struct {
+    uint32_t superframe_id;
+    uint16_t src;
+    uint32_t join_slot;
+    uint32_t offset;
+    uint16_t neighbor;
+    whad_dot15d4_link_options_t options;
+    whad_dot15d4_link_type_t type;
+} whad_dot15d4_add_link_params_t;
 
 typedef struct {
     whad_dot15d4_addr_type_t type;
@@ -58,6 +95,14 @@ typedef struct {
     whad_dot15d4_packet_t packet;
     uint32_t fcs;
 } whad_dot15d4_send_params_t;
+
+
+typedef struct {
+    uint64_t slot;
+    uint32_t wait_offset;
+    whad_dot15d4_packet_t packet;
+    uint32_t fcs;
+} whad_dot15d4_send_in_slot_params_t;
 
 typedef struct {
     uint32_t timestamp;
@@ -120,6 +165,23 @@ whad_result_t whad_dot15d4_raw_pdu_received_parse(Message *p_message, whad_dot15
 whad_result_t whad_dot15d4_pdu_received(Message *p_message, whad_dot15d4_recvd_packet_t *p_packet);
 whad_result_t whad_dot15d4_pdu_received_parse(Message *p_message, whad_dot15d4_recvd_packet_t *p_packet);
 
+/* TSCH related commands, included in version 3. */
+whad_result_t whad_dot15d4_config_tsch(Message *p_message, bool enabled); 
+whad_result_t whad_dot15d4_config_tsch_parse(Message *p_message, bool* p_enabled); 
+whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint32_t wait_offset, whad_dot15d4_packet_t packet);
+whad_result_t whad_dot15d4_send_in_slot_parse(Message *p_message, whad_dot15d4_send_in_slot_params_t *p_params);
+whad_result_t whad_dot15d4_add_link(Message *p_message, whad_dot15d4_add_link_params_t params);
+whad_result_t whad_dot15d4_add_link_parse(Message *p_message, whad_dot15d4_add_link_params_t *p_params);
+whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, uint32_t offset, uint16_t neighbor);
+whad_result_t whad_dot15d4_del_link_parse(Message *p_message, uint32_t *p_superframe_id, uint32_t *p_offset, uint16_t *p_neighbor);
+whad_result_t whad_dot15d4_update_superframe(Message *p_message, uint32_t superframe_id, uint32_t number_of_slots, uint32_t flags, uint64_t asn);
+whad_result_t whad_dot15d4_update_superframe_parse(Message *p_message, uint32_t *p_superframe_id, uint32_t *p_number_of_slots, uint32_t *p_flags, uint64_t *p_asn);
+whad_result_t whad_dot15d4_del_superframe(Message *p_message, uint32_t superframe_id);
+whad_result_t whad_dot15d4_del_superframe_parse(Message *p_message, uint32_t *p_superframe_id);
+whad_result_t whad_dot15d4_set_chm(Message *p_message, uint32_t channel_map);
+whad_result_t whad_dot15d4_set_chm_parse(Message *p_message, uint32_t *p_channel_map);
+whad_result_t whad_dot15d4_discovered_comm(Message *p_message, uint64_t slot, uint32_t offset, uint8_t *p_packet, uint32_t length);
+whad_result_t whad_dot15d4_discovered_comm_parse(Message *p_message, uint64_t *p_slot, uint32_t *p_offset, uint8_t *p_packet, uint32_t *p_length);
 
 #ifdef __cplusplus
 }
