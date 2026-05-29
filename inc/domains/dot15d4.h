@@ -73,8 +73,8 @@ typedef enum {
 typedef struct {
     uint32_t superframe_id;
     uint16_t src;
-    uint32_t join_slot;
-    uint32_t offset;
+    uint32_t time_slot;
+    uint32_t channel_offset;
     uint16_t neighbor;
     whad_dot15d4_link_options_t options;
     whad_dot15d4_link_type_t type;
@@ -172,8 +172,8 @@ whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint3
 whad_result_t whad_dot15d4_send_in_slot_parse(Message *p_message, whad_dot15d4_send_in_slot_params_t *p_params);
 whad_result_t whad_dot15d4_add_link(Message *p_message, whad_dot15d4_add_link_params_t params);
 whad_result_t whad_dot15d4_add_link_parse(Message *p_message, whad_dot15d4_add_link_params_t *p_params);
-whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, uint32_t offset, uint16_t neighbor);
-whad_result_t whad_dot15d4_del_link_parse(Message *p_message, uint32_t *p_superframe_id, uint32_t *p_offset, uint16_t *p_neighbor);
+whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, uint32_t time_slot, uint32_t channel_offset);
+whad_result_t whad_dot15d4_del_link_parse(Message *p_message, uint32_t *p_superframe_id, uint32_t *p_time_slot, uint32_t *p_channel_offset);
 whad_result_t whad_dot15d4_update_superframe(Message *p_message, uint32_t superframe_id, uint32_t number_of_slots, uint32_t flags, uint64_t asn);
 whad_result_t whad_dot15d4_update_superframe_parse(Message *p_message, uint32_t *p_superframe_id, uint32_t *p_number_of_slots, uint32_t *p_flags, uint64_t *p_asn);
 whad_result_t whad_dot15d4_del_superframe(Message *p_message, uint32_t superframe_id);

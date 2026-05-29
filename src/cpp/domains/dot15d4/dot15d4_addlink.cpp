@@ -17,15 +17,15 @@ AddLink::AddLink(Dot15d4Msg &message) : Dot15d4Msg(message)
  * 
  * @param[in]   superframe_id   Specify the identifier of the superframe the link must be associated to
  * @param[in]   src             Address of the Source associated to the link
- * @param[in]   join_slot       Join slot associated to the link
- * @param[in]   offset          Offset of the link within the superframe
+ * @param[in]   time_slot       Time slot associated to the link
+ * @param[in]   channel_offset  Channel Offset of the link within the superframe
  * @param[in]   neighbor        Address of the Neighbor associated to the link  
  * @param[in]   options         Options of the associated link  
  * @param[in]   type            Type of the associated link  
  
  **/
 
-AddLink::AddLink(uint32_t superframe_id, uint16_t src, uint32_t join_slot, uint32_t offset, uint32_t neighbor, LinkOptions options, LinkType type) : Dot15d4Msg()
+AddLink::AddLink(uint32_t superframe_id, uint16_t src, uint32_t time_slot, uint32_t channel_offset, uint32_t neighbor, LinkOptions options, LinkType type) : Dot15d4Msg()
 {
     /* Save superframe identifier.*/
     m_superframe_id = superframe_id;
@@ -37,10 +37,10 @@ AddLink::AddLink(uint32_t superframe_id, uint16_t src, uint32_t join_slot, uint3
     m_neighbor = neighbor;
 
     /* Save offset. */
-    m_offset = offset;
+    m_channel_offset = channel_offset;
 
     /* Save join slot. */
-    m_join_slot = join_slot;
+    m_time_slot = time_slot;
 
 
     /* Save link options. */
@@ -62,8 +62,8 @@ void AddLink::pack()
 
     params.superframe_id = m_superframe_id;
     params.src = m_source;
-    params.join_slot = m_join_slot;
-    params.offset = m_offset;
+    params.time_slot = m_time_slot;
+    params.channel_offset = m_channel_offset;
     params.neighbor = m_neighbor;
     params.options = (whad_dot15d4_link_options_t)m_options;
     params.type = (whad_dot15d4_link_type_t)m_type;
@@ -102,8 +102,8 @@ void AddLink::unpack()
         m_neighbor = (uint16_t)(params.neighbor);
         m_type = (LinkType)params.type;
         m_options = (LinkOptions)params.options;
-        m_join_slot = params.join_slot;
-        m_offset = params.offset;
+        m_time_slot = params.time_slot;
+        m_channel_offset = params.channel_offset;
     }
 }
 
@@ -133,11 +133,11 @@ uint16_t AddLink::getSource()
 /**
  * @brief   Retrieve the slot of added link within the superframe
  * 
- * @retval  Join Slot
+ * @retval  Time Slot
  */
-uint32_t AddLink::getJoinSlot()
+uint32_t AddLink::getTimeSlot()
 {
-    return m_join_slot;
+    return m_time_slot;
 }
 
 /**
@@ -145,9 +145,9 @@ uint32_t AddLink::getJoinSlot()
  * 
  * @retval  Channel Offset in Superframe 
  */
-uint32_t AddLink::getOffset()
+uint32_t AddLink::getChannelOffset()
 {
-    return m_offset;
+    return m_channel_offset;
 }
 
 /**

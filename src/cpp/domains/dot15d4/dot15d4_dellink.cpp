@@ -15,22 +15,22 @@ DeleteLink::DeleteLink(Dot15d4Msg &message) : Dot15d4Msg(message)
 /**
  * @brief       DeleteLink message constructor.
  * 
- * @param[in]   superframe_id   Specify the identifier of the superframe the link is associated to
- * @param[in]   offset          Offset of the link within the superframe
- * @param[in]   neighbor        Address of the Neighbor associated to the link  
+ * @param[in]   superframe_id       Specify the identifier of the superframe the link is associated to
+ * @param[in]   time_slot           Time slot of the link to delete
+ * @param[in]   channel_offset      Channel sOffset of the link within the superframe
  
  **/
 
-DeleteLink::DeleteLink(uint32_t superframe_id, uint32_t offset, uint32_t neighbor) : Dot15d4Msg()
+DeleteLink::DeleteLink(uint32_t superframe_id, uint32_t time_slot, uint32_t channel_offset) : Dot15d4Msg()
 {
     /* Save superframe identifier.*/
     m_superframe_id = superframe_id;
 
-    /* Save neighbor address. */
-    m_neighbor = neighbor;
+    /* Save time slot. */
+    m_time_slot = time_slot;
 
     /* Save offset. */
-    m_offset = offset;
+    m_channel_offset = channel_offset;
 }
 
 /**
@@ -42,8 +42,8 @@ void DeleteLink::pack()
     whad_dot15d4_del_link(
         this->getMessage(),
         m_superframe_id,
-        m_offset,
-        m_neighbor
+        m_time_slot,
+        m_channel_offset
     );
 }
 
@@ -57,14 +57,14 @@ void DeleteLink::unpack()
     whad_result_t result;
     
     uint32_t superframe_id;
-    uint32_t offset;
-    uint16_t neighbor;
+    uint32_t time_slot;
+    uint32_t channel_offset;
 
     result = whad_dot15d4_del_link_parse(
         this->getMessage(),
         &superframe_id, 
-        &offset, 
-        &neighbor
+        &time_slot, 
+        &channel_offset
     );
 
     if (result == WHAD_ERROR)
@@ -76,8 +76,8 @@ void DeleteLink::unpack()
     {
         /* Save parameters. */
         m_superframe_id = superframe_id;
-        m_neighbor = (uint16_t)(neighbor);
-        m_offset = offset;
+        m_time_slot = time_slot;
+        m_channel_offset = channel_offset;
     }
 }
 
@@ -94,14 +94,14 @@ uint32_t DeleteLink::getSuperframeId()
 
 
 /**
- * @brief   Retrieve the neighbor address associated with the deleted link
+ * @brief   Retrieve the time slot associated with the deleted link
  * 
- * @retval  Neighbor address (16-bit short format)
+ * @retval  Time slot of the link
  */
  
-uint16_t DeleteLink::getNeighbor()
+uint32_t DeleteLink::getTimeSlot()
 {
-    return m_neighbor;
+    return m_time_slot;
 }
 
 /**
@@ -109,7 +109,7 @@ uint16_t DeleteLink::getNeighbor()
  * 
  * @retval  Channel Offset in Superframe 
  */
-uint32_t DeleteLink::getOffset()
+uint32_t DeleteLink::getChannelOffset()
 {
-    return m_offset;
+    return m_channel_offset;
 }
