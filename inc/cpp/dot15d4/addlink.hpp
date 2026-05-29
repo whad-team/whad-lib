@@ -14,13 +14,13 @@ namespace whad::dot15d4 {
     {
         public:
             AddLink(Dot15d4Msg &message);
-            AddLink(uint32_t superframe_id, uint16_t src, uint32_t join_slot, uint32_t offset, uint32_t neighbor, LinkOptions options, LinkType type);
+            AddLink(uint32_t superframe_id, uint16_t src, uint32_t time_slot, uint32_t channel_offset, uint32_t neighbor, LinkOptions options, LinkType type);
 
             /* Getters. */
             uint32_t getSuperframeId();
             uint16_t getSource();
-            uint32_t getJoinSlot();
-            uint32_t getOffset();
+            uint32_t getTimeSlot();
+            uint32_t getChannelOffset();
             uint16_t getNeighbor();
             LinkOptions getLinkOptions();
             LinkType getLinkType();
@@ -31,8 +31,8 @@ namespace whad::dot15d4 {
 
             uint32_t m_superframe_id;
             uint16_t m_source;
-            uint32_t m_join_slot;
-            uint32_t m_offset;
+            uint32_t m_time_slot;
+            uint32_t m_channel_offset;
             uint16_t m_neighbor;
             LinkOptions m_options;
             LinkType m_type;

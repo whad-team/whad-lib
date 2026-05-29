@@ -14,12 +14,12 @@ namespace whad::dot15d4 {
     {
         public:
             DeleteLink(Dot15d4Msg &message);
-            DeleteLink(uint32_t superframe_id, uint32_t offset, uint32_t neighbor);
+            DeleteLink(uint32_t superframe_id, uint32_t time_slot, uint32_t channel_offset);
 
             /* Getters. */
             uint32_t getSuperframeId();
-            uint32_t getOffset();
-            uint16_t getNeighbor();
+            uint32_t getChannelOffset();
+            uint32_t getTimeSlot();
             
 
         private:
@@ -27,8 +27,8 @@ namespace whad::dot15d4 {
             void unpack();
 
             uint32_t m_superframe_id;
-            uint32_t m_offset;
-            uint16_t m_neighbor;
+            uint32_t m_channel_offset;
+            uint16_t m_time_slot;
     };
 
 }
