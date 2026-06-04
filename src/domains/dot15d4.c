@@ -848,6 +848,71 @@ whad_result_t whad_dot15d4_raw_pdu_received(Message *p_message, whad_dot15d4_rec
         p_message->msg.dot15d4.msg.raw_pdu.lqi = 0;
     }
 
+    if (p_packet->has_asn)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_asn = true;
+        p_message->msg.dot15d4.msg.raw_pdu.asn = p_packet->asn;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_asn = false;
+        p_message->msg.dot15d4.msg.raw_pdu.asn = 0;
+    }
+
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_start_of_slot_timestamp = true;
+        p_message->msg.dot15d4.msg.raw_pdu.start_of_slot_timestamp = p_packet->start_of_slot_timestamp;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_start_of_slot_timestamp = false;
+        p_message->msg.dot15d4.msg.raw_pdu.start_of_slot_timestamp = 0;
+    }
+
+    if (p_packet->has_time_slot)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_time_slot = true;
+        p_message->msg.dot15d4.msg.raw_pdu.time_slot = p_packet->time_slot;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_time_slot = false;
+        p_message->msg.dot15d4.msg.raw_pdu.time_slot = 0;
+    }
+
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_base_channel_frequency = true;
+        p_message->msg.dot15d4.msg.raw_pdu.base_channel_frequency = p_packet->base_channel_frequency;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_base_channel_frequency = false;
+        p_message->msg.dot15d4.msg.raw_pdu.base_channel_frequency = 0;
+    }
+
+    if (p_packet->has_number_of_channels)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_number_of_channels = true;
+        p_message->msg.dot15d4.msg.raw_pdu.number_of_channels = p_packet->number_of_channels;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_number_of_channels = false;
+        p_message->msg.dot15d4.msg.raw_pdu.number_of_channels = 0;
+    }
+
+    if (p_packet->has_channel_spacing)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_channel_spacing = true;
+        p_message->msg.dot15d4.msg.raw_pdu.channel_spacing = p_packet->channel_spacing;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_channel_spacing = false;
+        p_message->msg.dot15d4.msg.raw_pdu.channel_spacing = 0;
+    }
     /* Success. */
     return WHAD_SUCCESS;
 }
@@ -901,6 +966,44 @@ whad_result_t whad_dot15d4_raw_pdu_received_parse(Message *p_message, whad_dot15
     if (p_packet->has_lqi)
     {
         p_packet->lqi = p_message->msg.dot15d4.msg.raw_pdu.lqi;
+    }
+
+
+    p_packet->has_asn = p_message->msg.dot15d4.msg.raw_pdu.has_asn;
+    if (p_packet->has_asn)
+    {
+        p_packet->asn = p_message->msg.dot15d4.msg.raw_pdu.asn;
+    }
+
+    p_packet->has_time_slot = p_message->msg.dot15d4.msg.raw_pdu.has_time_slot;
+    if (p_packet->has_time_slot)
+    {
+        p_packet->time_slot = p_message->msg.dot15d4.msg.raw_pdu.time_slot;
+    }
+
+    p_packet->has_start_of_slot_timestamp = p_message->msg.dot15d4.msg.raw_pdu.has_start_of_slot_timestamp;
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_packet->start_of_slot_timestamp = p_message->msg.dot15d4.msg.raw_pdu.start_of_slot_timestamp;
+    }
+
+    p_packet->has_base_channel_frequency = p_message->msg.dot15d4.msg.raw_pdu.has_base_channel_frequency;
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_packet->base_channel_frequency = p_message->msg.dot15d4.msg.raw_pdu.base_channel_frequency;
+    }
+    
+    p_packet->has_number_of_channels = p_message->msg.dot15d4.msg.raw_pdu.has_number_of_channels;
+    if (p_packet->has_number_of_channels)
+    {
+        p_packet->number_of_channels = p_message->msg.dot15d4.msg.raw_pdu.number_of_channels;
+    }
+
+
+    p_packet->has_channel_spacing = p_message->msg.dot15d4.msg.raw_pdu.has_channel_spacing;
+    if (p_packet->has_channel_spacing)
+    {
+        p_packet->channel_spacing = p_message->msg.dot15d4.msg.raw_pdu.channel_spacing;
     }
 
     /* Success. */
@@ -976,6 +1079,71 @@ whad_result_t whad_dot15d4_pdu_received(Message *p_message, whad_dot15d4_recvd_p
         p_message->msg.dot15d4.msg.pdu.lqi = 0;
     }
 
+    if (p_packet->has_asn)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_asn = true;
+        p_message->msg.dot15d4.msg.pdu.asn = p_packet->asn;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_asn = false;
+        p_message->msg.dot15d4.msg.pdu.asn = 0;
+    }
+
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_start_of_slot_timestamp = true;
+        p_message->msg.dot15d4.msg.pdu.start_of_slot_timestamp = p_packet->start_of_slot_timestamp;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_start_of_slot_timestamp = false;
+        p_message->msg.dot15d4.msg.pdu.start_of_slot_timestamp = 0;
+    }
+
+    if (p_packet->has_time_slot)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_time_slot = true;
+        p_message->msg.dot15d4.msg.pdu.time_slot = p_packet->time_slot;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_time_slot = false;
+        p_message->msg.dot15d4.msg.pdu.time_slot = 0;
+    }
+
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_base_channel_frequency = true;
+        p_message->msg.dot15d4.msg.pdu.base_channel_frequency = p_packet->base_channel_frequency;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_base_channel_frequency = false;
+        p_message->msg.dot15d4.msg.pdu.base_channel_frequency = 0;
+    }
+
+    if (p_packet->has_number_of_channels)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_number_of_channels = true;
+        p_message->msg.dot15d4.msg.pdu.number_of_channels = p_packet->number_of_channels;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_number_of_channels = false;
+        p_message->msg.dot15d4.msg.pdu.number_of_channels = 0;
+    }
+
+    if (p_packet->has_channel_spacing)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_channel_spacing = true;
+        p_message->msg.dot15d4.msg.pdu.channel_spacing = p_packet->channel_spacing;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_channel_spacing = false;
+        p_message->msg.dot15d4.msg.pdu.channel_spacing = 0;
+    }
     /* Success. */
     return WHAD_SUCCESS;
 }
@@ -1030,6 +1198,45 @@ whad_result_t whad_dot15d4_pdu_received_parse(Message *p_message, whad_dot15d4_r
         p_packet->lqi = p_message->msg.dot15d4.msg.raw_pdu.lqi;
     }
 
+
+
+    p_packet->has_asn = p_message->msg.dot15d4.msg.pdu.has_asn;
+    if (p_packet->has_asn)
+    {
+        p_packet->asn = p_message->msg.dot15d4.msg.pdu.asn;
+    }
+
+    p_packet->has_time_slot = p_message->msg.dot15d4.msg.pdu.has_time_slot;
+    if (p_packet->has_time_slot)
+    {
+        p_packet->time_slot = p_message->msg.dot15d4.msg.pdu.time_slot;
+    }
+
+    p_packet->has_start_of_slot_timestamp = p_message->msg.dot15d4.msg.pdu.has_start_of_slot_timestamp;
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_packet->start_of_slot_timestamp = p_message->msg.dot15d4.msg.pdu.start_of_slot_timestamp;
+    }
+
+    p_packet->has_base_channel_frequency = p_message->msg.dot15d4.msg.pdu.has_base_channel_frequency;
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_packet->base_channel_frequency = p_message->msg.dot15d4.msg.pdu.base_channel_frequency;
+    }
+    
+    p_packet->has_number_of_channels = p_message->msg.dot15d4.msg.pdu.has_number_of_channels;
+    if (p_packet->has_number_of_channels)
+    {
+        p_packet->number_of_channels = p_message->msg.dot15d4.msg.pdu.number_of_channels;
+    }
+
+
+    p_packet->has_channel_spacing = p_message->msg.dot15d4.msg.pdu.has_channel_spacing;
+    if (p_packet->has_channel_spacing)
+    {
+        p_packet->channel_spacing = p_message->msg.dot15d4.msg.pdu.channel_spacing;
+    }
+    
     /* Success. */
     return WHAD_SUCCESS;
 }
@@ -1208,8 +1415,8 @@ whad_result_t whad_dot15d4_add_link(Message *p_message, whad_dot15d4_add_link_pa
 
     p_message->msg.dot15d4.msg.add_link.neighbor = params.neighbor;
 
-    p_message->msg.dot15d4.msg.add_link.join_slot = params.join_slot;
-    p_message->msg.dot15d4.msg.add_link.offset = params.offset;
+    p_message->msg.dot15d4.msg.add_link.time_slot = params.time_slot;
+    p_message->msg.dot15d4.msg.add_link.channel_offset = params.channel_offset;
     p_message->msg.dot15d4.msg.add_link.options = params.options;
 
     return WHAD_SUCCESS;
@@ -1222,7 +1429,7 @@ whad_result_t whad_dot15d4_add_link(Message *p_message, whad_dot15d4_add_link_pa
  * @param[in]       p_message   Pointer to a NanoPb Message structure
  * @param[in,out]   p_params    Pointer to a `whad_dot15d4_add_link_params_t` structure
  *
- * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_SUCCESS        Success
  * @retval          WHAD_ERROR          Invalid message or address pointer.
  **/
 
@@ -1244,8 +1451,8 @@ whad_result_t whad_dot15d4_add_link_parse(Message *p_message, whad_dot15d4_add_l
     }
     p_params->neighbor = (uint16_t)(p_message->msg.dot15d4.msg.add_link.neighbor);
 
-    p_params->join_slot = p_message->msg.dot15d4.msg.add_link.join_slot;
-    p_params->offset = p_message->msg.dot15d4.msg.add_link.offset;
+    p_params->time_slot = p_message->msg.dot15d4.msg.add_link.time_slot;
+    p_params->channel_offset = p_message->msg.dot15d4.msg.add_link.channel_offset;
  
     p_params->options = (whad_dot15d4_link_options_t)(p_message->msg.dot15d4.msg.add_link.options);
     p_params->type = (whad_dot15d4_link_type_t)(p_message->msg.dot15d4.msg.add_link.type);
@@ -1261,14 +1468,14 @@ whad_result_t whad_dot15d4_add_link_parse(Message *p_message, whad_dot15d4_add_l
  *
  * @param[in]       p_message       Pointer to a NanoPb Message structure
  * @param[in]       superframe_id   Identifier of the associated superframe
- * @param[in]       offset          Offset associated to the link to delete
- * @param[in]       neighbor        Neighbor associated to the link
+ * @param[in]       time_slot       Time slot of the link to delete
+ * @param[in]       channel_offset  Channel offset of the link to delete
  *
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message or address pointer.
  **/
 
-whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, uint32_t offset, uint16_t neighbor) 
+whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, uint32_t time_slot, uint32_t channel_offset) 
 {
     if (p_message == NULL) {
         return WHAD_ERROR;
@@ -1279,8 +1486,8 @@ whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, 
 
 
     p_message->msg.dot15d4.msg.del_link.superframe_id = superframe_id;
-    p_message->msg.dot15d4.msg.del_link.offset = offset;
-    p_message->msg.dot15d4.msg.del_link.neighbor = neighbor;
+    p_message->msg.dot15d4.msg.del_link.time_slot = time_slot;
+    p_message->msg.dot15d4.msg.del_link.channel_offset   = channel_offset;
     return WHAD_SUCCESS;
 }
 
@@ -1290,10 +1497,10 @@ whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, 
 /**
  * @brief   Parse a DeleteLinkCmd message
  *
- * @param[in]       p_message       Pointer to a NanoPb Message structure
+ * @param[in]           p_message         Pointer to a NanoPb Message structure
  * @param[in,out]       p_superframe_id   Pointer to the identifier of the associated superframe
- * @param[in,out]       p_offset          Offset associated to the link to delete
- * @param[in,out]       p_neighbor        Neighbor associated to the link
+ * @param[in,out]       p_time_slot       Time slot of the link to delete
+ * @param[in,out]       p_channel_offset  Channel offset associated to the link
 
  *
  * @retval          WHAD_SUCCESS        Success.
@@ -1301,18 +1508,18 @@ whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, 
  **/
 
 
-whad_result_t whad_dot15d4_del_link_parse(Message *p_message, uint32_t *p_superframe_id, uint32_t *p_offset, uint16_t *p_neighbor)
+whad_result_t whad_dot15d4_del_link_parse(Message *p_message, uint32_t *p_superframe_id, uint32_t *p_time_slot, uint32_t *p_channel_offset)
 {
 
     /* Sanity checks. */
-    if ((p_message == NULL) || (p_superframe_id == NULL) || (p_offset == NULL) || (p_neighbor == NULL))
+    if ((p_message == NULL) || (p_superframe_id == NULL) || (p_channel_offset == NULL) || (p_time_slot == NULL))
     {
         return WHAD_ERROR;
     }
 
     *p_superframe_id = p_message->msg.dot15d4.msg.del_link.superframe_id;
-    *p_offset = p_message->msg.dot15d4.msg.del_link.offset;
-    *p_neighbor = p_message->msg.dot15d4.msg.del_link.neighbor;
+    *p_channel_offset = p_message->msg.dot15d4.msg.del_link.channel_offset;
+    *p_time_slot = p_message->msg.dot15d4.msg.del_link.time_slot;
     return WHAD_SUCCESS;
 }
  
@@ -1507,7 +1714,7 @@ whad_result_t whad_dot15d4_set_chm_parse(Message *p_message, uint32_t *p_channel
  * @retval          WHAD_ERROR          Invalid message or address pointer.
  **/
 
-whad_result_t whad_dot15d4_discovered_comm(Message *p_message, uint64_t slot, uint32_t offset, uint8_t *p_packet, uint32_t length)
+whad_result_t whad_dot15d4_discovered_comm(Message *p_message, uint64_t time_slot, uint32_t channel_offset, uint8_t *p_packet, uint32_t length)
 {
     /* Sanity checks. */
     if ((p_message == NULL) || (p_packet == NULL))
@@ -1518,8 +1725,8 @@ whad_result_t whad_dot15d4_discovered_comm(Message *p_message, uint64_t slot, ui
     p_message->which_msg = Message_dot15d4_tag;
     p_message->msg.dot15d4.which_msg = dot15d4_Message_discovered_comm_tag;
 
-    p_message->msg.dot15d4.msg.discovered_comm.slot = slot;
-    p_message->msg.dot15d4.msg.discovered_comm.offset = offset;
+    p_message->msg.dot15d4.msg.discovered_comm.time_slot = time_slot;
+    p_message->msg.dot15d4.msg.discovered_comm.channel_offset = channel_offset;
 
     if ((length >= 0) && (length <= 255))
     {
@@ -1551,7 +1758,7 @@ whad_result_t whad_dot15d4_discovered_comm(Message *p_message, uint64_t slot, ui
  * @retval          WHAD_ERROR          Invalid message or address pointer.
  **/
 
-whad_result_t whad_dot15d4_discovered_comm_parse(Message *p_message, uint64_t *p_slot, uint32_t *p_offset, uint8_t *p_packet, uint32_t *p_length)
+whad_result_t whad_dot15d4_discovered_comm_parse(Message *p_message, uint64_t *p_time_slot, uint32_t *p_channel_offset, uint8_t *p_packet, uint32_t *p_length)
 {
     /* Sanity checks. */
     if (p_message == NULL)
@@ -1559,9 +1766,9 @@ whad_result_t whad_dot15d4_discovered_comm_parse(Message *p_message, uint64_t *p
         return WHAD_ERROR;
     }
 
-    *p_slot = p_message->msg.dot15d4.msg.discovered_comm.slot;
+    *p_time_slot = p_message->msg.dot15d4.msg.discovered_comm.time_slot;
 
-    *p_offset = p_message->msg.dot15d4.msg.discovered_comm.offset;
+    *p_channel_offset = p_message->msg.dot15d4.msg.discovered_comm.channel_offset;
 
     /* Check packet size. */
     if (p_message->msg.dot15d4.msg.discovered_comm.pdu.size > DOT15D4_PACKET_MAX_SIZE)
