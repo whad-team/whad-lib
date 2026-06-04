@@ -361,7 +361,7 @@ whad_result_t whad_ble_sniff_adv(Message *p_message, bool use_ext_adv, uint32_t 
     /* Populate message fields. */
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_sniff_adv_tag;
-    p_message->msg.ble.msg.sniff_adv.use_extended_adv = use_ext_adv;
+    p_message->msg.ble.msg.sniff_adv.use_ext_adv = use_ext_adv;
     p_message->msg.ble.msg.sniff_adv.channel = channel;
     memcpy(p_message->msg.ble.msg.sniff_adv.bd_address, p_bdaddr, 6);
 
@@ -390,7 +390,7 @@ whad_result_t whad_ble_sniff_adv_parse(Message *p_message, whad_ble_sniff_adv_pa
 
     /* Extract message info. */
     p_parameters->channel = p_message->msg.ble.msg.sniff_adv.channel;
-    p_parameters->use_ext_adv = p_message->msg.ble.msg.sniff_adv.use_extended_adv;
+    p_parameters->use_ext_adv = p_message->msg.ble.msg.sniff_adv.use_ext_adv;
     p_parameters->p_bdaddr = p_message->msg.ble.msg.sniff_adv.bd_address;
 
     /* Success. */
