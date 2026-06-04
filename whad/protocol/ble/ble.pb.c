@@ -161,14 +161,3 @@ PB_BIND(ble_Message, ble_Message, 4)
 
 
 
-
-
-
-
-
-
-
-
-
-
-

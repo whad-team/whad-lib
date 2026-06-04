@@ -261,6 +261,24 @@ typedef struct _ble_CentralModeCmd {
     char dummy_field;
 } ble_CentralModeCmd;
 
+/* BLE extended advertisement AuxPtr info.
+
+ See Vol 6, Part B, Section 2.3.4.5 for more details.
+
+ This message provides all the required values for
+ successfully transmit the following extended advertising
+ PDU on a secondary channel.
+
+ Shall be used when the provided extended advertising PDU
+ is malformed or impossible to parse without errors. */
+typedef struct _ble_AuxPtr { 
+    uint32_t channel;
+    uint32_t ca;
+    uint32_t offset_units;
+    uint32_t offset;
+    ble_BlePhy phy;
+} ble_AuxPtr;
+
 /* *
  ConnectToCmd
 
@@ -371,7 +389,6 @@ typedef struct _ble_StopCmd {
 typedef struct _ble_HijackMasterCmd {
     uint32_t access_address;
 } ble_HijackMasterCmd;
-
 /* *
  HijackSlaveCmd
 
