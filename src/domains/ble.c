@@ -361,7 +361,7 @@ whad_result_t whad_ble_sniff_adv(Message *p_message, bool use_ext_adv, uint32_t 
     /* Populate message fields. */
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_sniff_adv_tag;
-    p_message->msg.ble.msg.sniff_adv.use_extended_adv = use_ext_adv;
+    p_message->msg.ble.msg.sniff_adv.use_ext_adv = use_ext_adv;
     p_message->msg.ble.msg.sniff_adv.channel = channel;
     memcpy(p_message->msg.ble.msg.sniff_adv.bd_address, p_bdaddr, 6);
 
@@ -390,7 +390,7 @@ whad_result_t whad_ble_sniff_adv_parse(Message *p_message, whad_ble_sniff_adv_pa
 
     /* Extract message info. */
     p_parameters->channel = p_message->msg.ble.msg.sniff_adv.channel;
-    p_parameters->use_ext_adv = p_message->msg.ble.msg.sniff_adv.use_extended_adv;
+    p_parameters->use_ext_adv = p_message->msg.ble.msg.sniff_adv.use_ext_adv;
     p_parameters->p_bdaddr = p_message->msg.ble.msg.sniff_adv.bd_address;
 
     /* Success. */
@@ -807,8 +807,8 @@ whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv
         {
             adv_data_length = 31;
         }
-        p_message->msg.ble.msg.adv_mode.scan_data.size = adv_data_length;
-        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_adv_data, adv_data_length);
+        p_message->msg.ble.msg.adv_mode.scanrsp_data.size = adv_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_adv_data, adv_data_length);
     }
 
     /* Set scan response data, if provided. */
@@ -837,12 +837,12 @@ whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_para
     }
 
     /* Extract advertising data from message. */
-    p_parameters->adv_data_length = p_message->msg.ble.msg.adv_mode.scan_data.size;
+    p_parameters->adv_data_length = p_message->msg.ble.msg.adv_mode.scanrsp_data.size;
     if ((p_parameters->adv_data_length > 0) && (p_parameters->adv_data_length < 31))
     {
         memcpy(
             p_parameters->adv_data,
-            p_message->msg.ble.msg.adv_mode.scan_data.bytes,
+            p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes,
             p_parameters->adv_data_length
         );
     }
@@ -892,8 +892,8 @@ whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_adv_data, int
         {
             adv_data_length = 31;
         }
-        //p_message->msg.ble.msg.adv_mode.scan_data.size = scan_data_length;
-        //memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_scan_data, scan_data_length);
+        //p_message->msg.ble.msg.adv_mode.scanrsp_data.size = scan_data_length;
+        //memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scan_data, scan_data_length);
     }
 
     /* Set scan response data, if provided. */
@@ -1336,8 +1336,8 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, 
         {
             adv_data_length = 31;
         }
-        p_message->msg.ble.msg.adv_mode.scan_data.size = adv_data_length;
-        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_adv_data, adv_data_length);
+        p_message->msg.ble.msg.adv_mode.scanrsp_data.size = adv_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_adv_data, adv_data_length);
     }
 
     /* Set scan response data, if provided. */
@@ -1367,12 +1367,12 @@ whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mo
     }
 
  /* Extract advertising data from message. */
-    p_parameters->adv_data_length = p_message->msg.ble.msg.periph_mode.scan_data.size;
+    p_parameters->adv_data_length = p_message->msg.ble.msg.periph_mode.scanrsp_data.size;
     if ((p_parameters->adv_data_length > 0) && (p_parameters->adv_data_length < 31))
     {
         memcpy(
             p_parameters->adv_data,
-            p_message->msg.ble.msg.periph_mode.scan_data.bytes,
+            p_message->msg.ble.msg.periph_mode.scanrsp_data.bytes,
             p_parameters->adv_data_length
         );
     }
@@ -2640,3 +2640,299 @@ whad_result_t whad_ble_injected_parse(Message *p_message, whad_ble_injected_para
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+/**
+ * Messages defined since version 3.
+ **/
+
+/**
+ * @brief Initialize a message to set RX and TX PHY.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       tx_phy              New TX PHY to use, if available
+ * @param[in]       rx_phy              New RX PHY to use, if available
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_set_phy(Message *p_message, whad_ble_phy_t tx_phy, whad_ble_phy_t rx_phy)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_set_phy_tag;
+    p_message->msg.ble.msg.set_phy.tx_phy = tx_phy;
+    p_message->msg.ble.msg.set_phy.rx_phy = rx_phy;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Parse a message to set RX and TX PHY.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in,out]       p_tx_phy            Pointer to a variable that will contain the new TX PHY value
+ * @param[in,out]       p_rx_phy            Pointer to a variable that will contain the new RX PHY value
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_set_phy_parse(Message *p_message, whad_ble_phy_t *p_tx_phy, whad_ble_phy_t *p_rx_phy)
+{
+    /* Sanity checks. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+    
+    /* At least one of p_tx_phy and p_rx_phy must be a valid pointer. */
+    if ((p_tx_phy == NULL) && (p_rx_phy == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    if (p_tx_phy != NULL)
+    {
+        *p_tx_phy = (whad_ble_phy_t)p_message->msg.ble.msg.set_phy.tx_phy;
+    }
+
+    if (p_rx_phy != NULL)
+    {
+        *p_rx_phy = (whad_ble_phy_t)p_message->msg.ble.msg.set_phy.rx_phy;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to set the hardware TX power level.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       power               Power level.
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_set_tx_power_level(Message *p_message, int power)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_set_tx_pwr_tag;
+    p_message->msg.ble.msg.set_tx_pwr.level = power;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief Parse a message to set TX power level.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_power             Pointer to a variable that will contain the new power level value
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_set_tx_power_level_parse(Message *p_message, int *p_power)
+{
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_power != NULL))
+    {
+        return WHAD_ERROR;
+    }
+    
+    /* Extract power level. */
+    *p_power = p_message->msg.ble.msg.set_tx_pwr.level;
+    
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Initialize a message to set the supported TX and RX PHYs.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       phys                whad_ble_phys_t structure holding selected TX and RX PHYs.
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_set_supp_phys(Message *p_message, whad_ble_phys_t phys)
+{
+    int i;
+
+    /* Sanity check. */
+    if ((p_message == NULL) || (phys.count > MAX_SUPP_PHYS))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Build message from provided PHY info. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_set_supp_phys_tag;
+
+    for (i=0; i<phys.count; i++) {
+        p_message->msg.ble.msg.set_supp_phys.tx_phy[i] = phys.tx[i];
+        p_message->msg.ble.msg.set_supp_phys.rx_phy[i] = phys.rx[i];
+    }
+
+    p_message->msg.ble.msg.set_supp_phys.tx_phy_count = phys.count;
+    p_message->msg.ble.msg.set_supp_phys.rx_phy_count = phys.count;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief Parse a message to set supported TX PHYs.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       p_phys              Pointer to a structure specifying the TX and RX PHYs.
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_set_supp_phys_parse(Message *p_message, whad_ble_phys_t *p_phys)
+{
+    int i;
+
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_phys == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract information from message. */
+    p_phys->count = p_message->msg.ble.msg.set_supp_phys.tx_phy_count;
+    for (i=0; i<p_phys->count; i++)
+    {
+        p_phys->tx[i] = p_message->msg.ble.msg.set_supp_phys.tx_phy[i];
+        p_phys->rx[i] = p_message->msg.ble.msg.set_supp_phys.rx_phy[i];
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief Initialize a message to set the current extended advertising data.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       p_pdus              Pointer to a list of extended advertising PDUS.
+ * @param[in,out]   p_count             Number of PDUs in the supplied array.
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_set_ext_adv_pdus(Message *p_message, whad_ble_ext_adv_t *p_pdus, size_t count)
+{
+    int i;
+
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_pdus == NULL) || (count == 0))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Create message. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_set_ext_adv_pdus_tag;
+    p_message->msg.ble.msg.set_ext_adv_pdus.pdus_count = count;
+    for (i=0; i<count; i++)
+    {
+        p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].adv_data.size = p_pdus[i].length;
+        if (p_pdus[i].length < BLE_MAX_EXT_ADV_DATA_LEN)
+        {
+            /* Copy advertising data. */
+            memcpy(p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].adv_data.bytes, p_pdus[i].adv_data, p_pdus[i].length);
+
+            /* Copy AuxPtr if present. */
+            p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].has_aux_ptr = p_pdus[i].has_auxptr;
+            if (p_pdus[i].has_auxptr)
+            {
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.channel = p_pdus[i].auxptr.channel;
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.ca = p_pdus[i].auxptr.ca;
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.offset_units = p_pdus[i].auxptr.offset_units;
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.offset = p_pdus[i].auxptr.offset;
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.phy = p_pdus[i].auxptr.phy;
+            }
+            else
+            {
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.channel = 0;
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.ca = 0;
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.offset_units = 0;
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.offset = 0;
+                p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].aux_ptr.phy = 0;
+            }
+        }
+        else
+        {
+            return WHAD_ERROR;
+        }
+    }
+
+    return WHAD_SUCCESS;
+}
+
+/**
+ * @brief Parse a message to set supported TX PHYs.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_pdus              Pointer to a list of extended advertisement PDUs
+ * @param[in,out]   p_count             Pointer to a variable holding the number of PDus stored in the
+ *                                      corresponding list.
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_set_ext_adv_pdus_parse(Message *p_message, whad_ble_ext_adv_t *p_pdus, size_t *p_count)
+{
+    int i;
+
+    /* Sanity check. */
+    if ((p_message == NULL) || (p_count == NULL) || ((p_pdus == NULL) && (p_count == NULL)))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Copy number of PDUs into *p_count. */
+    *p_count = p_message->msg.ble.msg.set_ext_adv_pdus.pdus_count;
+
+    /* Copy items to p_pdus if pointer is not NULL. */
+    if (p_pdus != NULL)
+    {
+        for (i=0; i<*p_count; i++)
+        {
+            p_pdus[i].length = p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].adv_data.size; 
+            memcpy(p_pdus[i].adv_data, p_message->msg.ble.msg.set_ext_adv_pdus.pdus[i].adv_data.bytes, p_pdus[i].length);
+        }
+        return WHAD_SUCCESS;
+    }
+
+    return WHAD_SUCCESS;
+}
+

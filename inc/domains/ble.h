@@ -6,6 +6,8 @@
 #define BLE_PREPSEQ_PACKET_MAX_SIZE     255
 #define BLE_PREPSEQ_TRIGGER_MAX_SIZE    255
 #define BLE_RSSI_NONE                   (-4096)
+#define MAX_SUPP_PHYS                   4
+#define BLE_MAX_EXT_ADV_DATA_LEN         254
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,7 +53,11 @@ typedef enum {
     BLE_HIJACK_BOTH = ble_BleCommand_HijackBoth,
     BLE_PREPARE_SEQUENCE = ble_BleCommand_PrepareSequence,
     BLE_TRIGGER_SEQUENCE = ble_BleCommand_TriggerSequence,
-    BLE_DELETE_SEQUENCE = ble_BleCommand_DeleteSequence
+    BLE_DELETE_SEQUENCE = ble_BleCommand_DeleteSequence,
+    BLE_SET_PHY = ble_BleCommand_SetPhy,
+    BLE_SET_SUPP_PHYS = ble_BleCommand_SetSupportedPhys,
+    BLE_SET_TX_POWER_LEVEL = ble_BleCommand_SetTxPowerLevel,
+    BLE_SET_EXT_ADV_PDUS = ble_BleCommand_SetExtAdvPdus
 } whad_ble_command_t;
 
 /**
@@ -67,7 +73,9 @@ typedef enum {
     BLE_ADV_DIRECT_IND = ble_BleAdvType_ADV_DIRECT_IND,
     BLE_ADV_NONCONN_IND = ble_BleAdvType_ADV_NONCONN_IND,
     BLE_ADV_SCAN_IND = ble_BleAdvType_ADV_SCAN_IND,
-    BLE_ADV_SCAN_RSP = ble_BleAdvType_ADV_SCAN_RSP
+    BLE_ADV_SCAN_RSP = ble_BleAdvType_ADV_SCAN_RSP,
+    BLE_ADV_EXT_IND = ble_BleAdvType_ADV_EXT_IND,
+    BLE_ADV_DECISION_IND = ble_BleAdvType_ADV_DECISION_IND
 } whad_ble_advtype_t;
 
 
@@ -99,9 +107,44 @@ typedef enum {
 
 typedef enum {
     BLE_ADDR_PUBLIC = ble_BleAddrType_PUBLIC,
-    BLE_ADDR_RANDOM = ble_BleAddrType_RANDOM
+    BLE_ADDR_RANDOM = ble_BleAddrType_RANDOM,
+    BLE_ADDR_RPA = ble_BleAddrType_RPA
 } whad_ble_addrtype_t;
 
+
+/**
+ * @brief BLE PHY type
+ *
+ * Defines the PHY layer used by a BLE connection
+ * for upstream or downstream communication.
+ *
+ * This enum defines aliases for NanoPb messages.
+ **/
+
+typedef enum {
+    BLE_PHY_UNDEFINED = ble_BlePhy_UNDEFINED,
+    BLE_PHY_LE_1M = ble_BlePhy_LE_1M,
+    BLE_PHY_LE_1M_CODED = ble_BlePhy_LE_1M_CODED,
+    BLE_PHY_LE_2M = ble_BlePhy_LE_2M,
+    BLE_PHY_LE_2M_2BT = ble_BlePhy_LE_2M_2BT
+} whad_ble_phy_t;
+
+/**
+ * @brief BLE Channel Selection Algorithm
+ *
+ * Defines the channel selection algorithm used by a BLE
+ * connection. `CSA1` uses BLE's legacy channel hopping
+ * algorithm (sequence-based) while `CSA2` uses a PRNG-based
+ * channel hopping algorithm, introduced in BLE 5.
+ **/
+
+typedef enum {
+    BLE_CSA1 = ble_BleCsa_CSA1,
+    BLE_CSA2 = ble_BleCsa_CSA2,
+    BLE_CSA3a = ble_BleCsa_CSA3a,
+    BLE_CSA3b = ble_BleCsa_CSA3b,
+    BLE_CSA3c = ble_BleCsa_CSA3c
+} whad_ble_csa_t;
 
 typedef enum {
     BLE_PATTERN_TRIGGER,
@@ -173,7 +216,11 @@ typedef enum {
     WHAD_BLE_SYNCHRONIZED=ble_Message_synchronized_tag,
     WHAD_BLE_DESYNCHRONIZED=ble_Message_desynchronized_tag,
     WHAD_BLE_HIJACKED=ble_Message_hijacked_tag,
-    WHAD_BLE_INJECTED=ble_Message_injected_tag
+    WHAD_BLE_INJECTED=ble_Message_injected_tag,
+    WHAD_BLE_SET_PHY = ble_Message_set_phy_tag,
+    WHAD_BLE_SET_SUPP_PHYS = ble_Message_set_supp_phys_tag,
+    WHAD_BLE_SET_TX_POWER_LEVEL = ble_Message_set_tx_pwr_tag,
+    WHAD_BLE_SET_EXT_ADV_PDUS = ble_Message_set_ext_adv_pdus_tag
 } whad_ble_msgtype_t;
 
 /* Get BLE message type from NanoPb message. */
@@ -201,6 +248,38 @@ typedef struct {
 
 whad_result_t whad_ble_set_encryption(Message *p_message, uint32_t conn_handle, bool enabled, uint8_t *p_ll_key, uint8_t *p_ll_iv, uint8_t *p_key, uint8_t *p_rand, uint8_t *p_ediv);
 whad_result_t whad_ble_set_encryption_parse(Message *p_message, whad_ble_encryption_params_t *p_parameters);
+
+whad_result_t whad_ble_set_phy(Message *p_message, whad_ble_phy_t tx_phy, whad_ble_phy_t rx_phy);
+whad_result_t whad_ble_set_phy_parse(Message *p_message, whad_ble_phy_t *p_tx_phy, whad_ble_phy_t *p_rx_phy);
+whad_result_t whad_ble_set_tx_power_level(Message *p_message, int power);
+whad_result_t whad_ble_set_tx_power_level_parse(Message *p_message, int *p_power);
+
+typedef struct {
+    size_t count;
+    whad_ble_phy_t tx[MAX_SUPP_PHYS];
+    whad_ble_phy_t rx[MAX_SUPP_PHYS];
+} whad_ble_phys_t;
+
+whad_result_t whad_ble_set_supp_phys(Message *p_message, whad_ble_phys_t phys);
+whad_result_t whad_ble_set_supp_phys_parse(Message *p_message, whad_ble_phys_t *p_phys);
+
+typedef struct {
+    uint32_t channel;
+    uint8_t ca;
+    uint8_t offset_units;
+    uint32_t offset;
+    whad_ble_phy_t phy;
+} whad_ble_auxptr_t;
+
+typedef struct {
+    size_t length;
+    uint8_t adv_data[BLE_MAX_EXT_ADV_DATA_LEN];
+    bool has_auxptr;
+    whad_ble_auxptr_t auxptr;
+} whad_ble_ext_adv_t;
+
+whad_result_t whad_ble_set_ext_adv_pdus(Message *p_message, whad_ble_ext_adv_t *p_pdus, size_t count);
+whad_result_t whad_ble_set_ext_adv_pdus_parse(Message *p_message, whad_ble_ext_adv_t *p_pdus, size_t *p_count);
 
 /* Sniffing */
 typedef struct {
