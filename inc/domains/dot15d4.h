@@ -124,6 +124,26 @@ typedef struct {
     uint32_t fcs;
     bool has_lqi;
     uint32_t lqi;
+
+    /* TSCH-related fields */
+    bool has_asn;
+    uint64_t asn;
+    
+    bool has_start_of_slot_timestamp;
+    uint32_t start_of_slot_timestamp;
+    
+    bool has_time_slot;
+    uint64_t time_slot;
+
+    bool has_base_channel_frequency;
+    uint32_t base_channel_frequency;
+
+    bool has_number_of_channels;
+    uint32_t number_of_channels;
+    
+    bool has_channel_spacing;
+    uint32_t channel_spacing;
+
     whad_dot15d4_packet_t packet;
 } whad_dot15d4_recvd_packet_t;
 

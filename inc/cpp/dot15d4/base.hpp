@@ -37,6 +37,7 @@ namespace whad::dot15d4 {
         UpdateSuperframeMsg = WHAD_DOT15D4_UPDATE_SUPERFRAME,               /*!< Add or update a TSCH superframe.*/
         DeleteSuperframeMsg = WHAD_DOT15D4_DEL_SUPERFRAME,                  /*!< Delete a TSCH superframe. */
         SetChannelMapMsg    = WHAD_DOT15D4_SET_CHANNEL_MAP,                 /*!< Set the TSCH channel map. */
+        SendInSlotMsg = WHAD_DOT15D4_SEND_IN_SLOT,                          /*!< Send a PDU. */
         DiscoveredCommunicationMsg = WHAD_DOT15D4_DISCOVERED_COMMUNICATION  /*!< PDU received notification message. */
     };
 
