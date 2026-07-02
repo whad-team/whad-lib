@@ -1504,7 +1504,7 @@ whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mo
     {
         memcpy(
             p_parameters->adv_data,
-            p_message->msg.ble.msg.periph_mode.scanrsp_data.bytes,
+            p_message->msg.ble.msg.periph_mode.adv_data.bytes,
             p_parameters->adv_data_length
         );
     }
