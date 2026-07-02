@@ -19,9 +19,11 @@ ReactiveJam::ReactiveJam(BleMsg &message) : BleMsg(message)
  * @param[in]   pPattern        Byte buffer containing the byte pattern to match
  * @param[in]   length          Pattern length in bytes
  * @param[in]   position        Start position for pattern search
+ * @param[in]   phy             BLE PHY to use
+ *
  **/
 
-ReactiveJam::ReactiveJam(uint32_t channel, uint8_t *pPattern, unsigned int length, uint32_t position) : BleMsg()
+ReactiveJam::ReactiveJam(uint32_t channel, uint8_t *pPattern, unsigned int length, uint32_t position, Phy phy) : BleMsg()
 {
     m_channel = channel;
     m_patternLength = length;
@@ -34,6 +36,7 @@ ReactiveJam::ReactiveJam(uint32_t channel, uint8_t *pPattern, unsigned int lengt
         memset(m_pattern, 0, 20);
     }
     m_position = position;
+    m_phy = phy;
 }
 
 
@@ -48,7 +51,8 @@ void ReactiveJam::pack()
         m_channel,
         m_pattern,
         m_patternLength,
-        m_position
+        m_position,
+        (whad_ble_phy_t)m_phy
     );
 }
 
@@ -81,6 +85,7 @@ void ReactiveJam::unpack()
         }
         m_channel = params.channel;
         m_position = params.position;
+        m_phy = (Phy)params.phy;
     }
 }
 
@@ -130,3 +135,15 @@ uint32_t ReactiveJam::getPosition()
 {
     return m_position;
 }
+
+/**
+ * @brief   Retrieve the PHY
+ * 
+ * @retval  BLE PHY
+ */
+
+Phy ReactiveJam::getPhy()
+{
+    return m_phy;
+}
+

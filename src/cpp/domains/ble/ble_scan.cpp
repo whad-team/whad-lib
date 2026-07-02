@@ -21,6 +21,7 @@ ScanMode::ScanMode(BleMsg &message) : BleMsg(message)
 ScanMode::ScanMode(bool active) : BleMsg()
 {
     m_active = active;
+    m_interval = SCAN_INTERVAL_DEFAULT;
 }
 
 /**
@@ -40,7 +41,7 @@ bool ScanMode::isActiveModeEnabled()
 
 void ScanMode::pack()
 {
-    whad_ble_scan_mode(this->getMessage(), m_active); 
+    whad_ble_scan_mode(this->getMessage(), m_active, m_interval); 
 }
 
 
@@ -54,7 +55,8 @@ void ScanMode::unpack()
 
     result = whad_ble_scan_mode_parse(
         this->getMessage(),
-        &m_active
+        &m_active,
+        &m_interval
     );
 
     if (result == WHAD_ERROR)

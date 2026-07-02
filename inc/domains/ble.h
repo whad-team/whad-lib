@@ -8,10 +8,15 @@
 #define BLE_RSSI_NONE                   (-4096)
 #define MAX_SUPP_PHYS                   4
 #define BLE_MAX_EXT_ADV_DATA_LEN         254
+#define BLE_ADV_INT_MIN                 0x0020
+#define BLE_ADV_INT_MAX                 0x4000
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* Default channel map. */
+const uint8_t BLE_DEFAULT_CHANMAP[5] = { 0xff, 0xff, 0xff, 0xff, 0x1f};
 
 /*********************************
  * Bluetooth Low Energy domain
@@ -324,20 +329,40 @@ whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_add
 whad_result_t whad_ble_sniff_active_conn_parse(Message *p_message, whad_ble_sniff_conn_params_t *p_parameters);
 
 /* Set BLE mode */
-whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan);
-whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan);
+whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval);
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval);
 
 typedef struct {
+    whad_ble_advtype_t type;
+    uint32_t inter_min;
+    uint32_t inter_max;
+    uint8_t channel_map[5];
     uint8_t adv_data[31];
     uint8_t adv_data_length;
     uint8_t scanrsp_data[31];
     uint8_t scanrsp_data_length;
+    whad_ble_csa_t csa;
+    size_t ext_pdus_count;
+    whad_ble_ext_adv_t ext_pdus[4];
 } whad_ble_adv_mode_params_t;
-whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_adv_mode(
+        Message *p_message,
+        whad_ble_advtype_t type,
+        uint32_t inter_min,
+        uint32_t inter_max,
+        uint8_t *p_channel_map,
+        uint8_t *p_adv_data,
+        int adv_data_length,
+        uint8_t *p_scanrsp_data,
+        int scanrsp_data_length,
+        whad_ble_csa_t csa,
+        whad_ble_ext_adv_t *p_pdus,
+        size_t ext_count
+);
 whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 
-whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length, whad_ble_csa_t csa, whad_ble_ext_adv_t *p_pdus, size_t count);
 whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 /* No parsing functions for these three messages :) */
@@ -354,9 +379,10 @@ typedef struct {
     uint32_t hop_interval;
     uint32_t hop_increment;
     uint32_t crc_init;
+    whad_ble_csa_t csa;
 } whad_ble_connect_params_t;
 
-whad_result_t whad_ble_connect_to(Message *p_message, uint8_t *p_bdaddr, whad_ble_addrtype_t addr_type, uint32_t access_address, uint8_t *p_channelmap, uint32_t hop_interval, uint32_t hop_increment, uint32_t crc_init);
+whad_result_t whad_ble_connect_to(Message *p_message, uint8_t *p_bdaddr, whad_ble_addrtype_t addr_type, uint32_t access_address, uint8_t *p_channelmap, uint32_t hop_interval, uint32_t hop_increment, uint32_t crc_init, whad_ble_csa_t csa);
 whad_result_t whad_ble_connect_to_parse(Message *p_message, whad_ble_connect_params_t *p_parameters);
 
 typedef struct {
@@ -445,6 +471,7 @@ typedef struct {
     uint8_t pattern[20];
     int pattern_length;
     uint32_t position;
+    whad_ble_phy_t phy;
 } whad_ble_reactive_jam_params_t;
 
 typedef struct {
@@ -479,7 +506,7 @@ typedef struct {
     bool inc_rssi;
 } whad_ble_aa_disc_params_t;
 
-whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_t *p_pattern, int pattern_length, uint32_t position);
+whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_t *p_pattern, int pattern_length, uint32_t position, whad_ble_phy_t phy);
 whad_result_t whad_ble_reactive_jam_parse(Message *p_message, whad_ble_reactive_jam_params_t *p_parameters);
 
 /* Notifications (Adapter -> Host)*/

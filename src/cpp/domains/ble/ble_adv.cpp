@@ -23,7 +23,7 @@ AdvMode::AdvMode(BleMsg &message) : BleMsg(message)
  * @param[in]   scanRspLength   Size in bytes of the scan response data
  **/
 
-AdvMode::AdvMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength) : BleMsg()
+AdvMode::AdvMode(AdvType advType, uint32_t interMin, uint32_t interMax, uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength) : BleMsg()
 {
     /* If advertising data is provided, save it. */
     if ((advDataLength <= 31) && (pAdvData != NULL))
@@ -48,6 +48,12 @@ AdvMode::AdvMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRs
         m_scanRspLength = 0;
         memset(m_scanRsp, 0, 31);
     }
+
+    /* Save advertising parameters. */
+    m_type = advType;
+    m_interMin = interMin;
+    m_interMax = interMax;
+    m_csa = Csa::Csa1;
 }
 
 
@@ -59,10 +65,17 @@ void AdvMode::pack()
 {
     whad_ble_adv_mode(
         this->getMessage(),
+        (whad_ble_advtype_t)m_type,
+        m_interMin,
+        m_interMax,
+        NULL,
         m_advData,
         m_advDataLength,
         m_scanRsp,
-        m_scanRspLength
+        m_scanRspLength,
+        (whad_ble_csa_t)m_csa,
+        NULL,
+        0
     );
 }
 
@@ -87,6 +100,13 @@ void AdvMode::unpack()
     }
     else
     {
+        /* Save advertising parameters. */
+        m_type = (AdvType)params.type;
+        m_interMin = params.inter_min;
+        m_interMax = params.inter_max;
+        m_csa = (Csa)params.csa;
+        memcpy(m_channelMap.getChannelMapBuf(), params.channel_map, 5);
+
         /* Save advertising data. */
         m_advDataLength = params.adv_data_length;
         if ((m_advDataLength > 0) && (m_advDataLength <= 31))

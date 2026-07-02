@@ -6,6 +6,8 @@
 #include "common.hpp"
 #include <ble/base.hpp>
 
+#define SCAN_INTERVAL_DEFAULT   200
+
 namespace whad::ble {
 
     class ScanMode : public BleMsg
@@ -21,6 +23,7 @@ namespace whad::ble {
             void unpack();
 
             bool m_active;
+            uint32_t m_interval;
     };
 
     class AdvPdu : public BleMsg

@@ -5,6 +5,7 @@
 #include "message.hpp"
 #include "common.hpp"
 #include <ble/base.hpp>
+#include <ble/channelmap.hpp>
 
 namespace whad::ble {
 
@@ -12,7 +13,7 @@ namespace whad::ble {
     {
         public:
             AdvMode(BleMsg &message);
-            AdvMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength);
+            AdvMode(AdvType advType, uint32_t interMin, uint32_t interMax, uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength);
 
             unsigned int getAdvDataLength();
             unsigned int getScanRspLength();
@@ -27,6 +28,13 @@ namespace whad::ble {
             int m_advDataLength;
             uint8_t m_scanRsp[31];
             int m_scanRspLength;
+
+            AdvType m_type;
+            uint32_t m_interMin;
+            uint32_t m_interMax;
+            Csa m_csa;
+            ChannelMap m_channelMap;
+            
     };
 
 }
