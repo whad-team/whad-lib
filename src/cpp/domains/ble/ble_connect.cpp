@@ -25,7 +25,8 @@ ConnectTo::ConnectTo(BleMsg &message) : BleMsg(message)
  **/
 
 ConnectTo::ConnectTo(BDAddress targetAddr, uint32_t accessAddress, ChannelMap channelMap,
-                              uint32_t hopInterval, uint32_t hopIncrement, uint32_t crcInit) : BleMsg()
+                              uint32_t hopInterval, uint32_t hopIncrement, uint32_t crcInit,
+                              Csa csa) : BleMsg()
 {
     m_targetAddr = targetAddr;
     m_accessAddr = accessAddress;
@@ -33,6 +34,7 @@ ConnectTo::ConnectTo(BDAddress targetAddr, uint32_t accessAddress, ChannelMap ch
     m_hopInterval = hopInterval;
     m_hopIncrement = hopIncrement;
     m_crcInit = crcInit;
+    m_csa = csa;
 }
 
 
@@ -50,7 +52,8 @@ void ConnectTo::pack()
         m_channelMap.getChannelMapBuf(),
         m_hopInterval,
         m_hopIncrement,
-        m_crcInit
+        m_crcInit,
+        (whad_ble_csa_t)m_csa
     );
 }
 
@@ -157,3 +160,15 @@ uint32_t ConnectTo::getCrcInit()
 {
     return m_crcInit;
 }
+
+/**
+ * @brief   Retrieve the CSA
+ *
+ * @retval  Channel selection algorithm
+ */
+
+Csa ConnectTo::getCsa()
+{
+    return m_csa;
+}
+

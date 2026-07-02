@@ -21,7 +21,7 @@ ScanMode::ScanMode(BleMsg &message) : BleMsg(message)
 ScanMode::ScanMode(bool active, uint32_t interval) : BleMsg()
 {
     m_active = active;
-    m_interval = interval;
+    m_interval = SCAN_INTERVAL_DEFAULT;
 }
 
 /**

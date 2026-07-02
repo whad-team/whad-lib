@@ -13,7 +13,7 @@ namespace whad::ble {
         public:
             ConnectTo(BleMsg &message);
             ConnectTo(BDAddress targetAddr, uint32_t accessAddress, ChannelMap channelMap,
-                        uint32_t hopInterval, uint32_t hopIncrement, uint32_t crcInit);
+                        uint32_t hopInterval, uint32_t hopIncrement, uint32_t crcInit, Csa csa);
 
             /* Getters. */
             BDAddress& getTargetAddr();
@@ -22,6 +22,8 @@ namespace whad::ble {
             uint32_t getHopInterval();
             uint32_t getHopIncrement();
             uint32_t getCrcInit();
+            Csa getCsa();
+            Phy getPhy();
 
         private:
             void pack();
@@ -33,7 +35,8 @@ namespace whad::ble {
             uint32_t m_hopInterval;
             uint32_t m_hopIncrement;
             uint32_t m_crcInit;
-                    
+            Csa m_csa;
+            Phy m_phy;
     };
 
 }

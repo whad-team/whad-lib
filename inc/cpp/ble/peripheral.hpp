@@ -2,9 +2,11 @@
 #define __INC_WHAD_BLE_PERIPHERAL_HPP
 
 #include <string>
+#include <vector>
 #include "message.hpp"
 #include "common.hpp"
 #include <ble/base.hpp>
+#include <ble/adv_ext.hpp>
 
 namespace whad::ble {
 
@@ -12,19 +14,18 @@ namespace whad::ble {
     {
         public:
             PeripheralMode(BleMsg &message);
-            PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength);
-            PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength,
-                    AdvType type, ChannelMap channelMap, uint16_t interMin, uint16_t interMax);
+            PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength, Csa csa);
 
             uint8_t *getAdvData();
             unsigned int getAdvDataLength();
             uint8_t *getScanRsp();
             unsigned int getScanRspLength();
-            AdvType getAdvType();
-            ChannelMap &getChannelMap();
-            uint16_t getIntervalMin();
-            uint16_t getIntervalMax();
+            Csa getCsa();
 
+            bool addExtPdu(ExtAdvPdu &pdu);
+            size_t getNumberOfExtPdus();
+            std::vector<ExtAdvPdu>::iterator getExtPdusIterator();
+            ExtAdvPdu* getExtPdu(unsigned int index);
 
         private:
             void pack();
@@ -34,10 +35,8 @@ namespace whad::ble {
             unsigned int m_advDataLength;
             uint8_t m_scanRsp[31];
             unsigned int m_scanRspLength;
-            AdvType m_type;
-            ChannelMap m_channelMap;
-            uint16_t m_interMin;
-            uint16_t m_interMax;
+            Csa m_csa;
+            std::vector<ExtAdvPdu> m_pdus;
     };
 
 }

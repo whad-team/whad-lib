@@ -35,6 +35,24 @@ namespace whad::ble {
         DirectionInjectionToMaster = BLE_INJECTION_TO_MASTER    /*!< Inject data towards "master" device. */
     };
 
+    /*! Channel Selection Algorithm. */
+    enum Csa {
+        Csa1 = BLE_CSA1,
+        Csa2 = BLE_CSA2,
+        Csa3a = BLE_CSA3a,
+        Csa3b = BLE_CSA3b,
+        Csa3c = BLE_CSA3c
+    };
+
+    /*! BLE PHY. */
+    enum Phy {
+        Undefined = BLE_PHY_UNDEFINED,
+        LE1Mbit = BLE_PHY_LE_1M,
+        LE1MbitCoded = BLE_PHY_LE_1M_CODED,
+        LE2Mbit = BLE_PHY_LE_2M,
+        LE2Mbit2BT = BLE_PHY_LE_2M_2BT
+    };
+
     /*! BLE message types. */
     enum MessageType {
         UnknownMsg = WHAD_BLE_UNKNOWN,                                      /*<! Unknown message type. */
@@ -75,9 +93,50 @@ namespace whad::ble {
         SynchronizedMsg = WHAD_BLE_SYNCHRONIZED,                            /*!< Notify host of a connection sync. */
         DesynchronizedMsg = WHAD_BLE_DESYNCHRONIZED,                        /*!< Notify host of a connection desync. */
         HijackedMsg = WHAD_BLE_HIJACKED,                                    /*!< Notify host of an hijacking status update. */
-        InjectedMsg = WHAD_BLE_INJECTED                                     /*!< Notify host of an injection status update. */
+        InjectedMsg = WHAD_BLE_INJECTED,                                    /*!< Notify host of an injection status update. */
+        SetPhyMsg = WHAD_BLE_SET_PHY,                                       /*!< Set RX and TX PHY. */
+        SetSupportedPhysMsg = WHAD_BLE_SET_SUPP_PHYS,                       /*!< Set supported PHYs for RX and TX. */
+        SetTxPowerMsg = WHAD_BLE_SET_TX_POWER_LEVEL,                        /*!< Set TX power level. */
+        SetExtAdvPdusMsg = WHAD_BLE_SET_EXT_ADV_PDUS,                       /*!< Set extended advertising PDUs. */
     };
 
+#if 0
+    /* AuxPtr class */
+    class AuxPtr
+    {
+        public:
+
+            AuxPtr();
+            AuxPtr(int channel, int ca, int offset_units, int offset, Phy phy);
+
+            int getChannel();
+            int getCA();
+            int getOffsetUnits();
+            int getOffset();
+            Phy getPhy();
+
+        private:
+            int m_channel;
+            int m_ca;
+            int m_offsetUnits;
+            int m_phy;
+    };
+
+    /* Extended Advertising PDU */
+    class ExtAdvPdu
+    {
+        public:
+
+            ExtAdvPdu();
+            ExtAdvPdu(uint8_t *p_advData, size_t length);
+            ExtAdvPdu(uint8_t *p_advData, size_t length, AuxPtr *auxptr);
+
+        private:
+            size_t m_advLen;
+            uint8_t m_advData[254+64];
+            AuxPtr *m_pAuxPtr;
+    };
+#endif 
     /* Default BLE message class. */
     class BleMsg : public NanoPbMsg
     {

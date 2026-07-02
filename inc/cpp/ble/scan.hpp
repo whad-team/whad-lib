@@ -6,6 +6,8 @@
 #include "common.hpp"
 #include <ble/base.hpp>
 
+#define SCAN_INTERVAL_DEFAULT   200
+
 namespace whad::ble {
 
     class ScanMode : public BleMsg
