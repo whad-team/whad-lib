@@ -15,8 +15,7 @@
 extern "C" {
 #endif
 
-/* Default channel map. */
-const uint8_t BLE_DEFAULT_CHANMAP[5] = { 0xff, 0xff, 0xff, 0xff, 0x1f};
+extern const uint8_t BLE_DEFAULT_CHANMAP[5];
 
 /*********************************
  * Bluetooth Low Energy domain

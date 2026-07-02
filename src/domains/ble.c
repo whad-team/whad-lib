@@ -1,6 +1,9 @@
 #include <whad.h>
 #include <domains/ble.h>
 
+/* Default channel map. */
+const uint8_t BLE_DEFAULT_CHANMAP[5] = { 0xff, 0xff, 0xff, 0xff, 0x1f};
+
 whad_ble_msgtype_t whad_ble_get_message_type(Message *p_message)
 {
     whad_ble_msgtype_t msg_type = WHAD_BLE_UNKNOWN;
