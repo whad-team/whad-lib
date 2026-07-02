@@ -1499,7 +1499,7 @@ whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mo
     p_parameters->csa = p_message->msg.ble.msg.periph_mode.csa;
 
     /* Extract advertising data from message. */
-    p_parameters->adv_data_length = p_message->msg.ble.msg.periph_mode.scanrsp_data.size;
+    p_parameters->adv_data_length = p_message->msg.ble.msg.periph_mode.scan_data.size;
     if ((p_parameters->adv_data_length > 0) && (p_parameters->adv_data_length < 31))
     {
         memcpy(
