@@ -848,6 +848,71 @@ whad_result_t whad_dot15d4_raw_pdu_received(Message *p_message, whad_dot15d4_rec
         p_message->msg.dot15d4.msg.raw_pdu.lqi = 0;
     }
 
+    if (p_packet->has_asn)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_asn = true;
+        p_message->msg.dot15d4.msg.raw_pdu.asn = p_packet->asn;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_asn = false;
+        p_message->msg.dot15d4.msg.raw_pdu.asn = 0;
+    }
+
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_start_of_slot_timestamp = true;
+        p_message->msg.dot15d4.msg.raw_pdu.start_of_slot_timestamp = p_packet->start_of_slot_timestamp;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_start_of_slot_timestamp = false;
+        p_message->msg.dot15d4.msg.raw_pdu.start_of_slot_timestamp = 0;
+    }
+
+    if (p_packet->has_time_slot)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_time_slot = true;
+        p_message->msg.dot15d4.msg.raw_pdu.time_slot = p_packet->time_slot;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_time_slot = false;
+        p_message->msg.dot15d4.msg.raw_pdu.time_slot = 0;
+    }
+
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_base_channel_frequency = true;
+        p_message->msg.dot15d4.msg.raw_pdu.base_channel_frequency = p_packet->base_channel_frequency;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_base_channel_frequency = false;
+        p_message->msg.dot15d4.msg.raw_pdu.base_channel_frequency = 0;
+    }
+
+    if (p_packet->has_number_of_channels)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_number_of_channels = true;
+        p_message->msg.dot15d4.msg.raw_pdu.number_of_channels = p_packet->number_of_channels;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_number_of_channels = false;
+        p_message->msg.dot15d4.msg.raw_pdu.number_of_channels = 0;
+    }
+
+    if (p_packet->has_channel_spacing)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_channel_spacing = true;
+        p_message->msg.dot15d4.msg.raw_pdu.channel_spacing = p_packet->channel_spacing;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_channel_spacing = false;
+        p_message->msg.dot15d4.msg.raw_pdu.channel_spacing = 0;
+    }
     /* Success. */
     return WHAD_SUCCESS;
 }
@@ -901,6 +966,44 @@ whad_result_t whad_dot15d4_raw_pdu_received_parse(Message *p_message, whad_dot15
     if (p_packet->has_lqi)
     {
         p_packet->lqi = p_message->msg.dot15d4.msg.raw_pdu.lqi;
+    }
+
+
+    p_packet->has_asn = p_message->msg.dot15d4.msg.raw_pdu.has_asn;
+    if (p_packet->has_asn)
+    {
+        p_packet->asn = p_message->msg.dot15d4.msg.raw_pdu.asn;
+    }
+
+    p_packet->has_time_slot = p_message->msg.dot15d4.msg.raw_pdu.has_time_slot;
+    if (p_packet->has_time_slot)
+    {
+        p_packet->time_slot = p_message->msg.dot15d4.msg.raw_pdu.time_slot;
+    }
+
+    p_packet->has_start_of_slot_timestamp = p_message->msg.dot15d4.msg.raw_pdu.has_start_of_slot_timestamp;
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_packet->start_of_slot_timestamp = p_message->msg.dot15d4.msg.raw_pdu.start_of_slot_timestamp;
+    }
+
+    p_packet->has_base_channel_frequency = p_message->msg.dot15d4.msg.raw_pdu.has_base_channel_frequency;
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_packet->base_channel_frequency = p_message->msg.dot15d4.msg.raw_pdu.base_channel_frequency;
+    }
+    
+    p_packet->has_number_of_channels = p_message->msg.dot15d4.msg.raw_pdu.has_number_of_channels;
+    if (p_packet->has_number_of_channels)
+    {
+        p_packet->number_of_channels = p_message->msg.dot15d4.msg.raw_pdu.number_of_channels;
+    }
+
+
+    p_packet->has_channel_spacing = p_message->msg.dot15d4.msg.raw_pdu.has_channel_spacing;
+    if (p_packet->has_channel_spacing)
+    {
+        p_packet->channel_spacing = p_message->msg.dot15d4.msg.raw_pdu.channel_spacing;
     }
 
     /* Success. */
@@ -976,6 +1079,71 @@ whad_result_t whad_dot15d4_pdu_received(Message *p_message, whad_dot15d4_recvd_p
         p_message->msg.dot15d4.msg.pdu.lqi = 0;
     }
 
+    if (p_packet->has_asn)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_asn = true;
+        p_message->msg.dot15d4.msg.pdu.asn = p_packet->asn;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_asn = false;
+        p_message->msg.dot15d4.msg.pdu.asn = 0;
+    }
+
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_start_of_slot_timestamp = true;
+        p_message->msg.dot15d4.msg.pdu.start_of_slot_timestamp = p_packet->start_of_slot_timestamp;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_start_of_slot_timestamp = false;
+        p_message->msg.dot15d4.msg.pdu.start_of_slot_timestamp = 0;
+    }
+
+    if (p_packet->has_time_slot)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_time_slot = true;
+        p_message->msg.dot15d4.msg.pdu.time_slot = p_packet->time_slot;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_time_slot = false;
+        p_message->msg.dot15d4.msg.pdu.time_slot = 0;
+    }
+
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_base_channel_frequency = true;
+        p_message->msg.dot15d4.msg.pdu.base_channel_frequency = p_packet->base_channel_frequency;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_base_channel_frequency = false;
+        p_message->msg.dot15d4.msg.pdu.base_channel_frequency = 0;
+    }
+
+    if (p_packet->has_number_of_channels)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_number_of_channels = true;
+        p_message->msg.dot15d4.msg.pdu.number_of_channels = p_packet->number_of_channels;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_number_of_channels = false;
+        p_message->msg.dot15d4.msg.pdu.number_of_channels = 0;
+    }
+
+    if (p_packet->has_channel_spacing)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_channel_spacing = true;
+        p_message->msg.dot15d4.msg.pdu.channel_spacing = p_packet->channel_spacing;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_channel_spacing = false;
+        p_message->msg.dot15d4.msg.pdu.channel_spacing = 0;
+    }
     /* Success. */
     return WHAD_SUCCESS;
 }
@@ -1030,6 +1198,45 @@ whad_result_t whad_dot15d4_pdu_received_parse(Message *p_message, whad_dot15d4_r
         p_packet->lqi = p_message->msg.dot15d4.msg.raw_pdu.lqi;
     }
 
+
+
+    p_packet->has_asn = p_message->msg.dot15d4.msg.pdu.has_asn;
+    if (p_packet->has_asn)
+    {
+        p_packet->asn = p_message->msg.dot15d4.msg.pdu.asn;
+    }
+
+    p_packet->has_time_slot = p_message->msg.dot15d4.msg.pdu.has_time_slot;
+    if (p_packet->has_time_slot)
+    {
+        p_packet->time_slot = p_message->msg.dot15d4.msg.pdu.time_slot;
+    }
+
+    p_packet->has_start_of_slot_timestamp = p_message->msg.dot15d4.msg.pdu.has_start_of_slot_timestamp;
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_packet->start_of_slot_timestamp = p_message->msg.dot15d4.msg.pdu.start_of_slot_timestamp;
+    }
+
+    p_packet->has_base_channel_frequency = p_message->msg.dot15d4.msg.pdu.has_base_channel_frequency;
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_packet->base_channel_frequency = p_message->msg.dot15d4.msg.pdu.base_channel_frequency;
+    }
+    
+    p_packet->has_number_of_channels = p_message->msg.dot15d4.msg.pdu.has_number_of_channels;
+    if (p_packet->has_number_of_channels)
+    {
+        p_packet->number_of_channels = p_message->msg.dot15d4.msg.pdu.number_of_channels;
+    }
+
+
+    p_packet->has_channel_spacing = p_message->msg.dot15d4.msg.pdu.has_channel_spacing;
+    if (p_packet->has_channel_spacing)
+    {
+        p_packet->channel_spacing = p_message->msg.dot15d4.msg.pdu.channel_spacing;
+    }
+    
     /* Success. */
     return WHAD_SUCCESS;
 }
