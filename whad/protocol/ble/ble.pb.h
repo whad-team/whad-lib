@@ -336,6 +336,7 @@ typedef PB_BYTES_ARRAY_T(300) ble_SendPDUCmd_pdu_t;
  `crc` can be provided. */
 typedef struct _ble_SendPDUCmd {
     ble_BleDirection direction;
+    ble_PduReceived_pdu_t pdu;
     uint32_t conn_handle;
     ble_SendPDUCmd_pdu_t pdu;
     bool encrypt;

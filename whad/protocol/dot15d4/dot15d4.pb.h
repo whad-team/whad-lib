@@ -232,6 +232,33 @@ typedef struct _dot15d4_SendInSlotCmd {
     dot15d4_SendInSlotCmd_pdu_t pdu;
 } dot15d4_SendInSlotCmd;
 
+typedef PB_BYTES_ARRAY_T(255) dot15d4_PduReceived_pdu_t;
+typedef struct _dot15d4_PduReceived {
+    uint32_t channel;
+    bool has_rssi;
+    int32_t rssi;
+    bool has_timestamp;
+    uint64_t timestamp;
+    bool has_fcs_validity;
+    bool fcs_validity;
+    dot15d4_PduReceived_pdu_t pdu;
+    bool has_lqi;
+    uint32_t lqi;
+    bool has_asn;
+    uint64_t asn;
+    bool has_start_of_slot_timestamp;
+    uint32_t start_of_slot_timestamp;
+    bool has_time_slot;
+    uint64_t time_slot;
+    bool has_base_channel_frequency;
+    uint32_t base_channel_frequency;
+    bool has_number_of_channels;
+    uint32_t number_of_channels;
+    bool has_channel_spacing;
+    uint32_t channel_spacing;
+} dot15d4_PduReceived;
+
+typedef PB_BYTES_ARRAY_T(255) dot15d4_SendInSlotCmd_pdu_t;
 /* *
  ConfigureTSCH
 

@@ -141,12 +141,7 @@ typedef struct _unifying_PduReceived {
     int32_t rssi;
     bool has_timestamp;
     uint64_t timestamp;
-    bool has_crc_validity;
-    bool crc_validity;
-    bool has_address;
-    unifying_PduReceived_address_t address;
-    unifying_PduReceived_pdu_t pdu;
-} unifying_PduReceived;
+} unifying_Jammed;
 
 typedef struct _unifying_Message {
     pb_size_t which_msg;

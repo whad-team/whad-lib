@@ -122,16 +122,16 @@ typedef PB_BYTES_ARRAY_T(5) esb_PduReceived_address_t;
 typedef PB_BYTES_ARRAY_T(255) esb_PduReceived_pdu_t;
 typedef struct _esb_PduReceived {
     uint32_t channel;
-    bool has_rssi;
-    int32_t rssi;
-    bool has_timestamp;
-    uint64_t timestamp;
-    bool has_crc_validity;
-    bool crc_validity;
-    bool has_address;
-    esb_PduReceived_address_t address;
-    esb_PduReceived_pdu_t pdu;
-} esb_PduReceived;
+    uint32_t retransmission_count;
+    esb_SendCmd_pdu_t pdu;
+} esb_SendCmd;
+
+typedef PB_BYTES_ARRAY_T(255) esb_SendRawCmd_pdu_t;
+typedef struct _esb_SendRawCmd {
+    uint32_t channel;
+    uint32_t retransmission_count;
+    esb_SendRawCmd_pdu_t pdu;
+} esb_SendRawCmd;
 
 typedef struct _esb_Message {
     pb_size_t which_msg;
