@@ -23,16 +23,18 @@ Synchronized::Synchronized(BleMsg &message) : BleMsg(message)
  * @param[in]   hopInterval         Recovered hop interval
  * @param[in]   hopIncrement        Recovered hop increment
  * @param[in]   channelMap          Recovered channel map
+ * @param[in]   phy                 Current PHY
  **/
 
 Synchronized::Synchronized(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval,
-                                 uint32_t hopIncrement, ChannelMap channelMap) : BleMsg()
+                                 uint32_t hopIncrement, ChannelMap channelMap, Phy phy) : BleMsg()
 {
     m_accessAddr = accessAddress;
     m_crcInit = crcInit;
     m_hopIncrement = hopIncrement;
     m_hopInterval = hopInterval;
     m_channelMap = channelMap;
+    m_phy = phy;
 }
 
 
@@ -48,7 +50,8 @@ void Synchronized::pack()
         m_crcInit,
         m_hopInterval,
         m_hopIncrement,
-        m_channelMap.getChannelMapBuf()
+        m_channelMap.getChannelMapBuf(),
+        (whad_ble_phy_t)m_phy
     );
 }
 
@@ -114,6 +117,19 @@ ChannelMap& Synchronized::getChannelMap()
 
 
 /**
+ * @brief   Get current PHY
+ * 
+ * @retval  PHY used by the current connection
+ */
+
+Phy Synchronized::getPhy()
+{
+    return m_phy;
+}
+
+
+
+/**
  * @brief   Extract parameters from a BleMsg
  */
 
@@ -139,6 +155,7 @@ void Synchronized::unpack()
         m_hopInterval = params.hop_interval;
         m_crcInit = params.crc_init;
         m_channelMap = ChannelMap(params.channelmap);
+        m_phy = (Phy)params.phy;
     }
 }
 

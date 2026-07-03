@@ -12,15 +12,17 @@ namespace whad::ble {
     {
         public:
             SniffAccessAddress(BleMsg &message);
-            SniffAccessAddress(ChannelMap channelMap);
+            SniffAccessAddress(ChannelMap channelMap, Phy phy);
 
             ChannelMap& getChannelMap();
+            Phy getPhy();
 
         private:
             void pack();
             void unpack();
 
             ChannelMap m_channelMap;
+            Phy m_phy;
     };
 
     class AccessAddressDiscovered : public BleMsg

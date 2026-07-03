@@ -19,11 +19,13 @@ SniffAccessAddress::SniffAccessAddress(BleMsg &message) : BleMsg(message)
  * 
  * @param[in]   channelMap  Channel map specifying the channels to use for access adress
  *                          sniffing
+ * @param[in]   phy         PHY to use for access address sniffing
  **/
 
-SniffAccessAddress::SniffAccessAddress(ChannelMap channelMap) : BleMsg()
+SniffAccessAddress::SniffAccessAddress(ChannelMap channelMap, Phy phy) : BleMsg()
 {
     m_channelMap = channelMap;
+    m_phy = phy;
 }
 
 
@@ -39,6 +41,18 @@ ChannelMap& SniffAccessAddress::getChannelMap()
 
 
 /**
+ * @brief   Get PHY
+ * 
+ * @retval  RX PHY
+ */
+
+Phy SniffAccessAddress::getPhy()
+{
+    return m_phy;
+}
+
+
+/**
  * @brief   Pack paremeters into a BleMsg.
  */
 
@@ -46,7 +60,8 @@ void SniffAccessAddress::pack()
 {
     whad_ble_sniff_access_address(
         this->getMessage(),
-        m_channelMap.getChannelMapBuf()
+        m_channelMap.getChannelMapBuf(),
+        (whad_ble_phy_t)m_phy
     );
 }
 
@@ -59,10 +74,12 @@ void SniffAccessAddress::unpack()
 {
     whad_result_t result;
     uint8_t channelMap[5];
+    whad_ble_phy_t phy;
 
     result = whad_ble_sniff_access_address_parse(
         this->getMessage(),
-        channelMap
+        channelMap,
+        &phy
     );
 
     if (result == WHAD_ERROR)
@@ -72,6 +89,7 @@ void SniffAccessAddress::unpack()
     else
     {
         m_channelMap = ChannelMap(channelMap);
+        m_phy = (Phy)phy;
     }
 }
 

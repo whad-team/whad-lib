@@ -309,8 +309,8 @@ whad_result_t whad_ble_sniff_conn_req(Message *p_message, bool show_empty_packet
 whad_result_t whad_ble_sniff_conn_req_parse(Message *p_message, whad_ble_sniff_connreq_params_t *p_parameters);
 
 
-whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap);
-whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p_channelmap);
+whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap, whad_ble_phy_t phy);
+whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p_channelmap, whad_ble_phy_t *p_phy);
 
 typedef struct {
     uint32_t access_address;
@@ -319,18 +319,19 @@ typedef struct {
     uint32_t hop_increment;
     uint8_t channelmap[5];
     uint8_t channels[5];
+    whad_ble_phy_t phy;
 } whad_ble_sniff_conn_params_t;
 
 typedef whad_ble_sniff_conn_params_t whad_ble_synchro_params_t;
 
 whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_address, uint32_t crc_init,
                                          uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
-                                         uint8_t *p_channels);
+                                         uint8_t *p_channels, whad_ble_phy_t phy);
 whad_result_t whad_ble_sniff_active_conn_parse(Message *p_message, whad_ble_sniff_conn_params_t *p_parameters);
 
 /* Set BLE mode */
-whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval);
-whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval);
+whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval, bool use_ext_adv);
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval, bool *p_use_ext_adv);
 
 typedef struct {
     whad_ble_advtype_t type;
@@ -393,6 +394,7 @@ typedef struct {
     int length;
     uint32_t crc;
     bool encrypt;
+    whad_ble_phy_t phy;
 } whad_ble_pdu_params_t;
 
 typedef struct {
@@ -406,10 +408,11 @@ typedef struct {
 } whad_ble_hijacked_params_t;
 
 whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
-                                    uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc, bool encrypt);
+                                    uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc, bool encrypt,
+                                    whad_ble_phy_t phy);
 whad_result_t whad_ble_send_raw_pdu_parse(Message *p_message, whad_ble_pdu_params_t *p_parameters);
 whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
-                                uint8_t *p_pdu, int length, bool encrypt);
+                                uint8_t *p_pdu, int length, bool encrypt, whad_ble_phy_t phy);
 whad_result_t whad_ble_send_pdu_parse(Message *p_message, whad_ble_pdu_params_t *p_parameters);
 
 
@@ -454,8 +457,8 @@ whad_result_t whad_ble_jam_adv(Message *p_message);
 whad_result_t whad_ble_jam_adv_channel(Message *p_message, uint32_t channel);
 whad_result_t whad_ble_jam_adv_channel_parse(Message *p_message, uint32_t *p_channel);
 
-whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_address);
-whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_access_address);
+whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_address, whad_ble_phy_t phy);
+whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_access_address, whad_ble_phy_t *p_phy);
 
 whad_result_t whad_ble_hijack_master(Message *p_message, uint32_t access_address);
 whad_result_t whad_ble_hijack_master_parse(Message *p_message, uint32_t *p_access_address);
@@ -487,6 +490,7 @@ typedef struct {
     whad_ble_direction_t direction;
     bool processed;
     bool decrypted;
+    whad_ble_phy_t phy;
 } whad_ble_pdu_t;
 
 typedef struct {
@@ -496,6 +500,8 @@ typedef struct {
     whad_ble_addrtype_t addr_type;
     uint8_t *p_adv_data;
     int adv_data_length;
+    uint32_t channel;
+    whad_ble_phy_t phy;
 } whad_ble_adv_pdu_t;
 
 typedef struct {
@@ -510,15 +516,15 @@ whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_
 whad_result_t whad_ble_reactive_jam_parse(Message *p_message, whad_ble_reactive_jam_params_t *p_parameters);
 
 /* Notifications (Adapter -> Host)*/
-whad_result_t whad_ble_notify_connected(Message *p_message, whad_ble_addrtype_t adv_addr_type, uint8_t *p_adv_addr, whad_ble_addrtype_t init_addr_type, uint8_t *p_init_addr, uint32_t conn_handle);
+whad_result_t whad_ble_notify_connected(Message *p_message, whad_ble_addrtype_t adv_addr_type, uint8_t *p_adv_addr, whad_ble_addrtype_t init_addr_type, uint8_t *p_init_addr, uint32_t conn_handle, whad_ble_phy_t phy);
 whad_result_t whad_ble_notify_disconnected(Message *p_message, uint32_t conn_handle, uint32_t reason);
 whad_result_t whad_ble_notify_disconnected_parse(Message *p_message, whad_ble_disconnected_params_t *p_parameters);
 whad_result_t whad_ble_raw_pdu(Message *p_message, uint32_t channel, int32_t rssi, uint32_t conn_handle,
                                uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc,
                                bool crc_validity, uint32_t timestamp, uint32_t relative_timestamp,
-                               whad_ble_direction_t direction, bool processed, bool decrypted, bool use_timestamp);
+                               whad_ble_direction_t direction, bool processed, bool decrypted, bool use_timestamp, whad_ble_phy_t phy);
 whad_result_t whad_ble_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_ble_direction_t direction,
-                           int conn_handle, bool processed, bool decrypted);
+                           int conn_handle, bool processed, bool decrypted, whad_ble_phy_t phy);
 whad_result_t whad_ble_pdu_parse(Message *p_message, whad_ble_pdu_t *p_parameters);
 whad_result_t whad_ble_triggered(Message *p_message, uint32_t id);
 whad_result_t whad_ble_triggered_parse(Message *p_message, uint32_t *p_id);
@@ -526,10 +532,12 @@ whad_result_t whad_ble_access_address_discovered(Message *p_message, uint32_t ac
                                                  int32_t rssi, bool inc_ts, bool inc_rssi);
 whad_result_t whad_ble_access_address_discovered_parse(Message *p_message, whad_ble_aa_disc_params_t *p_parameters);
 whad_result_t whad_ble_adv_pdu(Message *p_message, whad_ble_advtype_t adv_type, int32_t rssi, uint8_t *p_bdaddr,
-                               whad_ble_addrtype_t addr_type, uint8_t *p_adv_data, int adv_data_length);
+                               whad_ble_addrtype_t addr_type, uint8_t *p_adv_data, int adv_data_length, uint32_t channel,
+                               whad_ble_phy_t phy);
 whad_result_t whad_ble_adv_pdu_parse(Message *p_message, whad_ble_adv_pdu_t *p_parameters);
 whad_result_t whad_ble_synchronized(Message *p_message, uint32_t access_address, uint32_t crc_init,
-                                    uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap);
+                                    uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
+                                    whad_ble_phy_t phy);
 whad_result_t whad_ble_synchronized_parse(Message *p_message, whad_ble_synchro_params_t *p_parameters);
 whad_result_t whad_ble_desynchronized(Message *p_message, uint32_t access_address);
 whad_result_t whad_ble_desynchronized_parse(Message *p_message, uint32_t *p_access_address);

@@ -12,12 +12,13 @@ namespace whad::ble {
     {
         public:
             Connected(BleMsg &message);
-            Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr);
+            Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr, Phy phy);
 
             /* Getters. */
             uint32_t getConnHandle();
             BDAddress& getAdvertiserAddr();
             BDAddress& getInitiatorAddr();
+            Phy getPhy();
 
         private:
             void pack();
@@ -25,6 +26,7 @@ namespace whad::ble {
             uint32_t m_connHandle;
             BDAddress m_advAddr;
             BDAddress m_initAddr;
+            Phy m_phy;
     };
 
 }

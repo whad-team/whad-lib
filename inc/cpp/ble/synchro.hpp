@@ -13,13 +13,14 @@ namespace whad::ble {
         public:
             Synchronized(BleMsg &message);
             Synchronized(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval,
-                            uint32_t hopIncrement, ChannelMap channelMap);
+                            uint32_t hopIncrement, ChannelMap channelMap, Phy phy);
 
             uint32_t getAccessAddress();
             uint32_t getCrcInit();
             uint32_t getHopInterval();
             uint32_t getHopIncrement();
             ChannelMap& getChannelMap();
+            Phy getPhy();
 
         private:
             void pack();
@@ -30,6 +31,7 @@ namespace whad::ble {
             uint32_t m_hopInterval;
             uint32_t m_hopIncrement;
             ChannelMap m_channelMap;
+            Phy m_phy;
     };
 
     class Desynchronized : public BleMsg

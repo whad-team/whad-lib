@@ -23,10 +23,11 @@ SendRawPdu::SendRawPdu(BleMsg &message) : BleMsg(message)
  * @param[in]   length          PDU size in bytes (cannot exceed 250 bytes)
  * @param[in]   crc             PDU CRC value
  * @param[in]   encrypt         If set to true and encryption enabled, adapter will encrypt the PDU
+ * @param[in]   phy             PHY to use to send this PDU, if set to Undefined then current PHY will be used instead
  **/
 
 SendRawPdu::SendRawPdu(Direction direction, uint32_t connHandle, uint32_t accessAddress, uint8_t *pPdu,
-                       int length, uint32_t crc, bool encrypt) : BleMsg()
+                       int length, uint32_t crc, bool encrypt, Phy phy) : BleMsg()
 {
     m_direction = direction;
     m_connHandle = connHandle;
@@ -34,6 +35,7 @@ SendRawPdu::SendRawPdu(Direction direction, uint32_t connHandle, uint32_t access
     m_pdu = PDU(pPdu, length);
     m_crc = crc;
     m_encrypt = encrypt;
+    m_phy = phy;
 }
 
 
@@ -51,7 +53,8 @@ void SendRawPdu::pack()
         m_pdu.getBytes(),
         m_pdu.getSize(),
         m_crc,
-        m_encrypt
+        m_encrypt,
+        (whad_ble_phy_t)m_phy
     ); 
 }
 
@@ -83,6 +86,7 @@ void SendRawPdu::unpack()
         m_crc = params.crc;
         m_encrypt = params.encrypt;
         m_pdu = PDU(params.p_pdu, params.length);
+        m_phy = (Phy)params.phy;
     }
 }
 
@@ -137,6 +141,18 @@ PDU& SendRawPdu::getPdu()
 uint32_t SendRawPdu::getCrc()
 {
     return m_crc;
+}
+
+
+/**
+ * @brief   Retrieve the PHY associated with this PDU
+ * 
+ * @return  PHY
+ */
+
+Phy SendRawPdu::getPhy()
+{
+    return m_phy;
 }
 
 

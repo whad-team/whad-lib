@@ -15,10 +15,25 @@ namespace whad::ble {
             RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
                     PDU pdu, uint32_t crc, bool crc_validity, uint32_t timestamp,
                     uint32_t relative_timestamp, Direction direction, bool processed,
-                    bool decrypted);
+                    bool decrypted, Phy phy);
             RawPdu(uint32_t channel, int32_t rssi, uint32_t conn_handle, uint32_t access_address,
                     PDU pdu, uint32_t crc, bool crc_validity, Direction direction,
-                    bool processed, bool decrypted);
+                    bool processed, bool decrypted, Phy phy);
+
+            uint32_t getChannel();
+            int32_t getRssi();
+            uint32_t getConnHandle();
+            uint32_t getAccessAddress();
+            PDU& getPdu();
+            uint32_t getCrc();
+            bool isCrcValid();
+            uint32_t getTimestamp();
+            uint32_t getRelativeTimestamp();
+            Direction getDirection();
+            bool isProcessed();
+            bool isDecrypted();
+            bool hasTimestamp();
+            Phy getPhy();
 
         private:
             void pack();
@@ -36,6 +51,7 @@ namespace whad::ble {
             bool m_processed;
             bool m_decrypted;
             bool m_hasTimestamp;
+            Phy m_phy;
 
     };
 

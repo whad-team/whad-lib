@@ -15,15 +15,17 @@ LinkLayerPdu::LinkLayerPdu(BleMsg &message) : BleMsg(message)
  * @param[in]   direction   Direction of the PDU (host to slave, slave to host, ...)
  * @param[in]   processed   Set to `true` if this PDU has already been processed
  * @param[in]   decrypted   Set to `true` if PDU has been decrypted
+ * @param[in]   phy         TX PHY to use, set to Phy::Undefined to use the current PHY
  **/
 
-LinkLayerPdu::LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted) : BleMsg()
+LinkLayerPdu::LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted, Phy phy) : BleMsg()
 {
     m_connHandle = conn_handle;
     m_pdu = pdu;
     m_direction = direction;
     m_processed = processed;
     m_decrypted = decrypted;
+    m_phy = phy;
 }
 
 void LinkLayerPdu::pack()
@@ -36,7 +38,8 @@ void LinkLayerPdu::pack()
         (whad_ble_direction_t)m_direction,
         m_connHandle,
         m_processed,
-        m_decrypted
+        m_decrypted,
+        (whad_ble_phy_t)m_phy
     );    
 }
 
@@ -63,6 +66,7 @@ void LinkLayerPdu::unpack()
         m_processed = params.processed;
         m_pdu = PDU(params.p_pdu, params.pdu_length);
         m_direction = (Direction)params.direction;
+        m_phy = (Phy)params.phy;
     }
 }
 
@@ -127,3 +131,16 @@ bool LinkLayerPdu::isDecrypted()
 {
     return m_decrypted;
 }
+
+
+/**
+ * @brief   Retrieve the PHY used to receive this PDU
+ * 
+ * @retval  RX PHY used to capture this PDU
+ */
+
+Phy LinkLayerPdu::getPhy()
+{
+    return m_phy;
+}
+
