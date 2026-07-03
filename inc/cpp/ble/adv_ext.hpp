@@ -20,6 +20,8 @@ namespace whad::ble {
             uint16_t getOffset();
             Phy getPhy();
 
+            void copyTo(whad_ble_auxptr_t *p_struct);
+
         private:
             uint8_t m_channel;
             uint8_t m_ca;
@@ -37,9 +39,13 @@ namespace whad::ble {
             ExtAdvPdu(uint8_t *p_advData, size_t length);
             ExtAdvPdu(uint8_t *p_advData, size_t length, AuxPtr *auxptr);
 
+            /* Getters. */
             size_t getLength();
             AuxPtr* getAuxPtr();
             uint8_t *getData();
+
+            /* Export. */
+            void copyTo(whad_ble_ext_adv_t *p_struct);
 
         private:
             size_t m_advLen;
