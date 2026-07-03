@@ -2920,7 +2920,7 @@ whad_result_t whad_ble_set_supp_phys(Message *p_message, whad_ble_phys_t phys)
     int i;
 
     /* Sanity check. */
-    if ((p_message == NULL) || (phys.count > MAX_SUPP_PHYS))
+    if ((p_message == NULL) || (phys.tx_count > MAX_SUPP_PHYS) || (phys.rx_count > MAX_SUPP_PHYS))
     {
         return WHAD_ERROR;
     }
@@ -2929,13 +2929,15 @@ whad_result_t whad_ble_set_supp_phys(Message *p_message, whad_ble_phys_t phys)
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_set_supp_phys_tag;
 
-    for (i=0; i<phys.count; i++) {
+    for (i=0; i<phys.tx_count; i++) {
         p_message->msg.ble.msg.set_supp_phys.tx_phy[i] = phys.tx[i];
+    }
+    for (i=0; i<phys.rx_count; i++) {
         p_message->msg.ble.msg.set_supp_phys.rx_phy[i] = phys.rx[i];
     }
 
-    p_message->msg.ble.msg.set_supp_phys.tx_phy_count = phys.count;
-    p_message->msg.ble.msg.set_supp_phys.rx_phy_count = phys.count;
+    p_message->msg.ble.msg.set_supp_phys.tx_phy_count = phys.tx_count;
+    p_message->msg.ble.msg.set_supp_phys.rx_phy_count = phys.rx_count;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -2962,10 +2964,14 @@ whad_result_t whad_ble_set_supp_phys_parse(Message *p_message, whad_ble_phys_t *
     }
 
     /* Extract information from message. */
-    p_phys->count = p_message->msg.ble.msg.set_supp_phys.tx_phy_count;
-    for (i=0; i<p_phys->count; i++)
+    p_phys->tx_count = p_message->msg.ble.msg.set_supp_phys.tx_phy_count;
+    for (i=0; i<p_phys->tx_count; i++)
     {
-        p_phys->tx[i] = p_message->msg.ble.msg.set_supp_phys.tx_phy[i];
+        p_phys->rx[i] = p_message->msg.ble.msg.set_supp_phys.rx_phy[i];
+    }
+    p_phys->rx_count = p_message->msg.ble.msg.set_supp_phys.rx_phy_count;
+    for (i=0; i<p_phys->rx_count; i++)
+    {
         p_phys->rx[i] = p_message->msg.ble.msg.set_supp_phys.rx_phy[i];
     }
 

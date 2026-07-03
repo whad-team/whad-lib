@@ -259,7 +259,8 @@ whad_result_t whad_ble_set_tx_power_level(Message *p_message, int power);
 whad_result_t whad_ble_set_tx_power_level_parse(Message *p_message, int *p_power);
 
 typedef struct {
-    size_t count;
+    size_t tx_count;
+    size_t rx_count;
     whad_ble_phy_t tx[MAX_SUPP_PHYS];
     whad_ble_phy_t rx[MAX_SUPP_PHYS];
 } whad_ble_phys_t;
@@ -536,7 +537,6 @@ whad_result_t whad_ble_hijacked(Message *p_message, uint32_t access_address, boo
 whad_result_t whad_ble_hijacked_parse(Message *p_message, whad_ble_hijacked_params_t *p_parameters);
 whad_result_t whad_ble_injected(Message *p_message, uint32_t access_address, uint32_t attempts, bool success);
 whad_result_t whad_ble_injected_parse(Message *p_message, whad_ble_injected_params_t *p_parameters);
-
 
 #ifdef __cplusplus
 }
