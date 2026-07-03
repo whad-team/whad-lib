@@ -43,6 +43,7 @@ whad_ble_msgtype_t whad_ble_get_message_type(Message *p_message)
  * @param[in]       processed           Set to true if PDU has been processed by the device, false otherwise
  * @param[in]       decrypted           Set to true if PDU has been decrypted, false otherwise
  * @param[in]       use_timestamp       If set to true, message will include timestamp and relative timestamp        
+ * @param[in]       phy                 Current PHY
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or PDU pointer.
@@ -51,7 +52,8 @@ whad_ble_msgtype_t whad_ble_get_message_type(Message *p_message)
 whad_result_t whad_ble_raw_pdu(Message *p_message, uint32_t channel, int32_t rssi, uint32_t conn_handle,
                                uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc,
                                bool crc_validity, uint32_t timestamp, uint32_t relative_timestamp,
-                               whad_ble_direction_t direction, bool processed, bool decrypted, bool use_timestamp)
+                               whad_ble_direction_t direction, bool processed, bool decrypted, bool use_timestamp,
+                               whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL) )
@@ -68,6 +70,7 @@ whad_result_t whad_ble_raw_pdu(Message *p_message, uint32_t channel, int32_t rss
     p_message->msg.ble.msg.raw_pdu.access_address = access_address;
     p_message->msg.ble.msg.raw_pdu.conn_handle = conn_handle;
     p_message->msg.ble.msg.raw_pdu.direction = (ble_BleDirection)direction;
+    p_message->msg.ble.msg.raw_pdu.phy = (ble_BlePhy)phy;
 
     /* Copy PDU into our message. */
     p_message->msg.ble.msg.raw_pdu.pdu.size = length;
@@ -121,13 +124,14 @@ whad_result_t whad_ble_raw_pdu(Message *p_message, uint32_t channel, int32_t rss
  * @param[in]       conn_handle         Connection handle of the connection this PDU has been captured from
  * @param[in]       processed           Set to true if PDU has been processed by the device, false otherwise
  * @param[in]       decrypted           Set to true if PDU has been decrypted, false otherwise
+ * @param[in]       phy                 Current PHY
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer or PDU pointer.
  **/
 
 whad_result_t whad_ble_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_ble_direction_t direction,
-                          int conn_handle, bool processed, bool decrypted)
+                          int conn_handle, bool processed, bool decrypted, whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL) )
@@ -143,6 +147,7 @@ whad_result_t whad_ble_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_
     p_message->msg.ble.msg.pdu.direction = (ble_BleDirection)direction;
     p_message->msg.ble.msg.pdu.conn_handle = conn_handle;
     p_message->msg.ble.msg.pdu.pdu.size = length;
+    p_message->msg.ble.msg.pdu.phy = (ble_BlePhy)phy;
     memcpy(&p_message->msg.ble.msg.pdu.pdu.bytes, p_pdu, length);
 
     /* Success. */
@@ -174,6 +179,7 @@ whad_result_t whad_ble_pdu_parse(Message *p_message, whad_ble_pdu_t *p_parameter
     p_parameters->decrypted = p_message->msg.ble.msg.pdu.decrypted;
     p_parameters->pdu_length = p_message->msg.ble.msg.pdu.pdu.size;
     p_parameters->p_pdu = p_message->msg.ble.msg.pdu.pdu.bytes;
+    p_parameters->phy = (whad_ble_phy_t)p_message->msg.ble.msg.pdu.phy;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -189,12 +195,13 @@ whad_result_t whad_ble_pdu_parse(Message *p_message, whad_ble_pdu_t *p_parameter
  * @param[in]       init_addr_type      Initiator address type (public/random)
  * @param[in]       p_init_addr         Pointer to the initiator BD address (6 bytes)
  * @param[in]       conn_handle         Connection handle of the connection this PDU has been captured from
+ * @param[in]       phy                 PHY used for connection
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_notify_connected(Message *p_message, whad_ble_addrtype_t adv_addr_type, uint8_t *p_adv_addr, whad_ble_addrtype_t init_addr_type, uint8_t *p_init_addr, uint32_t conn_handle)
+whad_result_t whad_ble_notify_connected(Message *p_message, whad_ble_addrtype_t adv_addr_type, uint8_t *p_adv_addr, whad_ble_addrtype_t init_addr_type, uint8_t *p_init_addr, uint32_t conn_handle, whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_adv_addr == NULL) || (p_init_addr == NULL) )
@@ -218,6 +225,9 @@ whad_result_t whad_ble_notify_connected(Message *p_message, whad_ble_addrtype_t 
     /* Save initiator address and address type. */
     memcpy(p_message->msg.ble.msg.connected.initiator, p_init_addr, 6);
     p_message->msg.ble.msg.connected.init_addr_type = (ble_BleAddrType)init_addr_type;
+
+    /* Save PHY */
+    p_message->msg.ble.msg.connected.phy = (ble_BlePhy)phy;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -552,12 +562,13 @@ whad_result_t whad_ble_sniff_conn_req_parse(Message *p_message, whad_ble_sniff_c
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       p_channelmap        Channel map to use for sniffing as a 5-byte array (40 bits)
+ * @param[in]       phy                 PHY to use for sniffing
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap)
+whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap, whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_channelmap == NULL))
@@ -568,6 +579,7 @@ whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_chann
     /* Populate message fields. */
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_sniff_aa_tag;
+    p_message->msg.ble.msg.sniff_aa.phy = (ble_BlePhy)phy;
     memcpy(p_message->msg.ble.msg.sniff_aa.monitored_channels, p_channelmap, 5);
 
     /* Success. */
@@ -579,21 +591,25 @@ whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_chann
  * @brief Parse an access address sniffing message.
  * 
  * @param[in]   p_message       Pointer to the message to parse
- * @param[out]  p_channelmap    Pointer to a 5-byte array that will contain the extracted channel map
+ * @param[in]   p_channelmap    Pointer to a 5-byte array that will contain the extracted channel map
+ * @param[in]   p_phy           Pointer to a destination PHY variable
  * 
  * @return whad_result_t 
  */
 
-whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p_channelmap)
+whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p_channelmap, whad_ble_phy_t *p_phy)
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_channelmap == NULL))
+    if ((p_message == NULL) || (p_channelmap == NULL) || (p_phy == NULL))
     {
         return WHAD_ERROR;
     }
 
     /* Extract channel map. */
     memcpy(p_channelmap, p_message->msg.ble.msg.sniff_aa.monitored_channels, 5);
+
+    /* Extract PHY */
+    *p_phy = (whad_ble_phy_t)p_message->msg.ble.msg.sniff_aa.phy;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -610,6 +626,7 @@ whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p
  * @param[in]       p_channelmap        Provided channel map to use for synchronization
  * @param[in]       p_channels          A set of channels to use to dynamically reconstruct the channel map.
  *                                      This parameter is used when parallelized channel map recovery is enabled.
+ * @param[in]       phy                 PHY to use for connection sniffing
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
@@ -617,7 +634,7 @@ whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p
 
 whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_address, uint32_t crc_init,
                                          uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
-                                         uint8_t *p_channels)
+                                         uint8_t *p_channels, whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_channelmap == NULL) || (p_channels == NULL))
@@ -632,6 +649,7 @@ whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_add
     p_message->msg.ble.msg.sniff_conn.crc_init = crc_init;
     p_message->msg.ble.msg.sniff_conn.hop_interval = hop_interval;
     p_message->msg.ble.msg.sniff_conn.hop_increment = hop_increment;
+    p_message->msg.ble.msg.sniff_conn.phy = (ble_BlePhy)phy;
     memcpy(p_message->msg.ble.msg.sniff_conn.channel_map, p_channelmap, 5);
     memcpy(p_message->msg.ble.msg.sniff_conn.monitored_channels, p_channels, 5);
 
@@ -663,6 +681,7 @@ whad_result_t whad_ble_sniff_active_conn_parse(Message *p_message, whad_ble_snif
     p_parameters->crc_init = p_message->msg.ble.msg.sniff_conn.crc_init;
     p_parameters->hop_interval = p_message->msg.ble.msg.sniff_conn.hop_interval;
     p_parameters->hop_increment = p_message->msg.ble.msg.sniff_conn.hop_increment;
+    p_parameters->phy = (whad_ble_phy_t)p_message->msg.ble.msg.sniff_conn.phy;
     memcpy(p_parameters->channelmap, p_message->msg.ble.msg.sniff_conn.channel_map, 5);
     memcpy(p_parameters->channels, p_message->msg.ble.msg.sniff_conn.monitored_channels, 5);
 
@@ -675,12 +694,13 @@ whad_result_t whad_ble_sniff_active_conn_parse(Message *p_message, whad_ble_snif
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       access_address      Access address of the active connection to sniff
+ * @param[in]       phy                 PHY to use for jamming
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_address)
+whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_address, whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -692,6 +712,7 @@ whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_addre
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_jam_conn_tag;
     p_message->msg.ble.msg.jam_conn.access_address = access_address;
+    p_message->msg.ble.msg.jam_conn.phy = (ble_BlePhy)phy;
 
     /* Success. */
     return WHAD_SUCCESS; 
@@ -703,21 +724,25 @@ whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_addre
  * 
  * @param[in]       p_message           Pointer to the message structure to parse
  * @param[in, out]  p_access_address    Pointer to the extracted access address
+ * @param[in, out]  p_phy               Pointer to the PHY type
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_access_address)
+whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_access_address, whad_ble_phy_t *p_phy)
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_access_address == NULL))
+    if ((p_message == NULL) || (p_access_address == NULL) || (p_phy == NULL))
     {
         return WHAD_ERROR;
     }   
 
     /* Extract access address from message. */
     *p_access_address = p_message->msg.ble.msg.jam_conn.access_address;
+
+    /* Extract PHY type. */
+    *p_phy = (whad_ble_phy_t)p_message->msg.ble.msg.jam_conn.phy;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -729,12 +754,14 @@ whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_acc
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       active_scan         If set to true, the adapter will send SCAN_REQ PDU to get additional data
+ * @param[in]       interval            Scan interval, in ms
+ * @param[in]       use_ext_adv         If set to true, the adapter will accept extended advertisements
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval)
+whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval, bool use_ext_adv)
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -747,6 +774,7 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t 
     p_message->msg.ble.which_msg = ble_Message_scan_mode_tag;
     p_message->msg.ble.msg.scan_mode.active_scan = active_scan;
     p_message->msg.ble.msg.scan_mode.interval = interval;
+    p_message->msg.ble.msg.scan_mode.use_ext_adv = use_ext_adv;
 
     /* Success. */
     return WHAD_SUCCESS;   
@@ -758,19 +786,22 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t 
  * 
  * @param[in]   p_message         Pointer to the message to parse. 
  * @param[out]  p_active_scan     Pointer to a boolean value, if true an active scan has to be performed.
+ * @param[out]  p_interval        Pointer to the scan interval value
+ * @param[out]  p_use_ext_adv     Pointer to a boolean value, if true extended advertisements are supported.
  * @return whad_result_t 
  */
 
-whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval)
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval, bool *p_use_ext_adv)
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_active_scan == NULL) || (p_interval == NULL))
+    if ((p_message == NULL) || (p_active_scan == NULL) || (p_interval == NULL) || (p_use_ext_adv == NULL))
     {
         return WHAD_ERROR;
     }    
 
     *p_active_scan = p_message->msg.ble.msg.scan_mode.active_scan;
     *p_interval = p_message->msg.ble.msg.scan_mode.interval;
+    *p_use_ext_adv = p_message->msg.ble.msg.scan_mode.use_ext_adv;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1199,13 +1230,14 @@ whad_result_t whad_ble_connect_to_parse(Message *p_message, whad_ble_connect_par
  * @param[in]       crc                 PDU CRC value
  * @param[in]       encrypt             If set to true, PDU will be encrypted with the current cryptographic material
  *                                      associated with the target connection
+ * @param[in]       phy                 Current PHY
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
 whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
-                                    uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc, bool encrypt)
+                                    uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc, bool encrypt, whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL))
@@ -1223,6 +1255,7 @@ whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t dir
     p_message->msg.ble.msg.send_raw_pdu.access_address = access_address;
     p_message->msg.ble.msg.send_raw_pdu.crc = crc;
     p_message->msg.ble.msg.send_raw_pdu.encrypt = encrypt;
+    p_message->msg.ble.msg.send_raw_pdu.phy = (ble_BlePhy)phy;
 
     /* Copy PDU in memory. */
     memcpy(p_message->msg.ble.msg.send_raw_pdu.pdu.bytes, p_pdu, length);
@@ -1259,6 +1292,7 @@ whad_result_t whad_ble_send_raw_pdu_parse(Message *p_message, whad_ble_pdu_param
     p_parameters->encrypt = p_message->msg.ble.msg.send_raw_pdu.encrypt;
     p_parameters->length = p_message->msg.ble.msg.send_raw_pdu.pdu.size;
     p_parameters->p_pdu = p_message->msg.ble.msg.send_raw_pdu.pdu.bytes;
+    p_parameters->phy = (whad_ble_phy_t)p_message->msg.ble.msg.send_raw_pdu.phy;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1275,13 +1309,14 @@ whad_result_t whad_ble_send_raw_pdu_parse(Message *p_message, whad_ble_pdu_param
  * @param[in]       length              PDU length in bytes
  * @param[in]       encrypt             If set to true, PDU will be encrypted with the current cryptographic material
  *                                      associated with the target connection
+ * @param[in]       phy                 PHY to use when sending PDU. If undefined, use the current TX PHY.
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
 whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
-                                uint8_t *p_pdu, int length, bool encrypt)
+                                uint8_t *p_pdu, int length, bool encrypt, whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_pdu == NULL))
@@ -1295,6 +1330,7 @@ whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t directi
     p_message->msg.ble.msg.send_pdu.direction = (ble_BleDirection)direction;
     p_message->msg.ble.msg.send_pdu.conn_handle = conn_handle;
     p_message->msg.ble.msg.send_pdu.encrypt = encrypt;
+    p_message->msg.ble.msg.send_pdu.phy = (ble_BlePhy)phy;
 
     /* Copy PDU in memory. */
     memcpy(p_message->msg.ble.msg.send_raw_pdu.pdu.bytes, p_pdu, length);
@@ -1839,6 +1875,7 @@ whad_result_t whad_ble_set_encryption_parse(Message *p_message, whad_ble_encrypt
  * @param[in]       p_pattern           Pointer to a byte array specifying a matching pattern
  * @param[in]       pattern_length      Length of the matching pattern in bytes
  * @param[in]       position            Specify the expected offset in a PDU of the matching pattern
+ * @param[in]       phy                 Specify the PHY used for jamming
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
@@ -2475,13 +2512,16 @@ whad_result_t whad_ble_access_address_discovered_parse(Message *p_message, whad_
  * @param[in]       addr_type           Specifies the advertiser's BD address type (public/random)
  * @param[in]       p_adv_data          Pointer to a byte buffer containing the advertising data
  * @param[in]       adv_data_length     Length of advertising data in bytes
+ * @param[in]       channel             Channel number where the advertising PDU has been received
+ * @param[in]       phy                 Current PHY used when PDU has been received
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
  **/
 
 whad_result_t whad_ble_adv_pdu(Message *p_message, whad_ble_advtype_t adv_type, int32_t rssi, uint8_t *p_bdaddr,
-                               whad_ble_addrtype_t addr_type, uint8_t *p_adv_data, int adv_data_length)
+                               whad_ble_addrtype_t addr_type, uint8_t *p_adv_data, int adv_data_length, uint32_t channel,
+                               whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_bdaddr == NULL) || (p_adv_data == NULL))
@@ -2495,6 +2535,9 @@ whad_result_t whad_ble_adv_pdu(Message *p_message, whad_ble_advtype_t adv_type, 
     p_message->msg.ble.msg.adv_pdu.addr_type = (ble_BleAddrType)addr_type;
     p_message->msg.ble.msg.adv_pdu.rssi = rssi;
     p_message->msg.ble.msg.adv_pdu.adv_type = (ble_BleAdvType)adv_type;
+    p_message->msg.ble.msg.adv_pdu.channel = channel;
+    p_message->msg.ble.msg.adv_pdu.phy = (ble_BlePhy)phy;
+
 
     /* Copy BD address. */
     memcpy(p_message->msg.ble.msg.adv_pdu.bd_address, p_bdaddr, 6);
@@ -2536,6 +2579,8 @@ whad_result_t whad_ble_adv_pdu_parse(Message *p_message, whad_ble_adv_pdu_t *p_p
     p_parameters->p_bdaddr = p_message->msg.ble.msg.adv_pdu.bd_address;
     p_parameters->p_adv_data = p_message->msg.ble.msg.adv_pdu.adv_data.bytes;
     p_parameters->adv_data_length = p_message->msg.ble.msg.adv_pdu.adv_data.size;
+    p_parameters->channel = p_message->msg.ble.msg.adv_pdu.channel;
+    p_parameters->phy = (whad_ble_phy_t)p_message->msg.ble.msg.adv_pdu.phy;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -2551,13 +2596,15 @@ whad_result_t whad_ble_adv_pdu_parse(Message *p_message, whad_ble_adv_pdu_t *p_p
  * @param[in]       hop_interval        Connection recovered hop interval
  * @param[in]       hop_increment       Connection recovered hop increment
  * @param[in]       p_channelmap        Connection channel map
+ * @param[in]       phy                 Current PHY
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid pointer or packet size exceed the allowed size.
  **/
 
 whad_result_t whad_ble_synchronized(Message *p_message, uint32_t access_address, uint32_t crc_init,
-                                    uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap)
+                                    uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
+                                    whad_ble_phy_t phy)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_channelmap == NULL))
@@ -2572,6 +2619,7 @@ whad_result_t whad_ble_synchronized(Message *p_message, uint32_t access_address,
     p_message->msg.ble.msg.synchronized.hop_interval = hop_interval;
     p_message->msg.ble.msg.synchronized.hop_increment = hop_increment;
     p_message->msg.ble.msg.synchronized.crc_init = crc_init;
+    p_message->msg.ble.msg.synchronized.phy = (ble_BlePhy)phy;
     memcpy(p_message->msg.ble.msg.synchronized.channel_map, p_channelmap, 5);
 
     /* Success. */
@@ -2816,8 +2864,8 @@ whad_result_t whad_ble_set_phy(Message *p_message, whad_ble_phy_t tx_phy, whad_b
  * @brief Parse a message to set RX and TX PHY.
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize
- * @param[in,out]       p_tx_phy            Pointer to a variable that will contain the new TX PHY value
- * @param[in,out]       p_rx_phy            Pointer to a variable that will contain the new RX PHY value
+ * @param[in,out]   p_tx_phy            Pointer to a variable that will contain the new TX PHY value
+ * @param[in,out]   p_rx_phy            Pointer to a variable that will contain the new RX PHY value
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid pointer.

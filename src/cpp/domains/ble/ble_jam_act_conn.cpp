@@ -8,6 +8,8 @@ using namespace whad::ble;
 
 JamActiveConn::JamActiveConn(BleMsg &message) : BleMsg(message), HijackBase()
 {
+    /* Default PHY. */
+    m_phy = Phy::LE1Mbit;
 }
 
 
@@ -19,8 +21,15 @@ JamActiveConn::JamActiveConn(BleMsg &message) : BleMsg(message), HijackBase()
 
 JamActiveConn::JamActiveConn(uint32_t accessAddress) : BleMsg(), HijackBase(accessAddress)
 {
+    /* Default PHY. */
+    m_phy = Phy::LE1Mbit;
 }
 
+
+JamActiveConn::JamActiveConn(uint32_t accessAddress, Phy phy) : BleMsg(), HijackBase(accessAddress)
+{
+    m_phy = phy;
+}
 
 /**
  * @brief   Pack parameters into a BleMsg
@@ -28,7 +37,7 @@ JamActiveConn::JamActiveConn(uint32_t accessAddress) : BleMsg(), HijackBase(acce
 
 void JamActiveConn::pack()
 {
-    whad_ble_jam_active_conn(this->getMessage(), m_accessAddr);
+    whad_ble_jam_active_conn(this->getMessage(), m_accessAddr, (whad_ble_phy_t)m_phy);
 }
 
 
@@ -42,11 +51,24 @@ void JamActiveConn::unpack()
 
     result = whad_ble_jam_active_conn_parse(
         this->getMessage(),
-        &m_accessAddr
+        &m_accessAddr,
+        (whad_ble_phy_t *)&m_phy
     );
 
     if (result == WHAD_ERROR)
     {
         throw WhadMessageParsingError();
     }
+}
+
+
+/**
+ * @brief   Retrieve the PHY associated with this message.
+ *
+ * @retval  TX PHY
+ */
+
+Phy JamActiveConn::getPhy()
+{
+    return m_phy;
 }

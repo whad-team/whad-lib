@@ -12,13 +12,14 @@ namespace whad::ble {
     {
         public:
             LinkLayerPdu(BleMsg &message);
-            LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted);
+            LinkLayerPdu(uint32_t conn_handle, PDU pdu, Direction direction, bool processed, bool decrypted, Phy phy);
 
             uint32_t getConnHandle();
             PDU& getPdu();
             Direction getDirection();
             bool isProcessed();
             bool isDecrypted();
+            Phy getPhy();
 
         private:
             void pack();
@@ -29,6 +30,7 @@ namespace whad::ble {
             Direction m_direction;
             bool m_processed;
             bool m_decrypted;
+            Phy m_phy;
     };
 
 }

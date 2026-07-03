@@ -12,7 +12,7 @@ namespace whad::ble {
     {
         public:
             SendRawPdu(BleMsg &message);
-            SendRawPdu(Direction direction, uint32_t connHandle, uint32_t accessAddress, uint8_t *pPdu, int length, uint32_t crc, bool encrypt);
+            SendRawPdu(Direction direction, uint32_t connHandle, uint32_t accessAddress, uint8_t *pPdu, int length, uint32_t crc, bool encrypt, Phy phy);
 
             Direction getDirection();
             uint32_t getConnHandle();
@@ -20,6 +20,7 @@ namespace whad::ble {
             PDU& getPdu();
             uint32_t getCrc();
             bool isEncrypted();
+            Phy getPhy();
 
         private:
             void pack();
@@ -31,6 +32,7 @@ namespace whad::ble {
             PDU m_pdu;
             uint32_t m_crc;
             bool m_encrypt;
+            Phy m_phy;
     };
 
 }

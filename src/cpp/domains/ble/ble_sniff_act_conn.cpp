@@ -25,9 +25,11 @@ SniffActiveConn::SniffActiveConn(BleMsg &message) : BleMsg(message)
  * @param[in]   channels        Channel map specifying the channels to use when recovering the
  *                              channel map (if multiple sniffers are used -- collaborative
  *                              channel map recovery).
+ * @param[in]   phy             PHY to use when sniffing for active connection
  **/
 
-SniffActiveConn::SniffActiveConn(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval, uint32_t hopIncrement, ChannelMap channelMap, ChannelMap channels) : BleMsg()
+SniffActiveConn::SniffActiveConn(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval, uint32_t hopIncrement,
+        ChannelMap channelMap, ChannelMap channels, Phy phy) : BleMsg()
 {
     m_accessAddr = accessAddress;
     m_crcInit = crcInit;
@@ -35,6 +37,7 @@ SniffActiveConn::SniffActiveConn(uint32_t accessAddress, uint32_t crcInit, uint3
     m_hopInterval = hopInterval;
     m_channelMap = channelMap;
     m_channels = channels;
+    m_phy = phy;
 }
 
 
@@ -51,7 +54,8 @@ void SniffActiveConn::pack()
         m_hopInterval,
         m_hopIncrement,
         m_channelMap.getChannelMapBuf(),
-        m_channels.getChannelMapBuf()
+        m_channels.getChannelMapBuf(),
+        (whad_ble_phy_t)m_phy
     ); 
 }
 
@@ -83,6 +87,7 @@ void SniffActiveConn::unpack()
         m_hopInterval = params.hop_interval;
         m_channelMap = ChannelMap(params.channelmap);
         m_channels = ChannelMap(params.channels);
+        m_phy = (Phy)params.phy;
     }
 }
 
@@ -156,3 +161,16 @@ ChannelMap& SniffActiveConn::getChannels()
 {
     return m_channels;
 }
+
+
+/**
+ * @brief   Get the connection PHY
+ * 
+ * @retval  PHY
+ */
+
+Phy SniffActiveConn::getPhy()
+{
+    return m_phy;
+}
+

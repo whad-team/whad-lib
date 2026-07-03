@@ -13,13 +13,15 @@ Connected::Connected(BleMsg &message) : BleMsg(message)
  * @param[in]   connHandle  Connection handle assigned to this connection
  * @param[in]   advAddr     Advertiser BD address
  * @param[in]   initAddr    Initiator BD address
+ * @param[in]   phy         PHY configured when connection request has been received
  **/
 
-Connected::Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr)  : BleMsg()
+Connected::Connected(uint32_t connHandle, BDAddress advAddr, BDAddress initAddr, Phy phy)  : BleMsg()
 {
     m_connHandle = connHandle;
     m_advAddr = advAddr;
     m_initAddr = initAddr;
+    m_phy = phy;
 }
 
 
@@ -39,7 +41,10 @@ void Connected::pack()
         (whad_ble_addrtype_t)m_initAddr.getType(), m_initAddr.getAddressBuf(),
 
         /* Connection handle */
-        m_connHandle
+        m_connHandle,
+
+        /* PHY */
+        (whad_ble_phy_t)m_phy
     );
 }
 
@@ -78,3 +83,16 @@ uint32_t Connected::getConnHandle()
 {
     return m_connHandle;
 }
+
+
+/**
+ * @brief   Get PHY
+ * 
+ * @retval  RX PHY
+ */
+
+Phy Connected::getPhy()
+{
+    return m_phy;
+}
+
