@@ -284,7 +284,6 @@ Csa AdvMode::getCsa()
     return m_csa;
 }
 
-
 /**
  * @brief   Add an extended advertising PDU.
  *

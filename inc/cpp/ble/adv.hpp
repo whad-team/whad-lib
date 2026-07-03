@@ -8,6 +8,7 @@
 #include <ble/base.hpp>
 #include <ble/channelmap.hpp>
 #include <ble/adv_ext.hpp>
+
 namespace whad::ble {
 
     class AdvMode : public BleMsg
