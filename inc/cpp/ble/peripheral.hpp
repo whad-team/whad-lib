@@ -22,6 +22,7 @@ namespace whad::ble {
             unsigned int getScanRspLength();
             Csa getCsa();
 
+            /* Extended advertising PDU */
             bool addExtPdu(ExtAdvPdu &pdu);
             size_t getNumberOfExtPdus();
             std::vector<ExtAdvPdu>::iterator getExtPdusIterator();

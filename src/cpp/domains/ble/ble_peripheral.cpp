@@ -70,22 +70,7 @@ void PeripheralMode::pack()
         for (it = m_pdus.begin(); it < m_pdus.end(); it++)
         {
             /* Fill ext_pdus array with the current ExtAdvPdu info. */
-            ext_pdus[nb_ext_adv].length = it->getLength();
-            memcpy(ext_pdus[nb_ext_adv].adv_data, it->getData(), it->getLength());
-            if (it->getAuxPtr() != NULL)
-            {
-                ext_pdus[nb_ext_adv].has_auxptr = true;
-                ext_pdus[nb_ext_adv].auxptr.channel = it->getAuxPtr()->getChannel();
-                ext_pdus[nb_ext_adv].auxptr.ca = it->getAuxPtr()->getCA();
-                ext_pdus[nb_ext_adv].auxptr.offset_units = it->getAuxPtr()->getOffsetUnits();
-                ext_pdus[nb_ext_adv].auxptr.offset = it->getAuxPtr()->getOffset();
-                ext_pdus[nb_ext_adv].auxptr.phy = (whad_ble_phy_t)it->getAuxPtr()->getPhy();
-            }
-            else
-            {
-                ext_pdus[nb_ext_adv].has_auxptr = false;
-            }
-            nb_ext_adv++;
+            it->copyTo(&ext_pdus[nb_ext_adv++]);
         }
     }
 

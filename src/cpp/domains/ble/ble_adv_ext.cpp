@@ -71,6 +71,15 @@ Phy AuxPtr::getPhy()
     return result;
 }
 
+void AuxPtr::copyTo(whad_ble_auxptr_t *p_struct)
+{
+    p_struct->channel = getChannel();
+    p_struct->ca = getCA();
+    p_struct->offset_units = getOffsetUnits();
+    p_struct->offset = getOffset();
+    p_struct->phy = (whad_ble_phy_t)getPhy();
+}
+
 ExtAdvPdu::ExtAdvPdu()
 {
     m_advLen = 0;
@@ -111,4 +120,20 @@ AuxPtr* ExtAdvPdu::getAuxPtr()
 uint8_t* ExtAdvPdu::getData()
 {
     return m_advData;
+}
+
+void ExtAdvPdu::copyTo(whad_ble_ext_adv_t *p_struct)
+{
+    p_struct->length = getLength();
+    memcpy(p_struct->adv_data, getData(), getLength());
+    if (getAuxPtr() != NULL)
+    {
+        p_struct->has_auxptr = true;
+        m_pAuxPtr->copyTo(&p_struct->auxptr);
+
+    }
+    else
+    {
+        p_struct->has_auxptr = false;
+    }
 }

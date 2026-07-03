@@ -2,10 +2,12 @@
 #define __INC_WHAD_BLE_ADV_HPP
 
 #include <string>
+#include <vector>
 #include "message.hpp"
 #include "common.hpp"
 #include <ble/base.hpp>
 #include <ble/channelmap.hpp>
+#include <ble/adv_ext.hpp>
 
 namespace whad::ble {
 
@@ -19,6 +21,16 @@ namespace whad::ble {
             unsigned int getScanRspLength();
             uint8_t *getAdvData();
             uint8_t *getScanRsp();
+            AdvType getAdvType();
+            uint32_t getIntervalMin();
+            uint32_t getIntervalMax();
+            Csa getCsa();
+            ChannelMap& getChannelMap();
+
+            /* Extended Advertising PDUs. */
+            bool addExtPdu(ExtAdvPdu &pdu);
+            size_t getNumberOfExtPdus();
+            ExtAdvPdu* getExtPdu(unsigned int index);
 
         private:
             void pack();
@@ -34,7 +46,8 @@ namespace whad::ble {
             uint32_t m_interMax;
             Csa m_csa;
             ChannelMap m_channelMap;
-            
+        
+            std::vector<ExtAdvPdu> m_pdus;
     };
 
 }

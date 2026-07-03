@@ -63,19 +63,33 @@ AdvMode::AdvMode(AdvType advType, uint32_t interMin, uint32_t interMax, uint8_t 
 
 void AdvMode::pack()
 {
+    whad_ble_ext_adv_t ext_pdus[4];
+    std::vector<ExtAdvPdu>::iterator it;
+    int nb_ext_adv = 0;
+
+    /* Populate extended advertising PDUs, if any. */
+    if (m_pdus.size() > 0)
+    {
+        for (it = m_pdus.begin(); it < m_pdus.end(); it++)
+        {
+            /* Fill ext_pdus array with the current ExtAdvPdu info. */
+            it->copyTo(&ext_pdus[nb_ext_adv++]);
+        }
+    }
+
     whad_ble_adv_mode(
         this->getMessage(),
         (whad_ble_advtype_t)m_type,
         m_interMin,
         m_interMax,
-        NULL,
+        m_channelMap.getChannelMapBuf(),
         m_advData,
         m_advDataLength,
         m_scanRsp,
         m_scanRspLength,
         (whad_ble_csa_t)m_csa,
-        NULL,
-        0
+        ext_pdus,
+        nb_ext_adv
     );
 }
 
@@ -170,3 +184,111 @@ uint8_t *AdvMode::getScanRsp()
 {
     return m_scanRsp;
 }
+
+
+/**
+ * @brief   Get advertisement type
+ *
+ * @retval  Advertisement type (AdvType)
+ */
+
+AdvType AdvMode::getAdvType()
+{
+    return m_type;
+}
+
+
+/**
+ * @brief   Get minimum advertising interval
+ *
+ * @retval  Minimum advertising interval (0x0020 < interval < 0x4000)
+ */
+
+uint32_t AdvMode::getIntervalMin()
+{
+    return m_interMin;
+}
+
+
+/**
+ * @brief   Get maximum advertising interval
+ *
+ * @retval  Maximum advertising interval (0x0020 < interval < 0x4000)
+ */
+
+uint32_t AdvMode::getIntervalMax()
+{
+    return m_interMax;
+}
+
+
+/**
+ * @brief   Get selected Channel Selection Algorithm (CSA)
+ *
+ * @retval  Selected Channel Selection Algorithm
+ */
+
+Csa AdvMode::getCsa()
+{
+    return m_csa;
+}
+
+/**
+ * @brief   Get channel map
+ *
+ * @retval  Configured channel map
+ */
+
+ChannelMap& AdvMode::getChannelMap()
+{
+    return m_channelMap;
+}
+
+/**
+ * @brief   Add an extended advertising PDU.
+ *
+ * @retval  True if PDU has successfully been added, false otherwise.
+ **/
+
+bool AdvMode::addExtPdu(ExtAdvPdu& pdu)
+{
+    if (m_pdus.size() < 4)
+    {
+        m_pdus.push_back(pdu);
+
+        /* Success. */
+        return true;
+    }
+    else
+    {
+        /* Failed, maximum number of extended PDU reached. */
+        return false;
+    }
+}
+
+
+/**
+ * @brief   Get the number of extended advertising PDU already defined.
+ *
+ * @retval  Number of extended advertising PDU.
+ **/
+size_t AdvMode::getNumberOfExtPdus()
+{
+    return m_pdus.size();
+}
+
+/**
+ * @brief   Retrieve a specific extended advertising PDU.
+ *
+ * @retval  Reference to an extended advertising PDU, NULL if index is invalid.
+ **/
+ExtAdvPdu* AdvMode::getExtPdu(unsigned int index)
+{
+    if (index < m_pdus.size())
+    {
+        return &m_pdus.at(index);
+    }
+    else
+        return NULL;
+}
+
