@@ -21,7 +21,40 @@ ScanMode::ScanMode(BleMsg &message) : BleMsg(message)
 ScanMode::ScanMode(bool active, uint32_t interval) : BleMsg()
 {
     m_active = active;
+    m_interval = SCAN_INTERVAL_DEFAULT;
+    m_useExtAdv = false;
+}
+
+
+/**
+ * @brief       ScanMode message constructor.
+ * 
+ * @param[in]   active      If set to true, adapter will perform an active scan
+ * @param[in]   interval    Scan interval in ms.
+ **/
+
+ScanMode::ScanMode(bool active, uint32_t interval) : BleMsg()
+{
+    m_active = active;
     m_interval = interval;
+    m_useExtAdv = false;
+}
+
+
+/**
+ * @brief       ScanMode message constructor.
+ * 
+ * @param[in]   active      If set to true, adapter will perform an active scan
+ * @param[in]   interval    Scan interval in ms.
+ * @param[in]   useExtAdv   If set to true, will follow extended advertisements.
+ **/
+
+ScanMode::ScanMode(bool active, uint32_t interval, bool useExtAdv) : BleMsg()
+{
+    m_active = active;
+    m_interval = interval;
+    m_useExtAdv = useExtAdv;
+>>>>>>> feature/whad-protocol-v3
 }
 
 /**
@@ -39,13 +72,25 @@ bool ScanMode::isActiveModeEnabled()
 /**
  * @brief   Get the scanning interval (in ms)
  * 
- * @retval  scanning interval in use, in ms.
+ * @retval  Scan interval, in ms.
  */
 
-uint32_t ScanMode::getScanningInterval()
+uint32_t ScanMode::getInterval()
 {
     return m_interval;
 }
+
+/**
+ * @brief   Determine if scan mode uses extended advertisements.
+ * 
+ * @retval  true if extended advertisements are supported, false otherwise.
+ */
+
+bool ScanMode::useExtAdv()
+{
+    return m_useExtAdv;
+}
+
 
 /**
  * @brief   Pack parameters into a BleMsg
@@ -53,7 +98,7 @@ uint32_t ScanMode::getScanningInterval()
 
 void ScanMode::pack()
 {
-    whad_ble_scan_mode(this->getMessage(), m_active, m_interval); 
+    whad_ble_scan_mode(this->getMessage(), m_active, m_interval, m_useExtAdv); 
 }
 
 
@@ -68,7 +113,8 @@ void ScanMode::unpack()
     result = whad_ble_scan_mode_parse(
         this->getMessage(),
         &m_active,
-        &m_interval
+        &m_interval,
+        &m_useExtAdv
     );
 
     if (result == WHAD_ERROR)
@@ -100,13 +146,15 @@ AdvPdu::AdvPdu(BleMsg &message) : BleMsg(message)
  * @param[in]   advDataLength       Advertising data length in bytes
  **/
 
-AdvPdu::AdvPdu(AdvType advType, int32_t rssi, BDAddress address, uint8_t *pAdvData, unsigned int advDataLength) : BleMsg()
+AdvPdu::AdvPdu(AdvType advType, int32_t rssi, BDAddress address, uint8_t *pAdvData, unsigned int advDataLength, uint32_t channel, Phy phy) : BleMsg()
 {
     m_advType = advType;
     m_rssi = rssi;
     m_address = address;
     m_advData = pAdvData;
     m_advDataLength = advDataLength;
+    m_channel = channel;
+    m_phy = phy;
 }
 
 
@@ -123,7 +171,9 @@ void AdvPdu::pack()
         m_address.getAddressBuf(),
         (whad_ble_addrtype_t)m_address.getType(),
         m_advData,
-        m_advDataLength
+        m_advDataLength,
+        m_channel,
+        (whad_ble_phy_t)m_phy
     );
 }
 
@@ -153,5 +203,92 @@ void AdvPdu::unpack()
         m_address = BDAddress((AddressType)params.addr_type, params.p_bdaddr);
         m_advDataLength = params.adv_data_length;
         m_advData = params.p_adv_data;
+        m_channel = params.channel;
+        m_phy = (Phy)params.phy;
     }
 }
+
+
+/**
+ * @brief   Get advertisement type.
+ *
+ * @retval  Advertisement type.
+ */
+
+AdvType AdvPdu::getAdvType()
+{
+    return m_advType;
+}
+
+
+/**
+ * @brief   Get RSSI.
+ *
+ * @retval  RSSI level (dBm)
+ */
+
+int32_t AdvPdu::getRssi()
+{
+    return m_rssi;
+}
+
+
+/**
+ * @brief   Get BD address.
+ *
+ * @retval  BD address.
+ */
+
+BDAddress& AdvPdu::getAddress()
+{
+    return m_address;
+}
+
+
+/**
+ * @brief   Get advertising data.
+ *
+ * @retval  Pointer to this pdu's advertising data
+ */
+
+uint8_t *AdvPdu::getAdvData()
+{
+    return m_advData;
+}
+
+
+/**
+ * @brief   Get length of advertising data.
+ *
+ * @retval  Advertising data length, in bytes.
+ */
+
+unsigned int AdvPdu::getAdvDataLength()
+{
+    return m_advDataLength;
+}
+
+
+/**
+ * @brief   Get channel number this PDU has been received on.
+ *
+ * @retval  Channel number.
+ */
+
+uint32_t AdvPdu::getChannel()
+{
+    return m_channel;
+}
+
+
+/**
+ * @brief   Get RX PHY when PDU has been received.
+ *
+ * @retval  PHY
+ */
+
+Phy AdvPdu::getPhy()
+{
+    return m_phy;
+}
+

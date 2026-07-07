@@ -6,10 +6,16 @@
 #define BLE_PREPSEQ_PACKET_MAX_SIZE     255
 #define BLE_PREPSEQ_TRIGGER_MAX_SIZE    255
 #define BLE_RSSI_NONE                   (-4096)
+#define MAX_SUPP_PHYS                   4
+#define BLE_MAX_EXT_ADV_DATA_LEN         254
+#define BLE_ADV_INT_MIN                 0x0020
+#define BLE_ADV_INT_MAX                 0x4000
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+extern const uint8_t BLE_DEFAULT_CHANMAP[5];
 
 /*********************************
  * Bluetooth Low Energy domain
@@ -51,7 +57,11 @@ typedef enum {
     BLE_HIJACK_BOTH = ble_BleCommand_HijackBoth,
     BLE_PREPARE_SEQUENCE = ble_BleCommand_PrepareSequence,
     BLE_TRIGGER_SEQUENCE = ble_BleCommand_TriggerSequence,
-    BLE_DELETE_SEQUENCE = ble_BleCommand_DeleteSequence
+    BLE_DELETE_SEQUENCE = ble_BleCommand_DeleteSequence,
+    BLE_SET_PHY = ble_BleCommand_SetPhy,
+    BLE_SET_SUPP_PHYS = ble_BleCommand_SetSupportedPhys,
+    BLE_SET_TX_POWER_LEVEL = ble_BleCommand_SetTxPowerLevel,
+    BLE_SET_EXT_ADV_PDUS = ble_BleCommand_SetExtAdvPdus,
 } whad_ble_command_t;
 
 /**
@@ -67,7 +77,9 @@ typedef enum {
     BLE_ADV_DIRECT_IND = ble_BleAdvType_ADV_DIRECT_IND,
     BLE_ADV_NONCONN_IND = ble_BleAdvType_ADV_NONCONN_IND,
     BLE_ADV_SCAN_IND = ble_BleAdvType_ADV_SCAN_IND,
-    BLE_ADV_SCAN_RSP = ble_BleAdvType_ADV_SCAN_RSP
+    BLE_ADV_SCAN_RSP = ble_BleAdvType_ADV_SCAN_RSP,
+    BLE_ADV_EXT_IND = ble_BleAdvType_ADV_EXT_IND,
+    BLE_ADV_DECISION_IND = ble_BleAdvType_ADV_DECISION_IND
 } whad_ble_advtype_t;
 
 
@@ -99,9 +111,44 @@ typedef enum {
 
 typedef enum {
     BLE_ADDR_PUBLIC = ble_BleAddrType_PUBLIC,
-    BLE_ADDR_RANDOM = ble_BleAddrType_RANDOM
+    BLE_ADDR_RANDOM = ble_BleAddrType_RANDOM,
+    BLE_ADDR_RPA = ble_BleAddrType_RPA
 } whad_ble_addrtype_t;
 
+
+/**
+ * @brief BLE PHY type
+ *
+ * Defines the PHY layer used by a BLE connection
+ * for upstream or downstream communication.
+ *
+ * This enum defines aliases for NanoPb messages.
+ **/
+
+typedef enum {
+    BLE_PHY_UNDEFINED = ble_BlePhy_UNDEFINED,
+    BLE_PHY_LE_1M = ble_BlePhy_LE_1M,
+    BLE_PHY_LE_1M_CODED = ble_BlePhy_LE_1M_CODED,
+    BLE_PHY_LE_2M = ble_BlePhy_LE_2M,
+    BLE_PHY_LE_2M_2BT = ble_BlePhy_LE_2M_2BT
+} whad_ble_phy_t;
+
+/**
+ * @brief BLE Channel Selection Algorithm
+ *
+ * Defines the channel selection algorithm used by a BLE
+ * connection. `CSA1` uses BLE's legacy channel hopping
+ * algorithm (sequence-based) while `CSA2` uses a PRNG-based
+ * channel hopping algorithm, introduced in BLE 5.
+ **/
+
+typedef enum {
+    BLE_CSA1 = ble_BleCsa_CSA1,
+    BLE_CSA2 = ble_BleCsa_CSA2,
+    BLE_CSA3a = ble_BleCsa_CSA3a,
+    BLE_CSA3b = ble_BleCsa_CSA3b,
+    BLE_CSA3c = ble_BleCsa_CSA3c
+} whad_ble_csa_t;
 
 typedef enum {
     BLE_PATTERN_TRIGGER,
@@ -173,7 +220,11 @@ typedef enum {
     WHAD_BLE_SYNCHRONIZED=ble_Message_synchronized_tag,
     WHAD_BLE_DESYNCHRONIZED=ble_Message_desynchronized_tag,
     WHAD_BLE_HIJACKED=ble_Message_hijacked_tag,
-    WHAD_BLE_INJECTED=ble_Message_injected_tag
+    WHAD_BLE_INJECTED=ble_Message_injected_tag,
+    WHAD_BLE_SET_PHY = ble_Message_set_phy_tag,
+    WHAD_BLE_SET_SUPP_PHYS = ble_Message_set_supp_phys_tag,
+    WHAD_BLE_SET_TX_POWER_LEVEL = ble_Message_set_tx_pwr_tag,
+    WHAD_BLE_SET_EXT_ADV_PDUS = ble_Message_set_ext_adv_pdus_tag
 } whad_ble_msgtype_t;
 
 /* Get BLE message type from NanoPb message. */
@@ -202,6 +253,39 @@ typedef struct {
 whad_result_t whad_ble_set_encryption(Message *p_message, uint32_t conn_handle, bool enabled, uint8_t *p_ll_key, uint8_t *p_ll_iv, uint8_t *p_key, uint8_t *p_rand, uint8_t *p_ediv);
 whad_result_t whad_ble_set_encryption_parse(Message *p_message, whad_ble_encryption_params_t *p_parameters);
 
+whad_result_t whad_ble_set_phy(Message *p_message, whad_ble_phy_t tx_phy, whad_ble_phy_t rx_phy);
+whad_result_t whad_ble_set_phy_parse(Message *p_message, whad_ble_phy_t *p_tx_phy, whad_ble_phy_t *p_rx_phy);
+whad_result_t whad_ble_set_tx_power_level(Message *p_message, int power);
+whad_result_t whad_ble_set_tx_power_level_parse(Message *p_message, int *p_power);
+
+typedef struct {
+    size_t tx_count;
+    size_t rx_count;
+    whad_ble_phy_t tx[MAX_SUPP_PHYS];
+    whad_ble_phy_t rx[MAX_SUPP_PHYS];
+} whad_ble_phys_t;
+
+whad_result_t whad_ble_set_supp_phys(Message *p_message, whad_ble_phys_t phys);
+whad_result_t whad_ble_set_supp_phys_parse(Message *p_message, whad_ble_phys_t *p_phys);
+
+typedef struct {
+    uint32_t channel;
+    uint8_t ca;
+    uint8_t offset_units;
+    uint32_t offset;
+    whad_ble_phy_t phy;
+} whad_ble_auxptr_t;
+
+typedef struct {
+    size_t length;
+    uint8_t adv_data[BLE_MAX_EXT_ADV_DATA_LEN];
+    bool has_auxptr;
+    whad_ble_auxptr_t auxptr;
+} whad_ble_ext_adv_t;
+
+whad_result_t whad_ble_set_ext_adv_pdus(Message *p_message, whad_ble_ext_adv_t *p_pdus, size_t count);
+whad_result_t whad_ble_set_ext_adv_pdus_parse(Message *p_message, whad_ble_ext_adv_t *p_pdus, size_t *p_count);
+
 /* Sniffing */
 typedef struct {
     bool use_ext_adv;
@@ -225,8 +309,8 @@ whad_result_t whad_ble_sniff_conn_req(Message *p_message, bool show_empty_packet
 whad_result_t whad_ble_sniff_conn_req_parse(Message *p_message, whad_ble_sniff_connreq_params_t *p_parameters);
 
 
-whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap);
-whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p_channelmap);
+whad_result_t whad_ble_sniff_access_address(Message *p_message, uint8_t *p_channelmap, whad_ble_phy_t phy);
+whad_result_t whad_ble_sniff_access_address_parse(Message *p_message, uint8_t *p_channelmap, whad_ble_phy_t *p_phy);
 
 typedef struct {
     uint32_t access_address;
@@ -235,20 +319,25 @@ typedef struct {
     uint32_t hop_increment;
     uint8_t channelmap[5];
     uint8_t channels[5];
+    whad_ble_phy_t phy;
 } whad_ble_sniff_conn_params_t;
 
 typedef whad_ble_sniff_conn_params_t whad_ble_synchro_params_t;
 
 whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_address, uint32_t crc_init,
                                          uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
-                                         uint8_t *p_channels);
+                                         uint8_t *p_channels, whad_ble_phy_t phy);
 whad_result_t whad_ble_sniff_active_conn_parse(Message *p_message, whad_ble_sniff_conn_params_t *p_parameters);
 
 /* Set BLE mode */
-whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval);
-whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval);
+whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval, bool use_ext_adv);
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval, bool *p_use_ext_adv);
 
 typedef struct {
+    whad_ble_advtype_t type;
+    uint32_t inter_min;
+    uint32_t inter_max;
+    uint8_t channel_map[5];
     uint8_t adv_data[31];
     uint8_t adv_data_length;
     uint8_t scanrsp_data[31];
@@ -257,14 +346,29 @@ typedef struct {
     uint8_t channel_map[5];
     uint16_t inter_min;
     uint16_t inter_max;
+    whad_ble_csa_t csa;
+    size_t ext_pdus_count;
+    whad_ble_ext_adv_t ext_pdus[4];
 } whad_ble_adv_mode_params_t;
-whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
-        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max);
+
+whad_result_t whad_ble_adv_mode(
+        Message *p_message,
+        whad_ble_advtype_t type,
+        uint32_t inter_min,
+        uint32_t inter_max,
+        uint8_t *p_channel_map,
+        uint8_t *p_adv_data,
+        int adv_data_length,
+        uint8_t *p_scanrsp_data,
+        int scanrsp_data_length,
+        whad_ble_csa_t csa,
+        whad_ble_ext_adv_t *p_pdus,
+        size_t ext_count
+);
 whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 
-whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
-        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max);
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length, whad_ble_csa_t csa, whad_ble_ext_adv_t *p_pdus, size_t count);
 whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 /* No parsing functions for these three messages :) */
@@ -281,9 +385,10 @@ typedef struct {
     uint32_t hop_interval;
     uint32_t hop_increment;
     uint32_t crc_init;
+    whad_ble_csa_t csa;
 } whad_ble_connect_params_t;
 
-whad_result_t whad_ble_connect_to(Message *p_message, uint8_t *p_bdaddr, whad_ble_addrtype_t addr_type, uint32_t access_address, uint8_t *p_channelmap, uint32_t hop_interval, uint32_t hop_increment, uint32_t crc_init);
+whad_result_t whad_ble_connect_to(Message *p_message, uint8_t *p_bdaddr, whad_ble_addrtype_t addr_type, uint32_t access_address, uint8_t *p_channelmap, uint32_t hop_interval, uint32_t hop_increment, uint32_t crc_init, whad_ble_csa_t csa);
 whad_result_t whad_ble_connect_to_parse(Message *p_message, whad_ble_connect_params_t *p_parameters);
 
 typedef struct {
@@ -294,6 +399,7 @@ typedef struct {
     int length;
     uint32_t crc;
     bool encrypt;
+    whad_ble_phy_t phy;
 } whad_ble_pdu_params_t;
 
 typedef struct {
@@ -307,10 +413,11 @@ typedef struct {
 } whad_ble_hijacked_params_t;
 
 whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
-                                    uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc, bool encrypt);
+                                    uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc, bool encrypt,
+                                    whad_ble_phy_t phy);
 whad_result_t whad_ble_send_raw_pdu_parse(Message *p_message, whad_ble_pdu_params_t *p_parameters);
 whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t direction, uint32_t conn_handle,
-                                uint8_t *p_pdu, int length, bool encrypt);
+                                uint8_t *p_pdu, int length, bool encrypt, whad_ble_phy_t phy);
 whad_result_t whad_ble_send_pdu_parse(Message *p_message, whad_ble_pdu_params_t *p_parameters);
 
 
@@ -355,8 +462,8 @@ whad_result_t whad_ble_jam_adv(Message *p_message);
 whad_result_t whad_ble_jam_adv_channel(Message *p_message, uint32_t channel);
 whad_result_t whad_ble_jam_adv_channel_parse(Message *p_message, uint32_t *p_channel);
 
-whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_address);
-whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_access_address);
+whad_result_t whad_ble_jam_active_conn(Message *p_message, uint32_t access_address, whad_ble_phy_t phy);
+whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_access_address, whad_ble_phy_t *p_phy);
 
 whad_result_t whad_ble_hijack_master(Message *p_message, uint32_t access_address);
 whad_result_t whad_ble_hijack_master_parse(Message *p_message, uint32_t *p_access_address);
@@ -372,6 +479,7 @@ typedef struct {
     uint8_t pattern[20];
     int pattern_length;
     uint32_t position;
+    whad_ble_phy_t phy;
 } whad_ble_reactive_jam_params_t;
 
 typedef struct {
@@ -387,6 +495,7 @@ typedef struct {
     whad_ble_direction_t direction;
     bool processed;
     bool decrypted;
+    whad_ble_phy_t phy;
 } whad_ble_pdu_t;
 
 typedef struct {
@@ -396,6 +505,8 @@ typedef struct {
     whad_ble_addrtype_t addr_type;
     uint8_t *p_adv_data;
     int adv_data_length;
+    uint32_t channel;
+    whad_ble_phy_t phy;
 } whad_ble_adv_pdu_t;
 
 typedef struct {
@@ -406,19 +517,19 @@ typedef struct {
     bool inc_rssi;
 } whad_ble_aa_disc_params_t;
 
-whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_t *p_pattern, int pattern_length, uint32_t position);
+whad_result_t whad_ble_reactive_jam(Message *p_message, uint32_t channel, uint8_t *p_pattern, int pattern_length, uint32_t position, whad_ble_phy_t phy);
 whad_result_t whad_ble_reactive_jam_parse(Message *p_message, whad_ble_reactive_jam_params_t *p_parameters);
 
 /* Notifications (Adapter -> Host)*/
-whad_result_t whad_ble_notify_connected(Message *p_message, whad_ble_addrtype_t adv_addr_type, uint8_t *p_adv_addr, whad_ble_addrtype_t init_addr_type, uint8_t *p_init_addr, uint32_t conn_handle);
+whad_result_t whad_ble_notify_connected(Message *p_message, whad_ble_addrtype_t adv_addr_type, uint8_t *p_adv_addr, whad_ble_addrtype_t init_addr_type, uint8_t *p_init_addr, uint32_t conn_handle, whad_ble_phy_t phy);
 whad_result_t whad_ble_notify_disconnected(Message *p_message, uint32_t conn_handle, uint32_t reason);
 whad_result_t whad_ble_notify_disconnected_parse(Message *p_message, whad_ble_disconnected_params_t *p_parameters);
 whad_result_t whad_ble_raw_pdu(Message *p_message, uint32_t channel, int32_t rssi, uint32_t conn_handle,
                                uint32_t access_address, uint8_t *p_pdu, int length, uint32_t crc,
                                bool crc_validity, uint32_t timestamp, uint32_t relative_timestamp,
-                               whad_ble_direction_t direction, bool processed, bool decrypted, bool use_timestamp);
+                               whad_ble_direction_t direction, bool processed, bool decrypted, bool use_timestamp, whad_ble_phy_t phy);
 whad_result_t whad_ble_pdu(Message *p_message, uint8_t *p_pdu, int length, whad_ble_direction_t direction,
-                           int conn_handle, bool processed, bool decrypted);
+                           int conn_handle, bool processed, bool decrypted, whad_ble_phy_t phy);
 whad_result_t whad_ble_pdu_parse(Message *p_message, whad_ble_pdu_t *p_parameters);
 whad_result_t whad_ble_triggered(Message *p_message, uint32_t id);
 whad_result_t whad_ble_triggered_parse(Message *p_message, uint32_t *p_id);
@@ -426,10 +537,12 @@ whad_result_t whad_ble_access_address_discovered(Message *p_message, uint32_t ac
                                                  int32_t rssi, bool inc_ts, bool inc_rssi);
 whad_result_t whad_ble_access_address_discovered_parse(Message *p_message, whad_ble_aa_disc_params_t *p_parameters);
 whad_result_t whad_ble_adv_pdu(Message *p_message, whad_ble_advtype_t adv_type, int32_t rssi, uint8_t *p_bdaddr,
-                               whad_ble_addrtype_t addr_type, uint8_t *p_adv_data, int adv_data_length);
+                               whad_ble_addrtype_t addr_type, uint8_t *p_adv_data, int adv_data_length, uint32_t channel,
+                               whad_ble_phy_t phy);
 whad_result_t whad_ble_adv_pdu_parse(Message *p_message, whad_ble_adv_pdu_t *p_parameters);
 whad_result_t whad_ble_synchronized(Message *p_message, uint32_t access_address, uint32_t crc_init,
-                                    uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap);
+                                    uint32_t hop_interval, uint32_t hop_increment, uint8_t *p_channelmap,
+                                    whad_ble_phy_t phy);
 whad_result_t whad_ble_synchronized_parse(Message *p_message, whad_ble_synchro_params_t *p_parameters);
 whad_result_t whad_ble_desynchronized(Message *p_message, uint32_t access_address);
 whad_result_t whad_ble_desynchronized_parse(Message *p_message, uint32_t *p_access_address);
@@ -437,6 +550,8 @@ whad_result_t whad_ble_hijacked(Message *p_message, uint32_t access_address, boo
 whad_result_t whad_ble_hijacked_parse(Message *p_message, whad_ble_hijacked_params_t *p_parameters);
 whad_result_t whad_ble_injected(Message *p_message, uint32_t access_address, uint32_t attempts, bool success);
 whad_result_t whad_ble_injected_parse(Message *p_message, whad_ble_injected_params_t *p_parameters);
+whad_result_t whad_ble_phy_updated(Message *p_message, whad_ble_phy_t tx, whad_ble_phy_t rx);
+whad_result_t whad_ble_phy_updated_parse(Message *p_message, whad_ble_phy_t *p_tx, whad_ble_phy_t *p_rx);
 
 
 #ifdef __cplusplus

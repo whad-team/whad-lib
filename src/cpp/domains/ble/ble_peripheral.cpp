@@ -24,7 +24,8 @@ PeripheralMode::PeripheralMode(BleMsg &message) : BleMsg(message)
  */
 
 PeripheralMode::PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength,
-                               uint8_t *pScanRsp, unsigned int scanRspLength) : BleMsg()
+                               uint8_t *pScanRsp, unsigned int scanRspLength,
+                               Csa csa) : BleMsg()
 {
     /* Save advertising data. */
     m_advDataLength = advDataLength;
@@ -56,6 +57,9 @@ PeripheralMode::PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength,
     m_channelMap.enableChannel(39);
     m_interMin = 0x20;
     m_interMax = 0x4000;
+
+    /* Set CSA */
+    m_csa = csa;
 }
 
 
@@ -87,13 +91,25 @@ PeripheralMode::PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength,
 
 void PeripheralMode::pack()
 {
-    whad_ble_peripheral_mode(
-        this->getMessage(),
-        m_advData, m_advDataLength,
-        m_scanRsp, m_scanRspLength,
-        (whad_ble_advtype_t)m_type,
-        m_channelMap.getChannelMapBuf(),
-        m_interMin, m_interMax);
+    whad_ble_ext_adv_t ext_pdus[4];
+    std::vector<ExtAdvPdu>::iterator it;
+    int nb_ext_adv = 0;
+
+    /* Populate extended advertising PDUs, if any. */
+    if (m_pdus.size() > 0)
+    {
+        for (it = m_pdus.begin(); it < m_pdus.end(); it++)
+        {
+            /* Fill ext_pdus array with the current ExtAdvPdu info. */
+            it->copyTo(&ext_pdus[nb_ext_adv++]);
+        }
+    }
+
+    /* Build the PeripheralMode message based on the provided information. */
+    whad_ble_peripheral_mode(this->getMessage(), m_advData, m_advDataLength,
+                             m_scanRsp, m_scanRspLength, type, channelMap, 
+                             interMin, interMax, (whad_ble_csa_t)m_csa,
+                             ext_pdus, nb_ext_adv);
 }
 
 
@@ -146,6 +162,64 @@ void PeripheralMode::unpack()
     }
 }
 
+/**
+ * @brief   Add an extended advertising PDU.
+ *
+ * @retval  True if PDU has successfully been added, false otherwise.
+ **/
+
+bool PeripheralMode::addExtPdu(ExtAdvPdu& pdu)
+{
+    if (m_pdus.size() < 4)
+    {
+        m_pdus.push_back(pdu);
+
+        /* Success. */
+        return true;
+    }
+    else
+    {
+        /* Failed, maximum number of extended PDU reached. */
+        return false;
+    }
+}
+
+
+/**
+ * @brief   Get the number of extended advertising PDU already defined.
+ *
+ * @retval  Number of extended advertising PDU.
+ **/
+size_t PeripheralMode::getNumberOfExtPdus()
+{
+    return m_pdus.size();
+}
+
+/**
+ * @brief   Retrieve a specific extended advertising PDU.
+ *
+ * @retval  Reference to an extended advertising PDU, NULL if index is invalid.
+ **/
+ExtAdvPdu* PeripheralMode::getExtPdu(unsigned int index)
+{
+    if (index < m_pdus.size())
+    {
+        return &m_pdus.at(index);
+    }
+    else
+        return NULL;
+}
+
+/**
+ * @brief   Get an iterator on defined extended advertising PDUs.
+ *
+ * @retval  Iterator.
+ **/
+
+std::vector<ExtAdvPdu>::iterator PeripheralMode::getExtPdusIterator()
+{
+    return m_pdus.begin();
+}
 
 /**
  * @brief   Get the advertising data
@@ -194,7 +268,6 @@ unsigned int PeripheralMode::getScanRspLength()
     return m_scanRspLength;
 }
 
-
 /**
  * @brief   Get advertisement type
  *
@@ -235,5 +308,17 @@ uint16_t PeripheralMode::getIntervalMin()
 uint16_t PeripheralMode::getIntervalMax()
 {
     return m_interMax;
+}
+
+
+/**
+ * @brief   Get the selected CSA
+ * 
+ * @retval  Channel selection algorithm in use
+ */
+
+Csa PeripheralMode::getCsa()
+{
+    return m_csa;
 }
 

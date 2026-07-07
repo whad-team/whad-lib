@@ -14,10 +14,15 @@ namespace whad::ble {
         public:
             JamActiveConn(BleMsg &message);
             JamActiveConn(uint32_t accessAddress);
+            JamActiveConn(uint32_t accessAddress, Phy phy);
+
+            Phy getPhy();
 
         private:
             void pack();
             void unpack();
+
+            Phy m_phy;
     };
 
 }
