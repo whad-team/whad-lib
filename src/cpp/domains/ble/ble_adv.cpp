@@ -13,6 +13,19 @@ AdvMode::AdvMode(BleMsg &message) : BleMsg(message)
     this->unpack();
 }
 
+/**
+ * @brief       AdvMode message constructor.
+ * 
+ * @param[in]   pAdvData        Pointer to a byte buffer containing the device advertising data
+ * @param[in]   advDataLength   Size in bytes of the advertising data
+ * @param[in]   pScanRsp        Pointer to a byte buffer containing the device scan response data
+ * @param[in]   scanRspLength   Size in bytes of the scan response data
+ **/
+
+AdvMode::AdvMode(uint8_t *pAdvData, size_t advDataLength, uint8_t *pScanRsp, size_t scanRspLength) : AdvMode(
+        AdvType::AdvInd, 0x20, 0x4000, pAdvData, advDataLength, pScanRsp, scanRspLength, ChannelMap((uint8_t *)BLE_DEFAULT_CHANMAP), Csa::Csa1)
+{
+}
 
 /**
  * @brief       AdvMode message constructor.
@@ -23,7 +36,7 @@ AdvMode::AdvMode(BleMsg &message) : BleMsg(message)
  * @param[in]   scanRspLength   Size in bytes of the scan response data
  **/
 
-AdvMode::AdvMode(AdvType advType, uint32_t interMin, uint32_t interMax, uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength) : BleMsg()
+AdvMode::AdvMode(AdvType advType, uint16_t interMin, uint16_t interMax, uint8_t *pAdvData, size_t advDataLength, uint8_t *pScanRsp, size_t scanRspLength, ChannelMap channelMap, Csa csa) : BleMsg()
 {
     /* If advertising data is provided, save it. */
     if ((advDataLength <= 31) && (pAdvData != NULL))
@@ -71,12 +84,9 @@ AdvMode::AdvMode(AdvType advType, uint32_t interMin, uint32_t interMax, uint8_t 
 
 AdvMode::AdvMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength,
         AdvType type, ChannelMap channelMap, uint16_t interMin, uint16_t interMax)
-    : AdvMode(pAdvData, advDataLength, pScanRsp, scanRspLength)
+    : AdvMode(type, interMin, interMax, pAdvData, advDataLength, pScanRsp, scanRspLength,
+            ChannelMap((uint8_t*)BLE_DEFAULT_CHANMAP), Csa::Csa1)
 {
-    m_type = type;
-    m_channelMap = channelMap;
-    m_interMin = interMin;
-    m_interMax = interMax;
 }
 
 /**
@@ -231,24 +241,33 @@ AdvType AdvMode::getAdvType()
 
 
 /**
+ * @brief   Get advertising channel map
+ *
+ * @retval  Channel map
+ */
+ChannelMap &AdvMode::getChannelMap()
+{
+    return m_channelMap;
+}
+
+
+/**
  * @brief   Get minimum advertising interval
  *
  * @retval  Minimum advertising interval (0x0020 < interval < 0x4000)
  */
 
-uint32_t AdvMode::getIntervalMin()
+uint16_t AdvMode::getIntervalMin()
 {
     return m_interMin;
 }
 
-
 /**
- * @brief   Get maximum advertising interval
+ * @brief   Get advertising maximum interval
  *
- * @retval  Maximum advertising interval (0x0020 < interval < 0x4000)
+ * @retval  Advertising maximum interval
  */
-
-uint32_t AdvMode::getIntervalMax()
+uint16_t AdvMode::getIntervalMax()
 {
     return m_interMax;
 }
@@ -265,16 +284,6 @@ Csa AdvMode::getCsa()
     return m_csa;
 }
 
-/**
- * @brief   Get channel map
- *
- * @retval  Configured channel map
- */
-
-ChannelMap& AdvMode::getChannelMap()
-{
-    return m_channelMap;
-}
 
 /**
  * @brief   Add an extended advertising PDU.

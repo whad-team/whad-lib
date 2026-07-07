@@ -817,11 +817,12 @@ whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, 
  * @param[in]       type                Advertisement PDU type
  * @param[in]       inter_min           Minimum advertising interval
  * @param[in]       inter_max           Maximum advertising interval
- * @param[in]       p_channel_map       Channel map to use (use default value if set to NULL)
+ * @param[in]       p_channelmap        Channel map to use (use default value if set to NULL)
  * @param[in]       p_adv_data          Pointer to a byte array containing the advertising data
  * @param[in]       adv_data_length     Length of advertising data
  * @param[in]       p_scanrsp_data      Pointer to a byte array containing the scan response data
  * @param[in]       scanrsp_data_length Length of scan response data
+ * @param[in]       adv_type            Advertisement type
  * @param[in]       csa                 Selected Channel Selection Algorithm
  * @param[in]       p_pdus              Pointer to a list of whad_ble_ext_adv_t structures
  * @param[in]       ext_count           Number of extended advertising PDUs passed in `p_pdus`.
@@ -830,14 +831,12 @@ whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, 
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-/* TODO: Add support for CSA and extended advertising PDUs. */
-
 whad_result_t whad_ble_adv_mode(
         Message *p_message,
         whad_ble_advtype_t type,
         uint32_t inter_min,
         uint32_t inter_max,
-        uint8_t* p_channel_map,
+        uint8_t* p_channelmap,
         uint8_t *p_adv_data,
         int adv_data_length,
         uint8_t *p_scanrsp_data,
@@ -869,15 +868,6 @@ whad_result_t whad_ble_adv_mode(
     p_message->msg.ble.msg.adv_mode.inter_min = inter_min;
     p_message->msg.ble.msg.adv_mode.inter_max = inter_max;
 
-    if (p_channel_map != NULL)
-    {
-        memcpy(p_message->msg.ble.msg.adv_mode.channel_map, p_channel_map, 5);
-    }
-    else
-    {
-        memcpy(p_message->msg.ble.msg.adv_mode.channel_map, BLE_DEFAULT_CHANMAP, 5);
-    }
-
     /* Set avertising data, if provided. */
     if (adv_data_length > 0)
     {
@@ -901,6 +891,26 @@ whad_result_t whad_ble_adv_mode(
 
         p_message->msg.ble.msg.adv_mode.scanrsp_data.size = scanrsp_data_length;
         memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
+    }
+
+    /* Set specific channel map, use default channel map if set to NULL. */
+    memset(p_message->msg.ble.msg.adv_mode.channel_map, 0, 5);
+    if (p_channelmap == NULL)
+    {
+        /* Enable only channels 37, 38 and 39. */
+        p_message->msg.ble.msg.adv_mode.channel_map[4] = 0xe0;
+    }
+    else
+    {
+        /* Check that at least one advertising channel has been selected. */
+        if ((p_channelmap[4] & 0xe0) > 0)
+        {
+            p_message->msg.ble.msg.adv_mode.channel_map[4] = p_channelmap[4] & 0xe0;
+        }
+        else
+        {
+            return WHAD_ERROR;
+        }
     }
 
     /* Cap ext_count to 4. */
@@ -992,6 +1002,7 @@ whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_para
     p_parameters->inter_max = p_message->msg.ble.msg.adv_mode.inter_max;
     memcpy(p_parameters->channel_map, p_message->msg.ble.msg.adv_mode.channel_map, 5);
 
+    /* TODO: extract extended advertising PDUs. */
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1453,6 +1464,7 @@ whad_result_t whad_ble_disconnect_parse(Message *p_message, uint32_t *p_conn_han
  **/
 
 whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
+        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max,
         whad_ble_csa_t csa, whad_ble_ext_adv_t *p_pdus, size_t count)
 {
     int i;
