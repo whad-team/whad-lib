@@ -23,7 +23,7 @@ AdvMode::AdvMode(BleMsg &message) : BleMsg(message)
  **/
 
 AdvMode::AdvMode(uint8_t *pAdvData, size_t advDataLength, uint8_t *pScanRsp, size_t scanRspLength) : AdvMode(
-        AdvType::AdvInd, 0x20, 0x4000, pAdvData, advDataLength, pScanRsp, scanRspLength, ChannelMap(BLE_DEFAULT_CHANMAP), Csa::Csa1)
+        AdvType::AdvInd, 0x20, 0x4000, pAdvData, advDataLength, pScanRsp, scanRspLength, ChannelMap((uint8_t *)BLE_DEFAULT_CHANMAP), Csa::Csa1)
 {
 }
 
@@ -36,7 +36,7 @@ AdvMode::AdvMode(uint8_t *pAdvData, size_t advDataLength, uint8_t *pScanRsp, siz
  * @param[in]   scanRspLength   Size in bytes of the scan response data
  **/
 
-AdvMode::AdvMode(AdvType advType, uint32_t interMin, uint32_t interMax, uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength, ChannelMap channelMap, Csa csa) : BleMsg()
+AdvMode::AdvMode(AdvType advType, uint16_t interMin, uint16_t interMax, uint8_t *pAdvData, size_t advDataLength, uint8_t *pScanRsp, size_t scanRspLength, ChannelMap channelMap, Csa csa) : BleMsg()
 {
     /* If advertising data is provided, save it. */
     if ((advDataLength <= 31) && (pAdvData != NULL))
@@ -85,12 +85,9 @@ AdvMode::AdvMode(AdvType advType, uint32_t interMin, uint32_t interMax, uint8_t 
 
 AdvMode::AdvMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength,
         AdvType type, ChannelMap channelMap, uint16_t interMin, uint16_t interMax)
-    : AdvMode(pAdvData, advDataLength, pScanRsp, scanRspLength)
+    : AdvMode(type, interMin, interMax, pAdvData, advDataLength, pScanRsp, scanRspLength,
+            ChannelMap((uint8_t*)BLE_DEFAULT_CHANMAP), Csa::Csa1)
 {
-    m_type = type;
-    m_channelMap = channelMap;
-    m_interMin = interMin;
-    m_interMax = interMax;
 }
 
 /**
@@ -123,16 +120,9 @@ void AdvMode::pack()
         m_advDataLength,
         m_scanRsp,
         m_scanRspLength,
-<<<<<<< HEAD
-        (whad_ble_advtype_t)m_type,
-        m_channelMap.getChannelMapBuf(),
-        m_interMin,
-        m_interMax
-=======
         (whad_ble_csa_t)m_csa,
         ext_pdus,
         nb_ext_adv
->>>>>>> feature/whad-protocol-v3
     );
 }
 
@@ -242,14 +232,9 @@ uint8_t *AdvMode::getScanRsp()
 /**
  * @brief   Get advertisement type
  *
-<<<<<<< HEAD
- * @retval  Advertisement type
- */
-=======
  * @retval  Advertisement type (AdvType)
  */
 
->>>>>>> feature/whad-protocol-v3
 AdvType AdvMode::getAdvType()
 {
     return m_type;
@@ -257,7 +242,6 @@ AdvType AdvMode::getAdvType()
 
 
 /**
-<<<<<<< HEAD
  * @brief   Get advertising channel map
  *
  * @retval  Channel map
@@ -269,46 +253,26 @@ ChannelMap &AdvMode::getChannelMap()
 
 
 /**
- * @brief   Get advertising mimimum interval
- *
- * @retval  Advertising minimum interval
- */
-uint16_t AdvMode::getIntervalMin()
-=======
  * @brief   Get minimum advertising interval
  *
  * @retval  Minimum advertising interval (0x0020 < interval < 0x4000)
  */
 
-uint32_t AdvMode::getIntervalMin()
->>>>>>> feature/whad-protocol-v3
+uint16_t AdvMode::getIntervalMin()
 {
     return m_interMin;
 }
 
-<<<<<<< HEAD
 /**
  * @brief   Get advertising maximum interval
  *
  * @retval  Advertising maximum interval
  */
 uint16_t AdvMode::getIntervalMax()
-=======
-
-/**
- * @brief   Get maximum advertising interval
- *
- * @retval  Maximum advertising interval (0x0020 < interval < 0x4000)
- */
-
-uint32_t AdvMode::getIntervalMax()
->>>>>>> feature/whad-protocol-v3
 {
     return m_interMax;
 }
 
-<<<<<<< HEAD
-=======
 
 /**
  * @brief   Get selected Channel Selection Algorithm (CSA)
@@ -321,16 +285,6 @@ Csa AdvMode::getCsa()
     return m_csa;
 }
 
-/**
- * @brief   Get channel map
- *
- * @retval  Configured channel map
- */
-
-ChannelMap& AdvMode::getChannelMap()
-{
-    return m_channelMap;
-}
 
 /**
  * @brief   Add an extended advertising PDU.
@@ -380,4 +334,3 @@ ExtAdvPdu* AdvMode::getExtPdu(unsigned int index)
         return NULL;
 }
 
->>>>>>> feature/whad-protocol-v3

@@ -343,9 +343,6 @@ typedef struct {
     uint8_t scanrsp_data[31];
     uint8_t scanrsp_data_length;
     whad_ble_advtype_t adv_type;
-    uint8_t channel_map[5];
-    uint16_t inter_min;
-    uint16_t inter_max;
     whad_ble_csa_t csa;
     size_t ext_pdus_count;
     whad_ble_ext_adv_t ext_pdus[4];
@@ -368,7 +365,7 @@ whad_result_t whad_ble_adv_mode(
 whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 
-whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length, whad_ble_csa_t csa, whad_ble_ext_adv_t *p_pdus, size_t count);
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length, whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max, whad_ble_csa_t csa, whad_ble_ext_adv_t *p_pdus, size_t count);
 whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 /* No parsing functions for these three messages :) */

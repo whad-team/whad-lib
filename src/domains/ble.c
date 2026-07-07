@@ -754,22 +754,14 @@ whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_acc
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       active_scan         If set to true, the adapter will send SCAN_REQ PDU to get additional data
-<<<<<<< HEAD
- * @param[in]       interval            Provide scanning interval (in ms).
-=======
  * @param[in]       interval            Scan interval, in ms
  * @param[in]       use_ext_adv         If set to true, the adapter will accept extended advertisements
->>>>>>> feature/whad-protocol-v3
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-<<<<<<< HEAD
-whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval)
-=======
 whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval, bool use_ext_adv)
->>>>>>> feature/whad-protocol-v3
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -780,14 +772,9 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t 
     /* Populate message fields. */
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_scan_mode_tag;
-<<<<<<< HEAD
-    p_message->msg.ble.msg.scan_mode.active_scan = active_scan; 
-    p_message->msg.ble.msg.scan_mode.interval = interval; 
-=======
     p_message->msg.ble.msg.scan_mode.active_scan = active_scan;
     p_message->msg.ble.msg.scan_mode.interval = interval;
     p_message->msg.ble.msg.scan_mode.use_ext_adv = use_ext_adv;
->>>>>>> feature/whad-protocol-v3
 
     /* Success. */
     return WHAD_SUCCESS;   
@@ -799,20 +786,12 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t 
  * 
  * @param[in]   p_message         Pointer to the message to parse. 
  * @param[out]  p_active_scan     Pointer to a boolean value, if true an active scan has to be performed.
-<<<<<<< HEAD
- * @param[out]  p_interval        Pointer to an integer value, indicating the scanning interval.
- * @return whad_result_t 
- */
-
-whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval)
-=======
  * @param[out]  p_interval        Pointer to the scan interval value
  * @param[out]  p_use_ext_adv     Pointer to a boolean value, if true extended advertisements are supported.
  * @return whad_result_t 
  */
 
 whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval, bool *p_use_ext_adv)
->>>>>>> feature/whad-protocol-v3
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_active_scan == NULL) || (p_interval == NULL) || (p_use_ext_adv == NULL))
@@ -822,10 +801,7 @@ whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, 
 
     *p_active_scan = p_message->msg.ble.msg.scan_mode.active_scan;
     *p_interval = p_message->msg.ble.msg.scan_mode.interval;
-<<<<<<< HEAD
-=======
     *p_use_ext_adv = p_message->msg.ble.msg.scan_mode.use_ext_adv;
->>>>>>> feature/whad-protocol-v3
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -841,39 +817,26 @@ whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, 
  * @param[in]       type                Advertisement PDU type
  * @param[in]       inter_min           Minimum advertising interval
  * @param[in]       inter_max           Maximum advertising interval
- * @param[in]       p_channel_map       Channel map to use (use default value if set to NULL)
+ * @param[in]       p_channelmap        Channel map to use (use default value if set to NULL)
  * @param[in]       p_adv_data          Pointer to a byte array containing the advertising data
  * @param[in]       adv_data_length     Length of advertising data
  * @param[in]       p_scanrsp_data      Pointer to a byte array containing the scan response data
  * @param[in]       scanrsp_data_length Length of scan response data
-<<<<<<< HEAD
  * @param[in]       adv_type            Advertisement type
- * @param[in]       p_channelmap        Pointer to a 5-byte array specifying the advertising channels to use,
- *                                      set to default if parameter is set to NULL
- * @param[in]       inter_min           Minimum value used to determine the lowest advertising interval
- * @param[in]       inter_max           Maximum value used to determine the greatest advertising interval
-=======
  * @param[in]       csa                 Selected Channel Selection Algorithm
  * @param[in]       p_pdus              Pointer to a list of whad_ble_ext_adv_t structures
  * @param[in]       ext_count           Number of extended advertising PDUs passed in `p_pdus`.
->>>>>>> feature/whad-protocol-v3
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
-
-<<<<<<< HEAD
-whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
-         whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max)
-=======
-/* TODO: Add support for CSA and extended advertising PDUs. */
 
 whad_result_t whad_ble_adv_mode(
         Message *p_message,
         whad_ble_advtype_t type,
         uint32_t inter_min,
         uint32_t inter_max,
-        uint8_t* p_channel_map,
+        uint8_t* p_channelmap,
         uint8_t *p_adv_data,
         int adv_data_length,
         uint8_t *p_scanrsp_data,
@@ -881,7 +844,6 @@ whad_result_t whad_ble_adv_mode(
         whad_ble_csa_t csa,
         whad_ble_ext_adv_t *p_pdus,
         size_t ext_count)
->>>>>>> feature/whad-protocol-v3
 {
     int i;
 
@@ -906,15 +868,6 @@ whad_result_t whad_ble_adv_mode(
     p_message->msg.ble.msg.adv_mode.inter_min = inter_min;
     p_message->msg.ble.msg.adv_mode.inter_max = inter_max;
 
-    if (p_channel_map != NULL)
-    {
-        memcpy(p_message->msg.ble.msg.adv_mode.channel_map, p_channel_map, 5);
-    }
-    else
-    {
-        memcpy(p_message->msg.ble.msg.adv_mode.channel_map, BLE_DEFAULT_CHANMAP, 5);
-    }
-
     /* Set avertising data, if provided. */
     if (adv_data_length > 0)
     {
@@ -923,13 +876,8 @@ whad_result_t whad_ble_adv_mode(
         {
             adv_data_length = 31;
         }
-<<<<<<< HEAD
         p_message->msg.ble.msg.adv_mode.adv_data.size = adv_data_length;
         memcpy(p_message->msg.ble.msg.adv_mode.adv_data.bytes, p_adv_data, adv_data_length);
-=======
-        p_message->msg.ble.msg.adv_mode.scanrsp_data.size = adv_data_length;
-        memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_adv_data, adv_data_length);
->>>>>>> feature/whad-protocol-v3
     }
 
     /* Set scan response data, if provided. */
@@ -945,7 +893,6 @@ whad_result_t whad_ble_adv_mode(
         memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
     }
 
-<<<<<<< HEAD
     /* Set specific channel map, use default channel map if set to NULL. */
     memset(p_message->msg.ble.msg.adv_mode.channel_map, 0, 5);
     if (p_channelmap == NULL)
@@ -959,7 +906,13 @@ whad_result_t whad_ble_adv_mode(
         if ((p_channelmap[4] & 0xe0) > 0)
         {
             p_message->msg.ble.msg.adv_mode.channel_map[4] = p_channelmap[4] & 0xe0;
-=======
+        }
+        else
+        {
+            return WHAD_ERROR;
+        }
+    }
+
     /* Cap ext_count to 4. */
     if (ext_count > 4)
     {
@@ -994,7 +947,6 @@ whad_result_t whad_ble_adv_mode(
                 p_message->msg.ble.msg.adv_mode.ext_pdus[i].aux_ptr.offset = 0;
                 p_message->msg.ble.msg.adv_mode.ext_pdus[i].aux_ptr.phy = 0;
             }
->>>>>>> feature/whad-protocol-v3
         }
         else
         {
@@ -1002,14 +954,6 @@ whad_result_t whad_ble_adv_mode(
         }
     }
 
-<<<<<<< HEAD
-    /* Save advertisement parameters. */
-    p_message->msg.ble.msg.adv_mode.adv_type = adv_type;
-    p_message->msg.ble.msg.adv_mode.inter_min = inter_min;
-    p_message->msg.ble.msg.adv_mode.inter_max = inter_max;
-
-=======
->>>>>>> feature/whad-protocol-v3
     /* Success. */
     return WHAD_SUCCESS;   
 }
@@ -1023,20 +967,12 @@ whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_para
     }
 
     /* Extract advertising data from message. */
-<<<<<<< HEAD
     p_parameters->adv_data_length = p_message->msg.ble.msg.adv_mode.adv_data.size;
-=======
-    p_parameters->adv_data_length = p_message->msg.ble.msg.adv_mode.scanrsp_data.size;
->>>>>>> feature/whad-protocol-v3
     if ((p_parameters->adv_data_length > 0) && (p_parameters->adv_data_length < 31))
     {
         memcpy(
             p_parameters->adv_data,
-<<<<<<< HEAD
             p_message->msg.ble.msg.adv_mode.adv_data.bytes,
-=======
-            p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes,
->>>>>>> feature/whad-protocol-v3
             p_parameters->adv_data_length
         );
     }
@@ -1066,6 +1002,7 @@ whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_para
     p_parameters->inter_max = p_message->msg.ble.msg.adv_mode.inter_max;
     memcpy(p_parameters->channel_map, p_message->msg.ble.msg.adv_mode.channel_map, 5);
 
+    /* TODO: extract extended advertising PDUs. */
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1527,7 +1464,7 @@ whad_result_t whad_ble_disconnect_parse(Message *p_message, uint32_t *p_conn_han
  **/
 
 whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
-        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max)
+        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max,
         whad_ble_csa_t csa, whad_ble_ext_adv_t *p_pdus, size_t count)
 {
     int i;

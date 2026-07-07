@@ -31,21 +31,6 @@ ScanMode::ScanMode(bool active, uint32_t interval) : BleMsg()
  * 
  * @param[in]   active      If set to true, adapter will perform an active scan
  * @param[in]   interval    Scan interval in ms.
- **/
-
-ScanMode::ScanMode(bool active, uint32_t interval) : BleMsg()
-{
-    m_active = active;
-    m_interval = interval;
-    m_useExtAdv = false;
-}
-
-
-/**
- * @brief       ScanMode message constructor.
- * 
- * @param[in]   active      If set to true, adapter will perform an active scan
- * @param[in]   interval    Scan interval in ms.
  * @param[in]   useExtAdv   If set to true, will follow extended advertisements.
  **/
 
@@ -54,7 +39,6 @@ ScanMode::ScanMode(bool active, uint32_t interval, bool useExtAdv) : BleMsg()
     m_active = active;
     m_interval = interval;
     m_useExtAdv = useExtAdv;
->>>>>>> feature/whad-protocol-v3
 }
 
 /**

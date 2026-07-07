@@ -13,6 +13,11 @@ PeripheralMode::PeripheralMode(BleMsg &message) : BleMsg(message)
     this->unpack();
 }
 
+PeripheralMode::PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength, Csa csa) : 
+    PeripheralMode(pAdvData, advDataLength, pScanRsp, scanRspLength, AdvType::AdvInd,
+            ChannelMap((uint8_t *)BLE_DEFAULT_CHANMAP), 0x20, 0x4000, csa)
+{
+}
 
 /**
  * @brief   Create a PeripheralMode message.
@@ -21,11 +26,17 @@ PeripheralMode::PeripheralMode(BleMsg &message) : BleMsg(message)
  * @param[in]   advDataLength   Size of the advertising data in bytes
  * @param[in]   pScanRsp        Pointer to a buffer containing the scan response data
  * @param[in]   scanRspLength   Size of the scan response data in bytes
+ * @param[in]   type            Advertising type
+ * @param[in]   channelMap      Advertising channel map
+ * @param[in]   interMin        Advertising minimum interval value
+ * @param[in]   interMax        Advertising maximum interval value
+ * @param[in]   csa             Channel Selection Algorithm to advertise
  */
 
 PeripheralMode::PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength,
                                uint8_t *pScanRsp, unsigned int scanRspLength,
-                               Csa csa) : BleMsg()
+                               AdvType type, ChannelMap channelMap, uint16_t interMin,
+                               uint16_t interMax, Csa csa) : BleMsg()
 {
     /* Save advertising data. */
     m_advDataLength = advDataLength;
@@ -50,40 +61,15 @@ PeripheralMode::PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength,
     }
 
     /* Initialize advertising parameters to default. */
-    m_type = AdvType::AdvInd;
-    m_channelMap = ChannelMap();
-    m_channelMap.enableChannel(37);
-    m_channelMap.enableChannel(38);
-    m_channelMap.enableChannel(39);
-    m_interMin = 0x20;
-    m_interMax = 0x4000;
+    m_type = type;
+    m_channelMap = channelMap;
+    m_interMin = interMin;
+    m_interMax = interMax;
 
     /* Set CSA */
     m_csa = csa;
 }
 
-
-/**
- * @brief   Create a PeripheralMode message.
- * 
- * @param[in]   pAdvData        Pointer to a buffer containing the advertising data
- * @param[in]   advDataLength   Size of the advertising data in bytes
- * @param[in]   pScanRsp        Pointer to a buffer containing the scan response data
- * @param[in]   scanRspLength   Size of the scan response data in bytes
- */
-
-PeripheralMode::PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength,
-                               uint8_t *pScanRsp, unsigned int scanRspLength,
-                               AdvType type, ChannelMap channelMap,
-                               uint16_t interMin, uint16_t interMax)
-    : PeripheralMode(pAdvData, advDataLength, pScanRsp, scanRspLength)
-{
-    /* Save advertising parameters. */
-    m_type = type;
-    m_channelMap = channelMap;
-    m_interMin = interMin;
-    m_interMax = interMax;
-}
 
 /**
  * @brief   Pack parameters into a BleMsg
@@ -107,8 +93,8 @@ void PeripheralMode::pack()
 
     /* Build the PeripheralMode message based on the provided information. */
     whad_ble_peripheral_mode(this->getMessage(), m_advData, m_advDataLength,
-                             m_scanRsp, m_scanRspLength, type, channelMap, 
-                             interMin, interMax, (whad_ble_csa_t)m_csa,
+                             m_scanRsp, m_scanRspLength, (whad_ble_advtype_t)m_type, m_channelMap.getChannelMapBuf(), 
+                             m_interMin, m_interMax, (whad_ble_csa_t)m_csa,
                              ext_pdus, nb_ext_adv);
 }
 
