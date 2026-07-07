@@ -61,7 +61,7 @@ typedef enum {
     BLE_SET_PHY = ble_BleCommand_SetPhy,
     BLE_SET_SUPP_PHYS = ble_BleCommand_SetSupportedPhys,
     BLE_SET_TX_POWER_LEVEL = ble_BleCommand_SetTxPowerLevel,
-    BLE_SET_EXT_ADV_PDUS = ble_BleCommand_SetExtAdvPdus
+    BLE_SET_EXT_ADV_PDUS = ble_BleCommand_SetExtAdvPdus,
 } whad_ble_command_t;
 
 /**
@@ -545,6 +545,9 @@ whad_result_t whad_ble_hijacked(Message *p_message, uint32_t access_address, boo
 whad_result_t whad_ble_hijacked_parse(Message *p_message, whad_ble_hijacked_params_t *p_parameters);
 whad_result_t whad_ble_injected(Message *p_message, uint32_t access_address, uint32_t attempts, bool success);
 whad_result_t whad_ble_injected_parse(Message *p_message, whad_ble_injected_params_t *p_parameters);
+whad_result_t whad_ble_phy_updated(Message *p_message, whad_ble_phy_t tx, whad_ble_phy_t rx);
+whad_result_t whad_ble_phy_updated_parse(Message *p_message, whad_ble_phy_t *p_tx, whad_ble_phy_t *p_rx);
+
 
 #ifdef __cplusplus
 }
