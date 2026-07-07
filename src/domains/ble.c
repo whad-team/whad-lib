@@ -2902,6 +2902,77 @@ whad_result_t whad_ble_set_phy_parse(Message *p_message, whad_ble_phy_t *p_tx_ph
 
 
 /**
+ * @brief Initialize a notification message to notify the new RX and TX PHY.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in]       tx_phy              New TX PHY to use, if available
+ * @param[in]       rx_phy              New RX PHY to use, if available
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_phy_updated(Message *p_message, whad_ble_phy_t tx_phy, whad_ble_phy_t rx_phy)
+{
+    /* Sanity check. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Populate message fields. */
+    p_message->which_msg = Message_ble_tag;
+    p_message->msg.ble.which_msg = ble_Message_set_phy_tag;
+    p_message->msg.ble.msg.phy_updated.tx_phy = tx_phy;
+    p_message->msg.ble.msg.phy_updated.rx_phy = rx_phy;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief Parse a notification message about new RX and TX PHY.
+ *  
+ * @param[in,out]   p_message           Pointer to the message structure to initialize
+ * @param[in,out]   p_tx_phy            Pointer to a variable that will contain the new TX PHY value
+ * @param[in,out]   p_rx_phy            Pointer to a variable that will contain the new RX PHY value
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid pointer.
+ **/
+
+whad_result_t whad_ble_phy_updated_parse(Message *p_message, whad_ble_phy_t *p_tx_phy, whad_ble_phy_t *p_rx_phy)
+{
+    /* Sanity checks. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+    
+    /* At least one of p_tx_phy and p_rx_phy must be a valid pointer. */
+    if ((p_tx_phy == NULL) && (p_rx_phy == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Extract parameters. */
+    if (p_tx_phy != NULL)
+    {
+        *p_tx_phy = (whad_ble_phy_t)p_message->msg.ble.msg.phy_updated.tx_phy;
+    }
+
+    if (p_rx_phy != NULL)
+    {
+        *p_rx_phy = (whad_ble_phy_t)p_message->msg.ble.msg.phy_updated.rx_phy;
+    }
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
  * @brief Initialize a message to set the hardware TX power level.
  *  
  * @param[in,out]   p_message           Pointer to the message structure to initialize

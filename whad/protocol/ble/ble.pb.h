@@ -234,7 +234,7 @@ typedef struct _ble_AdvModeCmd {
     ble_BleCsa csa;
     /* Extended advertising PDUs. */
     pb_size_t ext_pdus_count;
-    ble_ExtAdvPdu ext_pdus[32];
+    ble_ExtAdvPdu ext_pdus[4];
 } ble_AdvModeCmd;
 
 /* *
@@ -771,7 +771,7 @@ extern "C" {
 #define ble_SniffActiveConnCmd_init_default      {0, 0, {0}, 0, 0, {0}, _ble_BlePhy_MIN}
 #define ble_JamConnCmd_init_default              {0, _ble_BlePhy_MIN}
 #define ble_ScanModeCmd_init_default             {0, 0, 0}
-#define ble_AdvModeCmd_init_default              {{0, {0}}, {0, {0}}, {0}, _ble_BleAdvType_MIN, 0, 0, _ble_BleCsa_MIN, 0, {ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default}}
+#define ble_AdvModeCmd_init_default              {{0, {0}}, {0, {0}}, {0}, _ble_BleAdvType_MIN, 0, 0, _ble_BleCsa_MIN, 0, {ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default}}
 #define ble_SetAdvDataCmd_init_default           {{0, {0}}, {0, {0}}}
 #define ble_SetExtAdvPdusCmd_init_default        {0, {ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default, ble_ExtAdvPdu_init_default}}
 #define ble_AuxPtr_init_default                  {0, 0, 0, 0, _ble_BlePhy_MIN}
@@ -822,7 +822,7 @@ extern "C" {
 #define ble_SniffActiveConnCmd_init_zero         {0, 0, {0}, 0, 0, {0}, _ble_BlePhy_MIN}
 #define ble_JamConnCmd_init_zero                 {0, _ble_BlePhy_MIN}
 #define ble_ScanModeCmd_init_zero                {0, 0, 0}
-#define ble_AdvModeCmd_init_zero                 {{0, {0}}, {0, {0}}, {0}, _ble_BleAdvType_MIN, 0, 0, _ble_BleCsa_MIN, 0, {ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero}}
+#define ble_AdvModeCmd_init_zero                 {{0, {0}}, {0, {0}}, {0}, _ble_BleAdvType_MIN, 0, 0, _ble_BleCsa_MIN, 0, {ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero}}
 #define ble_SetAdvDataCmd_init_zero              {{0, {0}}, {0, {0}}}
 #define ble_SetExtAdvPdusCmd_init_zero           {0, {ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero, ble_ExtAdvPdu_init_zero}}
 #define ble_AuxPtr_init_zero                     {0, 0, 0, 0, _ble_BlePhy_MIN}
@@ -1639,7 +1639,7 @@ extern const pb_msgdesc_t ble_Message_msg;
 /* Maximum encoded size of messages (where known) */
 #define BLE_WHAD_PROTOCOL_BLE_BLE_PB_H_MAX_SIZE  ble_Message_size
 #define ble_AccessAddressDiscovered_size         28
-#define ble_AdvModeCmd_size                      11353
+#define ble_AdvModeCmd_size                      1497
 #define ble_AdvPduReceived_size                  64
 #define ble_AuxPtr_size                          26
 #define ble_CentralModeCmd_size                  0
@@ -1658,7 +1658,7 @@ extern const pb_msgdesc_t ble_Message_msg;
 #define ble_JamAdvCmd_size                       0
 #define ble_JamAdvOnChannelCmd_size              6
 #define ble_JamConnCmd_size                      8
-#define ble_Message_size                         11356
+#define ble_Message_size                         7065
 #define ble_PduReceived_size                     317
 #define ble_PeripheralModeCmd_size               1497
 #define ble_PhyUpdated_size                      15

@@ -27,6 +27,23 @@ namespace whad::ble {
 
     };
 
+    class PhyUpdated : public BleMsg
+    {
+        public:
+            PhyUpdated(BleMsg &message);
+            PhyUpdated(Phy tx, Phy rx);
+
+            /* Getters. */
+            Phy getTx();
+            Phy getRx();
+
+        private:
+            void pack();
+            void unpack();
+
+            Phy m_tx;
+            Phy m_rx;
+    };
 
     class SetSupportedPhys : public BleMsg
     {

@@ -33,7 +33,7 @@ PB_BIND(ble_JamConnCmd, ble_JamConnCmd, AUTO)
 PB_BIND(ble_ScanModeCmd, ble_ScanModeCmd, AUTO)
 
 
-PB_BIND(ble_AdvModeCmd, ble_AdvModeCmd, 4)
+PB_BIND(ble_AdvModeCmd, ble_AdvModeCmd, 2)
 
 
 PB_BIND(ble_SetAdvDataCmd, ble_SetAdvDataCmd, AUTO)

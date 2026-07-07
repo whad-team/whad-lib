@@ -90,6 +90,95 @@ Phy SetPhy::getRx()
 
 
 /**
+ * PhyUpdated
+ **/
+
+/**
+ * @brief       PhyUpdated notification message constructor, parsing an existing message.
+ *
+ * @param[in]   message     Message to parse.
+ */
+
+PhyUpdated::PhyUpdated(BleMsg &message) : BleMsg(message)
+{
+    unpack();
+}
+
+
+/**
+ * @brief       PhyUpdated message constructor.
+ *
+ * @param[in]   tx  TX PHY to use
+ * @param[in]   rx  RX PHY to use
+ */
+
+PhyUpdated::PhyUpdated(Phy tx, Phy rx) : BleMsg()
+{
+    m_tx = tx;
+    m_rx = rx;
+}
+
+
+/**
+ * @brief   Pack parameters into a BleMsg object.
+ */
+
+void PhyUpdated::pack()
+{
+    whad_ble_phy_updated(getMessage(), (whad_ble_phy_t)m_tx, (whad_ble_phy_t)m_rx);
+}
+
+
+/**
+ * @brief   Extract parameters from a BleMsg object.
+ */
+
+void PhyUpdated::unpack()
+{
+    whad_ble_phy_t tx,rx;
+    whad_result_t result;
+
+    result = whad_ble_phy_updated_parse(
+        this->getMessage(),
+        &tx,
+        &rx);
+
+    if (result == WHAD_ERROR)
+    {
+        throw WhadMessageParsingError();
+    }
+    else
+    {
+        m_rx = (Phy)rx;
+        m_tx = (Phy)tx;
+    }
+}
+
+
+/**
+ * @brief   Get TX PHY
+ *
+ * @retval  Selected TX PHY
+ */
+
+Phy PhyUpdated::getTx()
+{
+    return m_tx;
+}
+
+
+/**
+ * @brief   Get RX PHY
+ *
+ * @retval  Selected RX PHY
+ */
+
+Phy PhyUpdated::getRx()
+{
+    return m_rx;
+}
+
+/**
  * SetSupportedPhys
  **/
 

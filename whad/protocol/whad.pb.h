@@ -79,7 +79,7 @@ extern const pb_msgdesc_t Message_msg;
 
 /* Maximum encoded size of messages (where known) */
 #if defined(generic_Message_size) && defined(discovery_Message_size) && defined(phy_Message_size)
-union Message_msg_size_union {char f1[(6 + generic_Message_size)]; char f2[(6 + discovery_Message_size)]; char f7[(6 + phy_Message_size)]; char f0[11359];};
+union Message_msg_size_union {char f1[(6 + generic_Message_size)]; char f2[(6 + discovery_Message_size)]; char f7[(6 + phy_Message_size)]; char f0[7068];};
 #endif
 #if defined(generic_Message_size) && defined(discovery_Message_size) && defined(phy_Message_size)
 #define Message_size                             (0 + sizeof(union Message_msg_size_union))
