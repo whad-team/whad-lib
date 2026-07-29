@@ -61,8 +61,7 @@ void SetEncryption::unpack()
 {
     whad_ble_encryption_params_t params;
 
-    /* Parse SetEncryption message. */
-    if (whad_ble_set_encryption_parse(this->getRaw(), &params) == WHAD_SUCCESS)
+    if (whad_ble_set_encryption_parse(this->getMessage(), &params) == WHAD_SUCCESS)
     {
         this->m_connHandle = params.conn_handle;
         this->m_enabled = params.enabled;
