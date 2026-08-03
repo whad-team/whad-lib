@@ -54,6 +54,9 @@ INC_FOLDERS += \
 	-Iwhad/protocol/phy
 INCLUDE += $(INC_FOLDERS)
 
+dir:
+	mkdir -p lib
+
 %.o: %.cpp
 	echo "file $<"
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $< -o $@
@@ -61,7 +64,7 @@ INCLUDE += $(INC_FOLDERS)
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
-libwhad.a: $(OBJS)
+libwhad.a: dir $(OBJS)
 	echo $(OBJS)
 	$(AR) -rc $(LIB_DIR)/libwhad.a $(OBJS)
 
