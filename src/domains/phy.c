@@ -809,6 +809,13 @@ whad_result_t whad_phy_set_sync_word_parse(Message *p_message, whad_phy_syncword
 
     /* Extract sync word from message. */
     p_syncword->length = p_message->msg.phy.msg.sync_word.sync_word.size;
+
+    /* Ensure the sync word does not exceed the destination buffer. */
+    if (p_syncword->length > sizeof(p_syncword->syncword))
+    {
+        return WHAD_ERROR;
+    }
+
     memcpy(p_syncword->syncword, p_message->msg.phy.msg.sync_word.sync_word.bytes, p_syncword->length);
 
     /* Success. */
