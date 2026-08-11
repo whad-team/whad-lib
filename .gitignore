@@ -54,3 +54,4 @@ dkms.conf
 # Project specific
 docs/doxygen_doc/
 docs/build/
+tests/build/

@@ -1030,8 +1030,8 @@ whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_adv_data, int
         {
             adv_data_length = 31;
         }
-        //p_message->msg.ble.msg.adv_mode.scanrsp_data.size = scan_data_length;
-        //memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scan_data, scan_data_length);
+        p_message->msg.ble.msg.set_adv_data.adv_data.size = adv_data_length;
+        memcpy(p_message->msg.ble.msg.set_adv_data.adv_data.bytes, p_adv_data, adv_data_length);
     }
 
     /* Set scan response data, if provided. */
@@ -1043,8 +1043,8 @@ whad_result_t whad_ble_set_adv_data(Message *p_message, uint8_t *p_adv_data, int
             scanrsp_data_length = 31;
         }
 
-        //p_message->msg.ble.msg.adv_mode.scanrsp_data.size = scanrsp_data_length;
-        //memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
+        p_message->msg.ble.msg.set_adv_data.scanrsp_data.size = scanrsp_data_length;
+        memcpy(p_message->msg.ble.msg.set_adv_data.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
     }
 
     /* Success. */
@@ -1281,6 +1281,7 @@ whad_result_t whad_ble_send_raw_pdu(Message *p_message, whad_ble_direction_t dir
     p_message->msg.ble.msg.send_raw_pdu.phy = (ble_BlePhy)phy;
 
     /* Copy PDU in memory. */
+    p_message->msg.ble.msg.send_raw_pdu.pdu.size = length;
     memcpy(p_message->msg.ble.msg.send_raw_pdu.pdu.bytes, p_pdu, length);
 
     /* Success. */
@@ -1356,7 +1357,8 @@ whad_result_t whad_ble_send_pdu(Message *p_message, whad_ble_direction_t directi
     p_message->msg.ble.msg.send_pdu.phy = (ble_BlePhy)phy;
 
     /* Copy PDU in memory. */
-    memcpy(p_message->msg.ble.msg.send_raw_pdu.pdu.bytes, p_pdu, length);
+    p_message->msg.ble.msg.send_pdu.pdu.size = length;
+    memcpy(p_message->msg.ble.msg.send_pdu.pdu.bytes, p_pdu, length);
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1492,8 +1494,8 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, 
         {
             adv_data_length = 31;
         }
-        p_message->msg.ble.msg.periph_mode.scanrsp_data.size = adv_data_length;
-        memcpy(p_message->msg.ble.msg.periph_mode.scanrsp_data.bytes, p_adv_data, adv_data_length);
+        p_message->msg.ble.msg.periph_mode.adv_data.size = adv_data_length;
+        memcpy(p_message->msg.ble.msg.periph_mode.adv_data.bytes, p_adv_data, adv_data_length);
     }
 
     /* Set scan response data, if provided. */
@@ -1548,19 +1550,19 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, 
     }
 
     /* Set advertisement type. */
-    p_message->msg.ble.msg.adv_mode.adv_type = adv_type;
+    p_message->msg.ble.msg.periph_mode.adv_type = adv_type;
 
     /* Set channel map if provided, else set default channel map. */
-    memset(p_message->msg.ble.msg.adv_mode.channel_map, 0, 5);
+    memset(p_message->msg.ble.msg.periph_mode.channel_map, 0, 5);
     if (p_channelmap == NULL)
     {
-        p_message->msg.ble.msg.adv_mode.channel_map[4] = 0xe0;
+        p_message->msg.ble.msg.periph_mode.channel_map[4] = 0xe0;
     }
     else
     {
         if ((p_channelmap[4] & 0xe0) > 0)
         {
-            p_message->msg.ble.msg.adv_mode.channel_map[4] = p_channelmap[4] & 0xe0;
+            p_message->msg.ble.msg.periph_mode.channel_map[4] = p_channelmap[4] & 0xe0;
         }
         else
         {
@@ -1569,8 +1571,8 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, 
     }
 
     /* Set advertising interval. */
-    p_message->msg.ble.msg.adv_mode.inter_min = inter_min;
-    p_message->msg.ble.msg.adv_mode.inter_max = inter_max;
+    p_message->msg.ble.msg.periph_mode.inter_min = inter_min;
+    p_message->msg.ble.msg.periph_mode.inter_max = inter_max;
 
     /* Success. */
     return WHAD_SUCCESS;   
@@ -1619,10 +1621,10 @@ whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mo
     }
 
     /* Extract advertising parameters. */
-    p_parameters->adv_type = p_message->msg.ble.msg.adv_mode.adv_type;
-    p_parameters->inter_min = p_message->msg.ble.msg.adv_mode.inter_min;
-    p_parameters->inter_max = p_message->msg.ble.msg.adv_mode.inter_max;
-    memcpy(p_parameters->channel_map, p_message->msg.ble.msg.adv_mode.channel_map, 5);
+    p_parameters->adv_type = p_message->msg.ble.msg.periph_mode.adv_type;
+    p_parameters->inter_min = p_message->msg.ble.msg.periph_mode.inter_min;
+    p_parameters->inter_max = p_message->msg.ble.msg.periph_mode.inter_max;
+    memcpy(p_parameters->channel_map, p_message->msg.ble.msg.periph_mode.channel_map, 5);
 
     /* Extract extended advertising PDUs. */
     /* TODO. */
@@ -2119,7 +2121,7 @@ whad_result_t whad_ble_prepare_sequence_on_recv(Message *p_message, uint8_t *p_p
                                                 int offset, uint32_t id, whad_ble_direction_t direction, whad_prepared_packet_t *p_packets, int pkt_count) 
 {
     /* Sanity check. */
-    if ((p_message == NULL) || (p_pattern == NULL) || (p_mask == NULL) || (p_packets))
+    if ((p_message == NULL) || (p_pattern == NULL) || (p_mask == NULL) || (p_packets == NULL))
     {
         return WHAD_ERROR;
     }
@@ -2242,6 +2244,7 @@ whad_result_t whad_ble_prepare_sequence_manual_parse(Message *p_message, whad_bl
         p_parameters->packets[i].length = p_message->msg.ble.msg.prepare.sequence[i].packet.size;
         p_parameters->packets[i].p_bytes = p_message->msg.ble.msg.prepare.sequence[i].packet.bytes;
     }
+    p_parameters->packet_count = p_message->msg.ble.msg.prepare.sequence_count;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -2327,6 +2330,7 @@ whad_result_t whad_ble_prepare_sequence_conn_evt_parse(Message *p_message, whad_
         p_parameters->packets[i].length = p_message->msg.ble.msg.prepare.sequence[i].packet.size;
         p_parameters->packets[i].p_bytes = p_message->msg.ble.msg.prepare.sequence[i].packet.bytes;
     }
+    p_parameters->packet_count = p_message->msg.ble.msg.prepare.sequence_count;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -3072,7 +3076,7 @@ whad_result_t whad_ble_set_tx_power_level(Message *p_message, int power)
 whad_result_t whad_ble_set_tx_power_level_parse(Message *p_message, int *p_power)
 {
     /* Sanity checks. */
-    if ((p_message == NULL) || (p_power != NULL))
+    if ((p_message == NULL) || (p_power == NULL))
     {
         return WHAD_ERROR;
     }
@@ -3146,7 +3150,7 @@ whad_result_t whad_ble_set_supp_phys_parse(Message *p_message, whad_ble_phys_t *
     p_phys->tx_count = p_message->msg.ble.msg.set_supp_phys.tx_phy_count;
     for (i=0; i<p_phys->tx_count; i++)
     {
-        p_phys->rx[i] = p_message->msg.ble.msg.set_supp_phys.rx_phy[i];
+        p_phys->tx[i] = p_message->msg.ble.msg.set_supp_phys.tx_phy[i];
     }
     p_phys->rx_count = p_message->msg.ble.msg.set_supp_phys.rx_phy_count;
     for (i=0; i<p_phys->rx_count; i++)
@@ -3257,4 +3261,3 @@ whad_result_t whad_ble_set_ext_adv_pdus_parse(Message *p_message, whad_ble_ext_a
 
     return WHAD_SUCCESS;
 }
-
