@@ -76,14 +76,17 @@ run-tests: $(TEST_BINS)
 tests/build:
 	mkdir -p $@
 
-tests/build/%: tests/%.c lib/libwhad.a | tests/build
-	$(CC) $(CFLAGS) $(INCLUDE) $< lib/libwhad.a -o $@
+tests/build/testlib.o: tests/build tests/lib/test.c tests/lib/test.h
+	$(CC) $(CFLAGS) $(INCLUDE) -c tests/lib/test.c -o tests/build/testlib.o
+
+tests/build/%: tests/%.c lib/libwhad.a | tests/build tests/build/testlib.o
+	$(CC) $(CFLAGS) $(INCLUDE) -Itests/lib $< lib/libwhad.a tests/build/testlib.o -o $@
 
 all: lib/libwhad.a
 
 clean:
 	@rm -f $(OBJS)
 	@rm lib/*.a
-	@rm test/build -rf
+	@rm tests/build -rf
 
 check: run-tests
