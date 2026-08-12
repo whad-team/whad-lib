@@ -8,41 +8,9 @@
 #include <sys/wait.h>
 
 #include "whad.h"
+#include "test.h"
 
 #define BLE_MSG(m)  m.msg.ble.msg
-
-/* Test result. */
-typedef enum {
-    PASS,
-    FAILURE
-} result_t;
-
-/* Default test prototype. */
-typedef result_t (*FTestProc)(void);
-
-typedef struct {
-    char *psz_desc;
-    FTestProc p_func;
-} test_t;
-
-#define TEST_CASE(desc,f) {desc, f},
-#define TEST_SUITE_BEGIN(group) test_t TEST_##group[]={
-#define TEST_SUITE_RUN(group) test_run(TEST_##group, (sizeof TEST_##group / sizeof TEST_##group[0]))
-#define TEST_SUITE_END() };
-
-/* Assertions. */
-#define assert(cdt) {\
-    if (!(cdt)) return FAILURE; \
-}
-
-#define assert_success(p) assert((p)==WHAD_SUCCESS)
-#define assert_error(p) assert((p)==WHAD_ERROR)
-#define assert_eq(a,e) \
-    do { \
-        if ((e) != (a)) { \
-            return FAILURE; \
-        } \
-    } while (0)
 
 /**
  * Message type test.
@@ -2117,59 +2085,6 @@ TEST_CASE("SetAdvData parser reports unsupported", test_unsupported_set_adv_data
 TEST_CASE("getting message type", test_get_message_type)
 TEST_CASE("getting message type (wrong domain)", test_get_message_type_not_ble)
 TEST_SUITE_END()
-
-
-bool test_run(test_t *p_test_suite, int count)
-{
-    pid_t pid, wpid;
-    int status;
-    int i, failed=0, succeeded=0;
-    for (i=0; i<count; i++)
-    {
-        pid = fork();
-
-        if (!pid)
-        {
-            exit((p_test_suite[i].p_func()==FAILURE)?1:0);
-        }
-        else
-        {
-            printf("[%d/%d] Testing %s... ", i+1, count, p_test_suite[i].psz_desc);
-
-            /* Wait for test result. */
-            wpid = waitpid(pid, &status, 0);
-            if (wpid < 0) {
-                printf("ERR\n");
-                return false;
-            }
-
-            /* Process has exited normally. */
-            if (WIFEXITED(status))
-            {
-                if (WEXITSTATUS(status) == 0)
-                {
-                    succeeded++;
-                    printf("OK\n");
-                }
-                else
-                {
-                    failed++;
-                    printf("KO\n");
-                }
-            }
-
-            /* Process has crashed. */
-            else if (WIFSIGNALED(status))
-            {
-                failed++;
-                printf("ERROR (%d)\n", WTERMSIG(status));
-            }
-        }
-    }
-    printf("Result: %d PASSED, %d FAILED, %d TOTAL\n", succeeded, failed, count);
-    return (failed != 0);
-}
-
 
 /** Main runner. **/
 
