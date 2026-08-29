@@ -224,7 +224,8 @@ typedef enum {
     WHAD_BLE_SET_PHY = ble_Message_set_phy_tag,
     WHAD_BLE_SET_SUPP_PHYS = ble_Message_set_supp_phys_tag,
     WHAD_BLE_SET_TX_POWER_LEVEL = ble_Message_set_tx_pwr_tag,
-    WHAD_BLE_SET_EXT_ADV_PDUS = ble_Message_set_ext_adv_pdus_tag
+    WHAD_BLE_SET_EXT_ADV_PDUS = ble_Message_set_ext_adv_pdus_tag,
+    WHAD_BLE_PHY_UPDATED = ble_Message_phy_updated_tag
 } whad_ble_msgtype_t;
 
 /* Get BLE message type from NanoPb message. */

@@ -998,6 +998,7 @@ whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_para
 
     /* Extract advertising parameters. */
     p_parameters->adv_type = p_message->msg.ble.msg.adv_mode.adv_type;
+    p_parameters->csa = p_message->msg.ble.msg.adv_mode.csa;
     p_parameters->inter_min = p_message->msg.ble.msg.adv_mode.inter_min;
     p_parameters->inter_max = p_message->msg.ble.msg.adv_mode.inter_max;
     memcpy(p_parameters->channel_map, p_message->msg.ble.msg.adv_mode.channel_map, 5);

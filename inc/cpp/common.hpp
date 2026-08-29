@@ -63,7 +63,7 @@ namespace whad {
             }
 
             /* Getters. */
-            int getSize()
+            size_t getSize()
             {
                 return m_size;
             }
@@ -73,13 +73,13 @@ namespace whad {
                 return m_bytes;
             }
 
-            static int getMaxSize()
+            static size_t getMaxSize()
             {
                 return maxSize;
             }
 
             /* Setters. */
-            void setBytes(uint8_t *pBytes, int size)
+            void setBytes(uint8_t *pBytes, size_t size)
             {
                 if (size <= maxSize)
                 {
@@ -109,7 +109,7 @@ namespace whad {
         private:
             /* Packet properties. */
             uint8_t m_bytes[maxSize];
-            int m_size;
+            size_t m_size;
     };
 
     /**
@@ -178,7 +178,7 @@ namespace whad {
             /* Operators */
 
             /* Comparison operator overloading. */
-            bool operator==(const DeviceAddress &other)
+            bool operator==(DeviceAddress &other)
             {
                 return (
                     (m_length == other.getLength()) &&

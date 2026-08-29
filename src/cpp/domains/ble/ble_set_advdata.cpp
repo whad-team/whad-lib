@@ -19,13 +19,10 @@ SetAdvData::SetAdvData(BleMsg &message) : BleMsg(message)
 
 SetAdvData::SetAdvData(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength) : BleMsg()
 {
-    whad_ble_set_adv_data(
-        this->getMessage(),
-        pAdvData,
-        advDataLength,
-        pScanRsp,
-        scanRspLength
-    );
+    m_advData = pAdvData;
+    m_advDataLength = advDataLength;
+    m_scanRsp = pScanRsp;
+    m_scanRspLength = scanRspLength;
 }
 
 void SetAdvData::pack()
