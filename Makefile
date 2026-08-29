@@ -43,7 +43,9 @@ OBJS := $(TARGETS:.c=.o)
 OBJS := $(OBJS:.cpp=.o)
 
 TEST_SRCS := $(wildcard tests/*.c)
-TEST_BINS := $(patsubst tests/%.c,tests/build/%,$(TEST_SRCS))
+TEST_CPP_SRCS := $(wildcard tests/*.cpp)
+TEST_BINS := $(patsubst tests/%.c,tests/build/%.c,$(TEST_SRCS)) \
+			 $(patsubst tests/%.cpp, tests/build/%.cpp,$(TEST_CPP_SRCS))
 
 # WHAD Lib
 INC_FOLDERS += \
@@ -79,8 +81,11 @@ tests/build:
 tests/build/testlib.o: tests/build tests/lib/test.c tests/lib/test.h
 	$(CC) $(CFLAGS) $(INCLUDE) -c tests/lib/test.c -o tests/build/testlib.o
 
-tests/build/%: tests/%.c lib/libwhad.a | tests/build tests/build/testlib.o
+tests/build/%.c: tests/%.c lib/libwhad.a | tests/build tests/build/testlib.o
 	$(CC) $(CFLAGS) $(INCLUDE) -Itests/lib $< lib/libwhad.a tests/build/testlib.o -o $@
+
+tests/build/%.cpp: tests/%.cpp lib/libwhad.a | tests/build tests/build/testlib.o
+	$(CXX) $(CFLAGS) $(INCLUDE) -Itests/lib $< lib/libwhad.a tests/build/testlib.o -o $@
 
 all: lib/libwhad.a
 

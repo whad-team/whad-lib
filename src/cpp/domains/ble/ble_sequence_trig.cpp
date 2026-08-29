@@ -57,3 +57,12 @@ void SequenceTriggered::unpack()
         throw WhadMessageParsingError();
     }
 }
+
+/**
+ * @brief   Retrieve sequence ID
+ **/
+
+uint32_t SequenceTriggered::getId()
+{
+    return m_id;
+}

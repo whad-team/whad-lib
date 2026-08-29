@@ -64,3 +64,12 @@ void Hijacked::unpack()
         m_success = params.success;
     }
 }
+
+/**
+ * @brief   Check if hijacking was successful
+ **/
+
+bool Hijacked::isSuccessful()
+{
+    return m_success;
+}

@@ -25,13 +25,10 @@ SniffConnReq::SniffConnReq(BleMsg &message) : BleMsg(message)
 
 SniffConnReq::SniffConnReq(uint32_t channel, BDAddress targetAddr, bool showAdv, bool showEmpty) : BleMsg()
 {
-    whad_ble_sniff_conn_req(
-        this->getRaw(),
-        showEmpty,
-        showAdv,
-        channel,
-        targetAddr.getAddressBuf()
-    );
+    m_channel = channel;
+    m_targetAddr = targetAddr;
+    m_showAdv = showAdv;
+    m_showEmpty = showEmpty;
 }
 
 

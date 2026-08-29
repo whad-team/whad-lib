@@ -3,6 +3,7 @@
 #include "ble/rawpdu.hpp"
 #include "ble/ll_pdu.hpp"
 #include "ble/connected.hpp"
+#include "ble/disconnect.hpp"
 #include "ble/disconnected.hpp"
 #include "ble/setbdaddr.hpp"
 #include "ble/sniff_aa.hpp"
@@ -34,3 +35,6 @@
 #include "ble/hijacked.hpp"
 #include "ble/injected.hpp"
 #include "ble/triggered.hpp"
+#include "ble/txpower.hpp"
+#include "ble/phy.hpp"
+

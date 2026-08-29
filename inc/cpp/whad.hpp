@@ -7,6 +7,7 @@
 #include <generic/cmdresult.hpp>
 #include <generic/verbose.hpp>
 #include <generic/debug.hpp>
+#include <generic/progress.hpp>
 
 /* Discovery messages. */
 #include <discovery/discovery.hpp>

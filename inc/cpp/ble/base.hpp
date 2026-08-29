@@ -98,6 +98,7 @@ namespace whad::ble {
         SetSupportedPhysMsg = WHAD_BLE_SET_SUPP_PHYS,                       /*!< Set supported PHYs for RX and TX. */
         SetTxPowerMsg = WHAD_BLE_SET_TX_POWER_LEVEL,                        /*!< Set TX power level. */
         SetExtAdvPdusMsg = WHAD_BLE_SET_EXT_ADV_PDUS,                       /*!< Set extended advertising PDUs. */
+        PhyUpdatedMsg = WHAD_BLE_PHY_UPDATED,                               /*!< PHY update notification. */
     };
 
 #if 0
@@ -137,6 +138,7 @@ namespace whad::ble {
             AuxPtr *m_pAuxPtr;
     };
 #endif 
+
     /* Default BLE message class. */
     class BleMsg : public NanoPbMsg
     {

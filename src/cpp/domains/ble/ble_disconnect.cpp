@@ -33,6 +33,15 @@ void Disconnect::pack()
     whad_ble_disconnect(this->getMessage(), m_connHandle);
 }
 
+/**
+ * @brief   Retrieve the connection handle
+ **/
+
+uint32_t Disconnect::getConnHandle()
+{
+    return m_connHandle;
+}
+
 
 /**
  * @brief   Extract parameters fron a BleMsg

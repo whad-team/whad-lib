@@ -14,6 +14,7 @@ WhadInvalidSize::WhadInvalidSize() : WhadException()
 {
     /* No size provided. */
     m_size = -1;
+    m_expectedSize = -1;
 }
 
 
