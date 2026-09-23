@@ -15,3 +15,12 @@
 #include "dot15d4/sendrawpdu.hpp"
 #include "dot15d4/setnodeaddr.hpp"
 #include "dot15d4/sniff.hpp"
+
+#include "dot15d4/configtsch.hpp"
+#include "dot15d4/sendinslot.hpp"
+#include "dot15d4/addlink.hpp"
+#include "dot15d4/dellink.hpp"
+#include "dot15d4/updatesuperframe.hpp"
+#include "dot15d4/deletesuperframe.hpp"
+#include "dot15d4/setchm.hpp"
+#include "dot15d4/discoveredcomm.hpp"
