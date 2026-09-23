@@ -726,12 +726,13 @@ whad_result_t whad_ble_jam_active_conn_parse(Message *p_message, uint32_t *p_acc
  * 
  * @param[in,out]   p_message           Pointer to the message structure to initialize
  * @param[in]       active_scan         If set to true, the adapter will send SCAN_REQ PDU to get additional data
+ * @param[in]       interval            Provide scanning interval (in ms).
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
+whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval)
 {
     /* Sanity check. */
     if (p_message == NULL)
@@ -743,6 +744,7 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
     p_message->which_msg = Message_ble_tag;
     p_message->msg.ble.which_msg = ble_Message_scan_mode_tag;
     p_message->msg.ble.msg.scan_mode.active_scan = active_scan; 
+    p_message->msg.ble.msg.scan_mode.interval = interval; 
 
     /* Success. */
     return WHAD_SUCCESS;   
@@ -754,10 +756,11 @@ whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan)
  * 
  * @param[in]   p_message         Pointer to the message to parse. 
  * @param[out]  p_active_scan     Pointer to a boolean value, if true an active scan has to be performed.
+ * @param[out]  p_interval        Pointer to an integer value, indicating the scanning interval.
  * @return whad_result_t 
  */
 
-whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan)
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_active_scan == NULL))
@@ -766,6 +769,7 @@ whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan)
     }    
 
     *p_active_scan = p_message->msg.ble.msg.scan_mode.active_scan;
+    *p_interval = p_message->msg.ble.msg.scan_mode.interval;
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -782,15 +786,26 @@ whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan)
  * @param[in]       adv_data_length     Length of advertising data
  * @param[in]       p_scanrsp_data      Pointer to a byte array containing the scan response data
  * @param[in]       scanrsp_data_length Length of scan response data
+ * @param[in]       adv_type            Advertisement type
+ * @param[in]       p_channelmap        Pointer to a 5-byte array specifying the advertising channels to use,
+ *                                      set to default if parameter is set to NULL
+ * @param[in]       inter_min           Minimum value used to determine the lowest advertising interval
+ * @param[in]       inter_max           Maximum value used to determine the greatest advertising interval
  * 
  * @retval          WHAD_SUCCESS        Success.
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
+whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
+         whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max)
 {
     /* Sanity check. */
     if ((p_message == NULL) || (p_adv_data == NULL) || (p_scanrsp_data == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if ((inter_min < 0x20) || (inter_min > inter_max) || (inter_max <= inter_min) || (inter_max > 0x4000))
     {
         return WHAD_ERROR;
     }
@@ -807,8 +822,8 @@ whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv
         {
             adv_data_length = 31;
         }
-        p_message->msg.ble.msg.adv_mode.scan_data.size = adv_data_length;
-        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_adv_data, adv_data_length);
+        p_message->msg.ble.msg.adv_mode.adv_data.size = adv_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.adv_data.bytes, p_adv_data, adv_data_length);
     }
 
     /* Set scan response data, if provided. */
@@ -824,6 +839,31 @@ whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv
         memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
     }
 
+    /* Set specific channel map, use default channel map if set to NULL. */
+    memset(p_message->msg.ble.msg.adv_mode.channel_map, 0, 5);
+    if (p_channelmap == NULL)
+    {
+        /* Enable only channels 37, 38 and 39. */
+        p_message->msg.ble.msg.adv_mode.channel_map[4] = 0xe0;
+    }
+    else
+    {
+        /* Check that at least one advertising channel has been selected. */
+        if ((p_channelmap[4] & 0xe0) > 0)
+        {
+            p_message->msg.ble.msg.adv_mode.channel_map[4] = p_channelmap[4] & 0xe0;
+        }
+        else
+        {
+            return WHAD_ERROR;
+        }
+    }
+
+    /* Save advertisement parameters. */
+    p_message->msg.ble.msg.adv_mode.adv_type = adv_type;
+    p_message->msg.ble.msg.adv_mode.inter_min = inter_min;
+    p_message->msg.ble.msg.adv_mode.inter_max = inter_max;
+
     /* Success. */
     return WHAD_SUCCESS;   
 }
@@ -837,12 +877,12 @@ whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_para
     }
 
     /* Extract advertising data from message. */
-    p_parameters->adv_data_length = p_message->msg.ble.msg.adv_mode.scan_data.size;
+    p_parameters->adv_data_length = p_message->msg.ble.msg.adv_mode.adv_data.size;
     if ((p_parameters->adv_data_length > 0) && (p_parameters->adv_data_length < 31))
     {
         memcpy(
             p_parameters->adv_data,
-            p_message->msg.ble.msg.adv_mode.scan_data.bytes,
+            p_message->msg.ble.msg.adv_mode.adv_data.bytes,
             p_parameters->adv_data_length
         );
     }
@@ -865,6 +905,13 @@ whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_para
     {
         memset(p_parameters->scanrsp_data, 0, 31);
     }
+
+    /* Extract advertising parameters. */
+    p_parameters->adv_type = p_message->msg.ble.msg.adv_mode.adv_type;
+    p_parameters->inter_min = p_message->msg.ble.msg.adv_mode.inter_min;
+    p_parameters->inter_max = p_message->msg.ble.msg.adv_mode.inter_max;
+    memcpy(p_parameters->channel_map, p_message->msg.ble.msg.adv_mode.channel_map, 5);
+
 
     /* Success. */
     return WHAD_SUCCESS;
@@ -1316,10 +1363,16 @@ whad_result_t whad_ble_disconnect_parse(Message *p_message, uint32_t *p_conn_han
  * @retval          WHAD_ERROR          Invalid message pointer.
  **/
 
-whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length)
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
+        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max)
 {
-    /* Sanity check. */
+    /* Sanity checks. */
     if ((p_message == NULL) || (p_adv_data == NULL) || (p_scanrsp_data == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    if ((inter_min < 0x20) || (inter_min > inter_max) || (inter_max <= inter_min) || (inter_max > 0x4000))
     {
         return WHAD_ERROR;
     }
@@ -1336,8 +1389,8 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, 
         {
             adv_data_length = 31;
         }
-        p_message->msg.ble.msg.adv_mode.scan_data.size = adv_data_length;
-        memcpy(p_message->msg.ble.msg.adv_mode.scan_data.bytes, p_adv_data, adv_data_length);
+        p_message->msg.ble.msg.adv_mode.adv_data.size = adv_data_length;
+        memcpy(p_message->msg.ble.msg.adv_mode.adv_data.bytes, p_adv_data, adv_data_length);
     }
 
     /* Set scan response data, if provided. */
@@ -1353,6 +1406,31 @@ whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, 
         memcpy(p_message->msg.ble.msg.adv_mode.scanrsp_data.bytes, p_scanrsp_data, scanrsp_data_length);
     }
 
+    /* Set advertisement type. */
+    p_message->msg.ble.msg.adv_mode.adv_type = adv_type;
+
+    /* Set channel map if provided, else set default channel map. */
+    memset(p_message->msg.ble.msg.adv_mode.channel_map, 0, 5);
+    if (p_channelmap == NULL)
+    {
+        p_message->msg.ble.msg.adv_mode.channel_map[4] = 0xe0;
+    }
+    else
+    {
+        if ((p_channelmap[4] & 0xe0) > 0)
+        {
+            p_message->msg.ble.msg.adv_mode.channel_map[4] = p_channelmap[4] & 0xe0;
+        }
+        else
+        {
+            return WHAD_ERROR;
+        }
+    }
+
+    /* Set advertising interval. */
+    p_message->msg.ble.msg.adv_mode.inter_min = inter_min;
+    p_message->msg.ble.msg.adv_mode.inter_max = inter_max;
+
     /* Success. */
     return WHAD_SUCCESS;   
 }
@@ -1366,13 +1444,13 @@ whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mo
         return WHAD_ERROR;
     }
 
- /* Extract advertising data from message. */
-    p_parameters->adv_data_length = p_message->msg.ble.msg.periph_mode.scan_data.size;
+    /* Extract advertising data from message. */
+    p_parameters->adv_data_length = p_message->msg.ble.msg.periph_mode.adv_data.size;
     if ((p_parameters->adv_data_length > 0) && (p_parameters->adv_data_length < 31))
     {
         memcpy(
             p_parameters->adv_data,
-            p_message->msg.ble.msg.periph_mode.scan_data.bytes,
+            p_message->msg.ble.msg.periph_mode.adv_data.bytes,
             p_parameters->adv_data_length
         );
     }
@@ -1395,6 +1473,12 @@ whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mo
     {
         memset(p_parameters->scanrsp_data, 0, 31);
     }
+
+    /* Extract advertising parameters. */
+    p_parameters->adv_type = p_message->msg.ble.msg.adv_mode.adv_type;
+    p_parameters->inter_min = p_message->msg.ble.msg.adv_mode.inter_min;
+    p_parameters->inter_max = p_message->msg.ble.msg.adv_mode.inter_max;
+    memcpy(p_parameters->channel_map, p_message->msg.ble.msg.adv_mode.channel_map, 5);
 
     /* Success. */
     return WHAD_SUCCESS;

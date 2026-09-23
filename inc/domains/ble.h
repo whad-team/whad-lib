@@ -245,20 +245,26 @@ whad_result_t whad_ble_sniff_active_conn(Message *p_message, uint32_t access_add
 whad_result_t whad_ble_sniff_active_conn_parse(Message *p_message, whad_ble_sniff_conn_params_t *p_parameters);
 
 /* Set BLE mode */
-whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan);
-whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan);
+whad_result_t whad_ble_scan_mode(Message *p_message, bool active_scan, uint32_t interval);
+whad_result_t whad_ble_scan_mode_parse(Message *p_message, bool *p_active_scan, uint32_t *p_interval);
 
 typedef struct {
     uint8_t adv_data[31];
     uint8_t adv_data_length;
     uint8_t scanrsp_data[31];
     uint8_t scanrsp_data_length;
+    whad_ble_advtype_t adv_type;
+    uint8_t channel_map[5];
+    uint16_t inter_min;
+    uint16_t inter_max;
 } whad_ble_adv_mode_params_t;
-whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_adv_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
+        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max);
 whad_result_t whad_ble_adv_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 
-whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length);
+whad_result_t whad_ble_peripheral_mode(Message *p_message, uint8_t *p_adv_data, int adv_data_length, uint8_t *p_scanrsp_data, int scanrsp_data_length,
+        whad_ble_advtype_t adv_type, uint8_t *p_channelmap, uint16_t inter_min, uint16_t inter_max);
 whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mode_params_t *p_parameters);
 
 /* No parsing functions for these three messages :) */
