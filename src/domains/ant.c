@@ -1549,7 +1549,6 @@ whad_result_t whad_ant_pdu_received_parse(Message *p_message, whad_ant_recvd_pac
     /* Success. */
     return WHAD_SUCCESS;
 }
-<<<<<<< HEAD
 
 
 /**
