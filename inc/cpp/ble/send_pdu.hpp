@@ -12,12 +12,13 @@ namespace whad::ble {
     {
         public:
             SendPdu(BleMsg &message);
-            SendPdu(Direction direction, uint32_t connHandle, uint8_t *pPdu, int length, bool encrypt);
+            SendPdu(Direction direction, uint32_t connHandle, uint8_t *pPdu, int length, bool encrypt, Phy phy);
 
             Direction getDirection();
             uint32_t getConnHandle();
             PDU& getPdu();
             bool isEncrypted();
+            Phy getPhy();
 
         private:
             void pack();
@@ -27,6 +28,7 @@ namespace whad::ble {
             uint32_t m_connHandle;
             PDU m_pdu;
             bool m_encrypt;
+            Phy m_phy;
     };
 
 }

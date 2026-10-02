@@ -12,7 +12,8 @@ namespace whad::ble {
     {
         public:
             SniffActiveConn(BleMsg &message);
-            SniffActiveConn(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval, uint32_t hopIncrement, ChannelMap channelMap, ChannelMap channels);
+            SniffActiveConn(uint32_t accessAddress, uint32_t crcInit, uint32_t hopInterval, uint32_t hopIncrement,
+                    ChannelMap channelMap, ChannelMap channels, Phy phy);
 
             uint32_t getAccessAddress();
             uint32_t getCrcInit();
@@ -20,6 +21,7 @@ namespace whad::ble {
             uint32_t getHopIncrement();
             ChannelMap& getChannelMap();
             ChannelMap& getChannels();
+            Phy getPhy();
 
         private:
             void pack();
@@ -31,6 +33,7 @@ namespace whad::ble {
             uint32_t m_hopIncrement;
             ChannelMap m_channelMap;
             ChannelMap m_channels;
+            Phy m_phy;
     };
 
 }

@@ -10,6 +10,7 @@
 #include "domains/esb.h"
 #include "domains/unifying.h"
 #include "domains/dot15d4.h"
+#include "domains/ant.h"
 
 
 #define WHAD_MESSAGE_MAX_SIZE       (4096)

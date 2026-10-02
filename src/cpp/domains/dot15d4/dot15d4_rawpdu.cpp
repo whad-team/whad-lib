@@ -82,6 +82,74 @@ void RawPduReceived::pack()
         packet.has_timestamp = false;
     }
     
+
+    /* Add optional ASN. */
+    if (m_packet.hasAsn())
+    {
+        packet.has_asn = true;
+        packet.asn = m_packet.getAsn();
+    }
+    else
+    {
+        packet.has_asn = false;
+    }
+    
+
+    /* Add optional Start of Slot Timestamp. */
+    if (m_packet.hasStartOfSlotTimestamp())
+    {
+        packet.has_start_of_slot_timestamp = true;
+        packet.start_of_slot_timestamp = m_packet.getStartOfSlotTimestamp();
+    }
+    else
+    {
+        packet.has_start_of_slot_timestamp = false;
+    }
+
+    /* Add optional Time slot. */
+    if (m_packet.hasTimeSlot())
+    {
+        packet.has_time_slot = true;
+        packet.time_slot = m_packet.getTimeSlot();
+    }
+    else
+    {
+        packet.has_time_slot = false;
+    }
+    
+    /* Add optional Base Channel Frequency. */
+    if (m_packet.hasBaseChannelFrequency())
+    {
+        packet.has_base_channel_frequency = true;
+        packet.base_channel_frequency = m_packet.getBaseChannelFrequency();
+    }
+    else
+    {
+        packet.has_base_channel_frequency = false;
+    }
+
+    /* Add optional number of channels. */
+    if (m_packet.hasNumberOfChannels())
+    {
+        packet.has_number_of_channels = true;
+        packet.number_of_channels = m_packet.getNumberOfChannels();
+    }
+    else
+    {
+        packet.has_number_of_channels = false;
+    }
+    
+    /* Add optional Channel spacing. */
+    if (m_packet.hasChannelSpacing())
+    {
+        packet.has_channel_spacing = true;
+        packet.channel_spacing = m_packet.getChannelSpacing();
+    }
+    else
+    {
+        packet.has_channel_spacing = false;
+    }
+    
     /* Copy packet bytes. */
     packet.packet.length = m_packet.getPdu().getSize();
     if ((packet.packet.length > 0) && (packet.packet.length <= 255))
@@ -146,6 +214,43 @@ void RawPduReceived::unpack()
         if (packet.has_timestamp)
         {
             m_packet.addTimestamp(packet.timestamp);
+        }
+
+
+        /* Set optional ASN */
+        if (packet.has_asn)
+        {
+            m_packet.addAsn(packet.asn);
+        }
+
+        /* Set optional Start of Slot Timestamp */
+        if (packet.has_start_of_slot_timestamp)
+        {
+            m_packet.addStartOfSlotTimestamp(packet.start_of_slot_timestamp);
+        }
+
+        /* Set optional time slot */
+        if (packet.has_time_slot)
+        {
+            m_packet.addTimeSlot(packet.time_slot);
+        }
+
+        /* Set optional base channel frequency */
+        if (packet.has_base_channel_frequency)
+        {
+            m_packet.addBaseChannelFrequency(packet.base_channel_frequency);
+        }
+
+        /* Set optional number of channels  */
+        if (packet.has_number_of_channels)
+        {
+            m_packet.addNumberOfChannels(packet.number_of_channels);
+        }
+
+        /* Set optional channel spacing */
+        if (packet.has_channel_spacing)
+        {
+            m_packet.addChannelSpacing(packet.channel_spacing);
         }
     }
 }

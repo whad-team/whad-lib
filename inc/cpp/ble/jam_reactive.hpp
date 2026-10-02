@@ -12,12 +12,13 @@ namespace whad::ble {
     {
         public:
             ReactiveJam(BleMsg &message);
-            ReactiveJam(uint32_t channel, uint8_t *pPattern, unsigned int length, uint32_t position);
+            ReactiveJam(uint32_t channel, uint8_t *pPattern, unsigned int length, uint32_t position, Phy phy);
 
             uint32_t getChannel();
             uint8_t *getPattern();
             unsigned int getPatternLength();
             uint32_t getPosition();
+            Phy getPhy();
 
         private:
             void pack();
@@ -27,6 +28,7 @@ namespace whad::ble {
             uint8_t m_pattern[20];
             unsigned int m_patternLength;
             uint32_t m_position;
+            Phy m_phy;
             
     };
 

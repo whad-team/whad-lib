@@ -23,12 +23,13 @@ SendPdu::SendPdu(BleMsg &message) : BleMsg(message)
  * @param[in]   encrypt         If set to true and encryption enabled, adapter will encrypt the PDU
  **/
 
-SendPdu::SendPdu(Direction direction, uint32_t connHandle, uint8_t *pPdu, int length, bool encrypt) : BleMsg()
+SendPdu::SendPdu(Direction direction, uint32_t connHandle, uint8_t *pPdu, int length, bool encrypt, Phy phy) : BleMsg()
 {
     m_direction = direction;
     m_connHandle = connHandle;
     m_pdu = PDU(pPdu, length);
     m_encrypt = encrypt;
+    m_phy = phy;
 }
 
 void SendPdu::pack()
@@ -39,7 +40,8 @@ void SendPdu::pack()
         m_connHandle,
         m_pdu.getBytes(),
         m_pdu.getSize(),
-        m_encrypt
+        m_encrypt,
+        (whad_ble_phy_t)m_phy
     ); 
 }
 
@@ -63,6 +65,7 @@ void SendPdu::unpack()
         m_connHandle = params.conn_handle;
         m_direction = (Direction)params.direction;
         m_encrypt = params.encrypt;
+        m_phy = (Phy)params.phy;
         m_pdu.setBytes(params.p_pdu, params.length);
     }
 }
@@ -114,3 +117,16 @@ bool SendPdu::isEncrypted()
 {
     return m_encrypt;
 }
+
+
+/**
+ * @brief   Retrieve the PHY to use for this PDU
+ * 
+ * @retval  TX PHY
+ */
+
+Phy SendPdu::getPhy()
+{
+    return m_phy;
+}
+

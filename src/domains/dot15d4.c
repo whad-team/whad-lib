@@ -848,6 +848,71 @@ whad_result_t whad_dot15d4_raw_pdu_received(Message *p_message, whad_dot15d4_rec
         p_message->msg.dot15d4.msg.raw_pdu.lqi = 0;
     }
 
+    if (p_packet->has_asn)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_asn = true;
+        p_message->msg.dot15d4.msg.raw_pdu.asn = p_packet->asn;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_asn = false;
+        p_message->msg.dot15d4.msg.raw_pdu.asn = 0;
+    }
+
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_start_of_slot_timestamp = true;
+        p_message->msg.dot15d4.msg.raw_pdu.start_of_slot_timestamp = p_packet->start_of_slot_timestamp;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_start_of_slot_timestamp = false;
+        p_message->msg.dot15d4.msg.raw_pdu.start_of_slot_timestamp = 0;
+    }
+
+    if (p_packet->has_time_slot)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_time_slot = true;
+        p_message->msg.dot15d4.msg.raw_pdu.time_slot = p_packet->time_slot;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_time_slot = false;
+        p_message->msg.dot15d4.msg.raw_pdu.time_slot = 0;
+    }
+
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_base_channel_frequency = true;
+        p_message->msg.dot15d4.msg.raw_pdu.base_channel_frequency = p_packet->base_channel_frequency;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_base_channel_frequency = false;
+        p_message->msg.dot15d4.msg.raw_pdu.base_channel_frequency = 0;
+    }
+
+    if (p_packet->has_number_of_channels)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_number_of_channels = true;
+        p_message->msg.dot15d4.msg.raw_pdu.number_of_channels = p_packet->number_of_channels;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_number_of_channels = false;
+        p_message->msg.dot15d4.msg.raw_pdu.number_of_channels = 0;
+    }
+
+    if (p_packet->has_channel_spacing)
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_channel_spacing = true;
+        p_message->msg.dot15d4.msg.raw_pdu.channel_spacing = p_packet->channel_spacing;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.raw_pdu.has_channel_spacing = false;
+        p_message->msg.dot15d4.msg.raw_pdu.channel_spacing = 0;
+    }
     /* Success. */
     return WHAD_SUCCESS;
 }
@@ -901,6 +966,44 @@ whad_result_t whad_dot15d4_raw_pdu_received_parse(Message *p_message, whad_dot15
     if (p_packet->has_lqi)
     {
         p_packet->lqi = p_message->msg.dot15d4.msg.raw_pdu.lqi;
+    }
+
+
+    p_packet->has_asn = p_message->msg.dot15d4.msg.raw_pdu.has_asn;
+    if (p_packet->has_asn)
+    {
+        p_packet->asn = p_message->msg.dot15d4.msg.raw_pdu.asn;
+    }
+
+    p_packet->has_time_slot = p_message->msg.dot15d4.msg.raw_pdu.has_time_slot;
+    if (p_packet->has_time_slot)
+    {
+        p_packet->time_slot = p_message->msg.dot15d4.msg.raw_pdu.time_slot;
+    }
+
+    p_packet->has_start_of_slot_timestamp = p_message->msg.dot15d4.msg.raw_pdu.has_start_of_slot_timestamp;
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_packet->start_of_slot_timestamp = p_message->msg.dot15d4.msg.raw_pdu.start_of_slot_timestamp;
+    }
+
+    p_packet->has_base_channel_frequency = p_message->msg.dot15d4.msg.raw_pdu.has_base_channel_frequency;
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_packet->base_channel_frequency = p_message->msg.dot15d4.msg.raw_pdu.base_channel_frequency;
+    }
+    
+    p_packet->has_number_of_channels = p_message->msg.dot15d4.msg.raw_pdu.has_number_of_channels;
+    if (p_packet->has_number_of_channels)
+    {
+        p_packet->number_of_channels = p_message->msg.dot15d4.msg.raw_pdu.number_of_channels;
+    }
+
+
+    p_packet->has_channel_spacing = p_message->msg.dot15d4.msg.raw_pdu.has_channel_spacing;
+    if (p_packet->has_channel_spacing)
+    {
+        p_packet->channel_spacing = p_message->msg.dot15d4.msg.raw_pdu.channel_spacing;
     }
 
     /* Success. */
@@ -976,6 +1079,71 @@ whad_result_t whad_dot15d4_pdu_received(Message *p_message, whad_dot15d4_recvd_p
         p_message->msg.dot15d4.msg.pdu.lqi = 0;
     }
 
+    if (p_packet->has_asn)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_asn = true;
+        p_message->msg.dot15d4.msg.pdu.asn = p_packet->asn;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_asn = false;
+        p_message->msg.dot15d4.msg.pdu.asn = 0;
+    }
+
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_start_of_slot_timestamp = true;
+        p_message->msg.dot15d4.msg.pdu.start_of_slot_timestamp = p_packet->start_of_slot_timestamp;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_start_of_slot_timestamp = false;
+        p_message->msg.dot15d4.msg.pdu.start_of_slot_timestamp = 0;
+    }
+
+    if (p_packet->has_time_slot)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_time_slot = true;
+        p_message->msg.dot15d4.msg.pdu.time_slot = p_packet->time_slot;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_time_slot = false;
+        p_message->msg.dot15d4.msg.pdu.time_slot = 0;
+    }
+
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_base_channel_frequency = true;
+        p_message->msg.dot15d4.msg.pdu.base_channel_frequency = p_packet->base_channel_frequency;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_base_channel_frequency = false;
+        p_message->msg.dot15d4.msg.pdu.base_channel_frequency = 0;
+    }
+
+    if (p_packet->has_number_of_channels)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_number_of_channels = true;
+        p_message->msg.dot15d4.msg.pdu.number_of_channels = p_packet->number_of_channels;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_number_of_channels = false;
+        p_message->msg.dot15d4.msg.pdu.number_of_channels = 0;
+    }
+
+    if (p_packet->has_channel_spacing)
+    {
+        p_message->msg.dot15d4.msg.pdu.has_channel_spacing = true;
+        p_message->msg.dot15d4.msg.pdu.channel_spacing = p_packet->channel_spacing;
+    }
+    else
+    {
+        p_message->msg.dot15d4.msg.pdu.has_channel_spacing = false;
+        p_message->msg.dot15d4.msg.pdu.channel_spacing = 0;
+    }
     /* Success. */
     return WHAD_SUCCESS;
 }
@@ -1030,6 +1198,588 @@ whad_result_t whad_dot15d4_pdu_received_parse(Message *p_message, whad_dot15d4_r
         p_packet->lqi = p_message->msg.dot15d4.msg.raw_pdu.lqi;
     }
 
+
+
+    p_packet->has_asn = p_message->msg.dot15d4.msg.pdu.has_asn;
+    if (p_packet->has_asn)
+    {
+        p_packet->asn = p_message->msg.dot15d4.msg.pdu.asn;
+    }
+
+    p_packet->has_time_slot = p_message->msg.dot15d4.msg.pdu.has_time_slot;
+    if (p_packet->has_time_slot)
+    {
+        p_packet->time_slot = p_message->msg.dot15d4.msg.pdu.time_slot;
+    }
+
+    p_packet->has_start_of_slot_timestamp = p_message->msg.dot15d4.msg.pdu.has_start_of_slot_timestamp;
+    if (p_packet->has_start_of_slot_timestamp)
+    {
+        p_packet->start_of_slot_timestamp = p_message->msg.dot15d4.msg.pdu.start_of_slot_timestamp;
+    }
+
+    p_packet->has_base_channel_frequency = p_message->msg.dot15d4.msg.pdu.has_base_channel_frequency;
+    if (p_packet->has_base_channel_frequency)
+    {
+        p_packet->base_channel_frequency = p_message->msg.dot15d4.msg.pdu.base_channel_frequency;
+    }
+    
+    p_packet->has_number_of_channels = p_message->msg.dot15d4.msg.pdu.has_number_of_channels;
+    if (p_packet->has_number_of_channels)
+    {
+        p_packet->number_of_channels = p_message->msg.dot15d4.msg.pdu.number_of_channels;
+    }
+
+
+    p_packet->has_channel_spacing = p_message->msg.dot15d4.msg.pdu.has_channel_spacing;
+    if (p_packet->has_channel_spacing)
+    {
+        p_packet->channel_spacing = p_message->msg.dot15d4.msg.pdu.channel_spacing;
+    }
+    
     /* Success. */
     return WHAD_SUCCESS;
 }
+
+
+
+
+/**
+ * @brief   Create a ConfigureTSCH message
+ *
+ * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   enabled     Boolean indicating if TSCH must be enabled by the device
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_config_tsch(Message *p_message, bool enabled)
+{
+    /* Sanity checks. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_config_tsch_tag;
+
+    p_message->msg.dot15d4.msg.config_tsch.enabled = enabled;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief   Parse a ConfigureTSCH message
+ *
+ * @param[in]       p_message   Pointer to a NanoPb Message structure
+ * @param[in,out]   p_enabled   Pointer to an integer that will contain the extracted
+ *                              boolean indicating if TSCH is enabled
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+whad_result_t whad_dot15d4_config_tsch_parse(Message *p_message, bool *p_enabled)
+{
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_enabled == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    *p_enabled = p_message->msg.dot15d4.msg.config_tsch.enabled;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief   Create a SendInSlotCmd message
+ *
+ * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   slot        Slot on which the packet will be sent
+ * @param[in]   wait_offset Waiting offset in microseconds before transmission
+ * @param[in]   packet      Structure representing a Zigbee packet
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_send_in_slot(Message *p_message, uint64_t slot, uint32_t wait_offset, whad_dot15d4_packet_t packet)
+{
+    /* Sanity checks. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_send_in_slot_tag;
+
+    p_message->msg.dot15d4.msg.send_in_slot.slot = slot;
+    p_message->msg.dot15d4.msg.send_in_slot.wait_offset = wait_offset;
+
+    if ((packet.length >= 0) && (packet.length <= 255))
+    {
+        /* Copy packet into our message structure. */
+        p_message->msg.dot15d4.msg.send_in_slot.pdu.size = packet.length;
+        memcpy(p_message->msg.dot15d4.msg.send_in_slot.pdu.bytes, packet.bytes, packet.length);
+
+        /* Success. */
+        return WHAD_SUCCESS;
+    }
+    else
+    {
+        /* Error, packet too big. */
+        return WHAD_ERROR;
+    }
+}
+
+
+/**
+ * @brief   Parse a SendInSlotCmd message
+ *
+ * @param[in]       p_message   Pointer to a NanoPb Message structure
+ * @param[in,out]   p_params    Pointer to a `whad_dot15d4_send_in_slot_params_t` structure
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_send_in_slot_parse(Message *p_message, whad_dot15d4_send_in_slot_params_t *p_params)
+{
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_params == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    p_params->slot = p_message->msg.dot15d4.msg.send_in_slot.slot;
+    p_params->wait_offset = p_message->msg.dot15d4.msg.send_in_slot.wait_offset;
+
+    /* Check packet size. */
+    if (p_message->msg.dot15d4.msg.send_in_slot.pdu.size > DOT15D4_PACKET_MAX_SIZE)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Copy packet bytes and length. */
+    p_params->packet.length = p_message->msg.dot15d4.msg.send_in_slot.pdu.size;
+    memcpy(p_params->packet.bytes, p_message->msg.dot15d4.msg.send_in_slot.pdu.bytes, p_params->packet.length);
+
+    /* Set FCS to zero (not used in send in slot command). */
+    p_params->fcs = 0;
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+
+/**
+ * @brief   Create a AddLinkCmd message
+ *
+ * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   params      Parameters represented as a `whad_dot15d4_send_in_slot_params_t` structure
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_add_link(Message *p_message, whad_dot15d4_add_link_params_t params)
+{
+    /* Sanity checks. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_add_link_tag;
+
+    p_message->msg.dot15d4.msg.add_link.superframe_id = params.superframe_id;
+
+    if ((params.src < 0) || (params.src > 0xFFFF)) {
+        return WHAD_ERROR;
+    }
+
+    p_message->msg.dot15d4.msg.add_link.src = params.src;
+
+    if ((params.neighbor < 0) || (params.neighbor > 0xFFFF)) {
+        return WHAD_ERROR;
+    }
+
+    p_message->msg.dot15d4.msg.add_link.neighbor = params.neighbor;
+
+    p_message->msg.dot15d4.msg.add_link.time_slot = params.time_slot;
+    p_message->msg.dot15d4.msg.add_link.channel_offset = params.channel_offset;
+    p_message->msg.dot15d4.msg.add_link.options = params.options;
+
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief   Parse a AddLinkCmd message
+ *
+ * @param[in]       p_message   Pointer to a NanoPb Message structure
+ * @param[in,out]   p_params    Pointer to a `whad_dot15d4_add_link_params_t` structure
+ *
+ * @retval          WHAD_SUCCESS        Success
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_add_link_parse(Message *p_message, whad_dot15d4_add_link_params_t *p_params)
+{
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_params == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    p_params->superframe_id = p_message->msg.dot15d4.msg.add_link.superframe_id;
+    if ((p_message->msg.dot15d4.msg.add_link.src < 0) || (p_message->msg.dot15d4.msg.add_link.src > 0xFFFF)) {
+        return WHAD_ERROR;
+    }
+    p_params->src = (uint16_t)(p_message->msg.dot15d4.msg.add_link.src);
+        if ((p_message->msg.dot15d4.msg.add_link.neighbor < 0) || (p_message->msg.dot15d4.msg.add_link.neighbor > 0xFFFF)) {
+        return WHAD_ERROR;
+    }
+    p_params->neighbor = (uint16_t)(p_message->msg.dot15d4.msg.add_link.neighbor);
+
+    p_params->time_slot = p_message->msg.dot15d4.msg.add_link.time_slot;
+    p_params->channel_offset = p_message->msg.dot15d4.msg.add_link.channel_offset;
+ 
+    p_params->options = (whad_dot15d4_link_options_t)(p_message->msg.dot15d4.msg.add_link.options);
+    p_params->type = (whad_dot15d4_link_type_t)(p_message->msg.dot15d4.msg.add_link.type);
+       
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
+
+
+/**
+ * @brief   Create a DeleteLinkCmd message
+ *
+ * @param[in]       p_message       Pointer to a NanoPb Message structure
+ * @param[in]       superframe_id   Identifier of the associated superframe
+ * @param[in]       time_slot       Time slot of the link to delete
+ * @param[in]       channel_offset  Channel offset of the link to delete
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_del_link(Message *p_message, uint32_t superframe_id, uint32_t time_slot, uint32_t channel_offset) 
+{
+    if (p_message == NULL) {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_del_link_tag;
+
+
+    p_message->msg.dot15d4.msg.del_link.superframe_id = superframe_id;
+    p_message->msg.dot15d4.msg.del_link.time_slot = time_slot;
+    p_message->msg.dot15d4.msg.del_link.channel_offset   = channel_offset;
+    return WHAD_SUCCESS;
+}
+
+
+
+
+/**
+ * @brief   Parse a DeleteLinkCmd message
+ *
+ * @param[in]           p_message         Pointer to a NanoPb Message structure
+ * @param[in,out]       p_superframe_id   Pointer to the identifier of the associated superframe
+ * @param[in,out]       p_time_slot       Time slot of the link to delete
+ * @param[in,out]       p_channel_offset  Channel offset associated to the link
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+
+whad_result_t whad_dot15d4_del_link_parse(Message *p_message, uint32_t *p_superframe_id, uint32_t *p_time_slot, uint32_t *p_channel_offset)
+{
+
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_superframe_id == NULL) || (p_channel_offset == NULL) || (p_time_slot == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    *p_superframe_id = p_message->msg.dot15d4.msg.del_link.superframe_id;
+    *p_channel_offset = p_message->msg.dot15d4.msg.del_link.channel_offset;
+    *p_time_slot = p_message->msg.dot15d4.msg.del_link.time_slot;
+    return WHAD_SUCCESS;
+}
+ 
+
+
+
+/**
+ * @brief   Create an UpdateSuperframeCmd message
+ *
+ * @param[in]       p_message           Pointer to a NanoPb Message structure
+ * @param[in]       superframe_id       Identifier of the superframe
+ * @param[in]       number_of_slots     Size of the superframe (in number of slots)
+ * @param[in]       flags               Flags associated with the superframe
+ * @param[in]       asn                 Initial ASN where the superframe is considered
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_update_superframe(Message *p_message, uint32_t superframe_id, uint32_t number_of_slots, uint32_t flags, uint64_t asn) 
+{
+    if (p_message == NULL) {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_update_superframe_tag;
+
+
+    p_message->msg.dot15d4.msg.update_superframe.superframe_id = superframe_id;
+    p_message->msg.dot15d4.msg.update_superframe.number_of_slots = number_of_slots;
+    p_message->msg.dot15d4.msg.update_superframe.flags = flags;
+    p_message->msg.dot15d4.msg.update_superframe.asn = asn;
+
+    return WHAD_SUCCESS;
+}
+
+
+
+
+/**
+ * @brief   Parse an UpdateSuperframeCmd message
+ *
+ * @param[in]           p_message             Pointer to a NanoPb Message structure
+ * @param[in,out]       p_superframe_id       Pointer to the identifier of the superframe
+ * @param[in,out]       p_number_of_slots     Pointer to size of the superframe (in number of slots)
+ * @param[in,out]       p_flags               Pointer to flags associated with the superframe
+ * @param[in,out]       p_asn                 Pointer to initial ASN where the superframe is considered
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+
+whad_result_t whad_dot15d4_update_superframe_parse(Message *p_message, uint32_t *p_superframe_id, uint32_t *p_number_of_slots, uint32_t *p_flags, uint64_t *p_asn)
+{
+
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_superframe_id == NULL) || (p_number_of_slots == NULL) || (p_flags == NULL) || (p_asn == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    *p_superframe_id = p_message->msg.dot15d4.msg.update_superframe.superframe_id;
+    *p_number_of_slots = p_message->msg.dot15d4.msg.update_superframe.number_of_slots;
+    *p_flags = p_message->msg.dot15d4.msg.update_superframe.flags;
+    *p_asn = p_message->msg.dot15d4.msg.update_superframe.asn;
+
+    return WHAD_SUCCESS;
+}
+
+
+
+/**
+ * @brief   Create an DeleteSuperframeCmd message
+ *
+ * @param[in]       p_message           Pointer to a NanoPb Message structure
+ * @param[in]       superframe_id       Identifier of the superframe
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_del_superframe(Message *p_message, uint32_t superframe_id)
+{
+    if (p_message == NULL) {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_del_superframe_tag;
+
+
+    p_message->msg.dot15d4.msg.del_superframe.superframe_id = superframe_id;
+    
+    return WHAD_SUCCESS;
+}
+
+
+
+
+/**
+ * @brief   Parse an DeleteSuperframeCmd message
+ *
+ * @param[in]           p_message             Pointer to a NanoPb Message structure
+ * @param[in,out]       p_superframe_id       Pointer to the identifier of the superframe
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+
+whad_result_t whad_dot15d4_del_superframe_parse(Message *p_message, uint32_t *p_superframe_id)
+{
+
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_superframe_id == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    *p_superframe_id = p_message->msg.dot15d4.msg.del_superframe.superframe_id;
+
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief   Create an SetChannelMapCmd message
+ *
+ * @param[in]       p_message           Pointer to a NanoPb Message structure
+ * @param[in]       channel_map         Bitmap of supported channels for channel hopping
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_set_chm(Message *p_message, uint32_t channel_map)
+{
+    if (p_message == NULL) {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_set_chm_tag;
+
+
+    p_message->msg.dot15d4.msg.set_chm.channel_map = channel_map;
+    
+    return WHAD_SUCCESS;
+}
+
+
+
+
+/**
+ * @brief   Parse an SetChannelMapCmd message
+ *
+ * @param[in]           p_message             Pointer to a NanoPb Message structure
+ * @param[in,out]       p_channel_map         Pointer to the channel map
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+
+whad_result_t whad_dot15d4_set_chm_parse(Message *p_message, uint32_t *p_channel_map)
+{
+
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_channel_map == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    *p_channel_map = p_message->msg.dot15d4.msg.set_chm.channel_map;
+
+    return WHAD_SUCCESS;
+}
+
+
+/**
+ * @brief   Create a DiscoveredComm message
+ *
+ * @param[in]   p_message   Pointer to a NanoPb Message structure
+ * @param[in]   slot        Slot of the discovered communication
+ * @param[in]   offset      Offset of the discovered communication
+ * @param[in]   p_packet    Pointer to a 802.15.4 packet
+ * @param[in]   length      Packet length in bytes
+ * 
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_discovered_comm(Message *p_message, uint64_t time_slot, uint32_t channel_offset, uint8_t *p_packet, uint32_t length)
+{
+    /* Sanity checks. */
+    if ((p_message == NULL) || (p_packet == NULL))
+    {
+        return WHAD_ERROR;
+    }
+
+    p_message->which_msg = Message_dot15d4_tag;
+    p_message->msg.dot15d4.which_msg = dot15d4_Message_discovered_comm_tag;
+
+    p_message->msg.dot15d4.msg.discovered_comm.time_slot = time_slot;
+    p_message->msg.dot15d4.msg.discovered_comm.channel_offset = channel_offset;
+
+    if ((length >= 0) && (length <= 255))
+    {
+        /* Copy packet into our message structure. */
+        p_message->msg.dot15d4.msg.discovered_comm.pdu.size = length;
+        memcpy(p_message->msg.dot15d4.msg.discovered_comm.pdu.bytes, p_packet, length);
+
+        /* Success. */
+        return WHAD_SUCCESS;
+    }
+    else
+    {
+        /* Error, packet too big. */
+        return WHAD_ERROR;
+    }
+}
+
+
+/**
+ * @brief   Parse a DiscoveredComm message
+ *
+ * @param[in]           p_message     Pointer to a NanoPb Message structure
+ * @param[in,out]       p_slot        Pointer to the slot of the discovered communication
+ * @param[in,out]       p_offset      Pointer to offset of the discovered communication
+ * @param[in,out]       p_packet      Pointer to a 802.15.4 packet
+ * @param[in,out]       p_length      Packet length in bytes
+ *
+ * @retval          WHAD_SUCCESS        Success.
+ * @retval          WHAD_ERROR          Invalid message or address pointer.
+ **/
+
+whad_result_t whad_dot15d4_discovered_comm_parse(Message *p_message, uint64_t *p_time_slot, uint32_t *p_channel_offset, uint8_t *p_packet, uint32_t *p_length)
+{
+    /* Sanity checks. */
+    if (p_message == NULL)
+    {
+        return WHAD_ERROR;
+    }
+
+    *p_time_slot = p_message->msg.dot15d4.msg.discovered_comm.time_slot;
+
+    *p_channel_offset = p_message->msg.dot15d4.msg.discovered_comm.channel_offset;
+
+    /* Check packet size. */
+    if (p_message->msg.dot15d4.msg.discovered_comm.pdu.size > DOT15D4_PACKET_MAX_SIZE)
+    {
+        return WHAD_ERROR;
+    }
+
+    /* Copy packet bytes and length. */
+    *p_length = p_message->msg.dot15d4.msg.discovered_comm.pdu.size;
+    memcpy(p_packet, p_message->msg.dot15d4.msg.discovered_comm.pdu.bytes, *p_length);
+
+    /* Success. */
+    return WHAD_SUCCESS;
+}
+
