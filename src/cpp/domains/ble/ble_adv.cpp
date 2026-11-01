@@ -2,6 +2,8 @@
 
 using namespace whad::ble;
 
+static uint8_t default_adv_channel_map[5] = {0x00, 0x00, 0x00, 0x00, 0xe0};
+
 /**
  * @brief       AdvMode message constructor, parse an existing message.
  * 
@@ -23,7 +25,8 @@ AdvMode::AdvMode(BleMsg &message) : BleMsg(message)
  **/
 
 AdvMode::AdvMode(uint8_t *pAdvData, size_t advDataLength, uint8_t *pScanRsp, size_t scanRspLength) : AdvMode(
-        AdvType::AdvInd, 0x20, 0x4000, pAdvData, advDataLength, pScanRsp, scanRspLength, ChannelMap((uint8_t *)BLE_DEFAULT_CHANMAP), Csa::Csa1)
+        AdvType::AdvInd, 0x20, 0x4000, pAdvData, advDataLength, pScanRsp, scanRspLength,
+        ChannelMap(default_adv_channel_map), Csa::Csa1)
 {
 }
 
@@ -86,7 +89,7 @@ AdvMode::AdvMode(AdvType advType, uint16_t interMin, uint16_t interMax, uint8_t 
 AdvMode::AdvMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength,
         AdvType type, ChannelMap channelMap, uint16_t interMin, uint16_t interMax)
     : AdvMode(type, interMin, interMax, pAdvData, advDataLength, pScanRsp, scanRspLength,
-            ChannelMap((uint8_t*)BLE_DEFAULT_CHANMAP), Csa::Csa1)
+            channelMap, Csa::Csa1)
 {
 }
 
@@ -333,4 +336,3 @@ ExtAdvPdu* AdvMode::getExtPdu(unsigned int index)
     else
         return NULL;
 }
-

@@ -809,6 +809,13 @@ whad_result_t whad_phy_set_sync_word_parse(Message *p_message, whad_phy_syncword
 
     /* Extract sync word from message. */
     p_syncword->length = p_message->msg.phy.msg.sync_word.sync_word.size;
+
+    /* Ensure provided sync word does not exceed destination buffer's capacity. */
+    if (p_syncword->length > sizeof(p_syncword->syncword))
+    {
+        return WHAD_ERROR;
+    }
+
     memcpy(p_syncword->syncword, p_message->msg.phy.msg.sync_word.sync_word.bytes, p_syncword->length);
 
     /* Success. */
@@ -1479,7 +1486,12 @@ whad_result_t whad_phy_packet_received(Message *p_message, uint32_t frequency, i
     p_message->msg.phy.msg.packet.has_rssi = true;
     p_message->msg.phy.msg.packet.rssi = rssi;
 
-    /* Copy packet into our message. */
+    /* Copy packet into our message with a maximum of 255 bytes. */
+    if (length > 255)
+    {
+        length = 255;
+    }
+
     p_message->msg.phy.msg.packet.packet.size = length;
     memcpy(p_message->msg.phy.msg.packet.packet.bytes, payload, length);
 

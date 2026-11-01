@@ -1128,6 +1128,7 @@ whad_result_t whad_ant_list_channels(Message *p_message)
     return WHAD_SUCCESS;
 }
 
+
 /**
  * @brief   Create a ListNetworksCmd message
  *
