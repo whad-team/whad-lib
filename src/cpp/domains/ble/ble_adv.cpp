@@ -65,14 +65,12 @@ AdvMode::AdvMode(AdvType advType, uint16_t interMin, uint16_t interMax, uint8_t 
         memset(m_scanRsp, 0, 31);
     }
 
-    /* Save advertising parameters. */
+    /* Set default advertising parameters. */
+    m_channelMap = channelMap;
     m_type = advType;
     m_interMin = interMin;
     m_interMax = interMax;
     m_csa = csa;
-
-    /* Save provided channel map. */
-    m_channelMap = channelMap;
 }
 
 /**
@@ -289,6 +287,7 @@ Csa AdvMode::getCsa()
 {
     return m_csa;
 }
+
 
 /**
  * @brief   Add an extended advertising PDU.

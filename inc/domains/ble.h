@@ -348,6 +348,7 @@ typedef struct {
     size_t ext_pdus_count;
     whad_ble_ext_adv_t ext_pdus[4];
 } whad_ble_adv_mode_params_t;
+
 whad_result_t whad_ble_adv_mode(
         Message *p_message,
         whad_ble_advtype_t type,

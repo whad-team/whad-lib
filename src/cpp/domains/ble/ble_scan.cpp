@@ -54,7 +54,7 @@ bool ScanMode::isActiveModeEnabled()
 
 
 /**
- * @brief   Retrieve the scan interval.
+ * @brief   Get the scanning interval (in ms)
  * 
  * @retval  Scan interval, in ms.
  */

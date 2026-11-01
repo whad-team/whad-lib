@@ -1621,12 +1621,10 @@ whad_result_t whad_ble_peripheral_mode_parse(Message *p_message, whad_ble_adv_mo
         memset(p_parameters->scanrsp_data, 0, 31);
     }
 
-    /* Extract advertisement type and interval values. */
+    /* Extract advertising parameters. */
     p_parameters->adv_type = p_message->msg.ble.msg.periph_mode.adv_type;
-    p_parameters->inter_max = p_message->msg.ble.msg.periph_mode.inter_max;
     p_parameters->inter_min = p_message->msg.ble.msg.periph_mode.inter_min;
-
-    /* Extract channel map. */
+    p_parameters->inter_max = p_message->msg.ble.msg.periph_mode.inter_max;
     memcpy(p_parameters->channel_map, p_message->msg.ble.msg.periph_mode.channel_map, 5);
 
     /* Extract extended advertising PDUs. */

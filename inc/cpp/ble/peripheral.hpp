@@ -15,10 +15,8 @@ namespace whad::ble {
         public:
             PeripheralMode(BleMsg &message);
             PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength, Csa csa);
-            PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength,
-                               uint8_t *pScanRsp, unsigned int scanRspLength,
-                               AdvType type, ChannelMap channelMap, uint16_t interMin,
-                               uint16_t interMax, Csa csa);
+            PeripheralMode(uint8_t *pAdvData, unsigned int advDataLength, uint8_t *pScanRsp, unsigned int scanRspLength,
+                    AdvType type, ChannelMap channelMap, uint16_t interMin, uint16_t interMax, Csa csa);
 
             AdvType getAdvType();
             uint16_t getIntervalMin();
@@ -27,6 +25,10 @@ namespace whad::ble {
             unsigned int getAdvDataLength();
             uint8_t *getScanRsp();
             unsigned int getScanRspLength();
+            AdvType getAdvType();
+            ChannelMap &getChannelMap();
+            uint16_t getIntervalMin();
+            uint16_t getIntervalMax();
             Csa getCsa();
 
             /* Extended advertising PDU */

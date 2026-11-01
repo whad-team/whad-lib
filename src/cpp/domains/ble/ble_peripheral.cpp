@@ -208,17 +208,6 @@ std::vector<ExtAdvPdu>::iterator PeripheralMode::getExtPdusIterator()
 }
 
 /**
- * @brief   Get advertisement type
- *
- * @retval  Advertisement type
- */
-
-AdvType PeripheralMode::getAdvType()
-{
-    return m_type;
-}
-
-/**
  * @brief   Get the advertising data
  * 
  * @retval  Pointer to the advertising data buffer
@@ -285,6 +274,49 @@ unsigned int PeripheralMode::getScanRspLength()
 {
     return m_scanRspLength;
 }
+
+/**
+ * @brief   Get advertisement type
+ *
+ * @retval  Advertisement type
+ */
+AdvType PeripheralMode::getAdvType()
+{
+    return m_type;
+}
+
+
+/**
+ * @brief   Get advertising channel map
+ *
+ * @retval  Channel map
+ */
+ChannelMap &PeripheralMode::getChannelMap()
+{
+    return m_channelMap;
+}
+
+
+/**
+ * @brief   Get advertising mimimum interval
+ *
+ * @retval  Advertising minimum interval
+ */
+uint16_t PeripheralMode::getIntervalMin()
+{
+    return m_interMin;
+}
+
+/**
+ * @brief   Get advertising maximum interval
+ *
+ * @retval  Advertising maximum interval
+ */
+uint16_t PeripheralMode::getIntervalMax()
+{
+    return m_interMax;
+}
+
 
 /**
  * @brief   Get the selected CSA

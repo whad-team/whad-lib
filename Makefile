@@ -70,8 +70,7 @@ dir:
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
-libwhad.a: dir $(OBJS)
-	echo $(OBJS)
+lib/libwhad.a: $(OBJS)
 	$(AR) -rc $(LIB_DIR)/libwhad.a $(OBJS)
 
 run-tests: $(TEST_BINS)
@@ -85,13 +84,13 @@ tests/build:
 tests/build/testlib.o: tests/build tests/lib/test.c tests/lib/test.h
 	$(CC) $(CFLAGS) $(INCLUDE) -c tests/lib/test.c -o tests/build/testlib.o
 
-tests/build/%.c: tests/%.c libwhad.a | tests/build tests/build/testlib.o
+tests/build/%.c: tests/%.c lib/libwhad.a | tests/build tests/build/testlib.o
 	$(CC) $(CFLAGS) $(INCLUDE) -Itests/lib $< lib/libwhad.a tests/build/testlib.o -o $@
 
-tests/build/%.cpp: tests/%.cpp libwhad.a | tests/build tests/build/testlib.o
+tests/build/%.cpp: tests/%.cpp lib/libwhad.a | tests/build tests/build/testlib.o
 	$(CXX) $(CFLAGS) $(INCLUDE) -Itests/lib $< lib/libwhad.a tests/build/testlib.o -o $@
 
-all: libwhad.a
+all: lib/libwhad.a
 
 clean:
 	@rm -f $(OBJS)
