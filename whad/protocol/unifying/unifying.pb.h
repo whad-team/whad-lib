@@ -125,7 +125,7 @@ typedef struct _unifying_RawPduReceived {
     bool has_rssi;
     int32_t rssi;
     bool has_timestamp;
-    uint32_t timestamp;
+    uint64_t timestamp;
     bool has_crc_validity;
     bool crc_validity;
     bool has_address;
@@ -141,7 +141,12 @@ typedef struct _unifying_PduReceived {
     int32_t rssi;
     bool has_timestamp;
     uint64_t timestamp;
-} unifying_Jammed;
+    bool has_crc_validity;
+    bool crc_validity;
+    bool has_address;
+    unifying_PduReceived_address_t address;
+    unifying_PduReceived_pdu_t pdu;
+} unifying_PduReceived;
 
 typedef struct _unifying_Message {
     pb_size_t which_msg;
@@ -329,14 +334,14 @@ X(a, STATIC,   SINGULAR, UINT32,   channel,           1)
 #define unifying_SniffPairingCmd_DEFAULT NULL
 
 #define unifying_Jammed_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp,         1)
+X(a, STATIC,   SINGULAR, UINT64,   timestamp,         1)
 #define unifying_Jammed_CALLBACK NULL
 #define unifying_Jammed_DEFAULT NULL
 
 #define unifying_RawPduReceived_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
+X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      4) \
 X(a, STATIC,   OPTIONAL, BYTES,    address,           5) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               6)
@@ -346,7 +351,7 @@ X(a, STATIC,   SINGULAR, BYTES,    pdu,               6)
 #define unifying_PduReceived_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
+X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      4) \
 X(a, STATIC,   OPTIONAL, BYTES,    address,           5) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               6)
@@ -421,13 +426,13 @@ extern const pb_msgdesc_t unifying_Message_msg;
 /* Maximum encoded size of messages (where known) */
 #define UNIFYING_WHAD_PROTOCOL_UNIFYING_UNIFYING_PB_H_MAX_SIZE unifying_Message_size
 #define unifying_JamCmd_size                     6
-#define unifying_Jammed_size                     6
+#define unifying_Jammed_size                     11
 #define unifying_LogitechDongleModeCmd_size      6
 #define unifying_LogitechKeyboardModeCmd_size    6
 #define unifying_LogitechMouseModeCmd_size       6
-#define unifying_Message_size                    293
-#define unifying_PduReceived_size                290
-#define unifying_RawPduReceived_size             290
+#define unifying_Message_size                    298
+#define unifying_PduReceived_size                295
+#define unifying_RawPduReceived_size             295
 #define unifying_SendCmd_size                    270
 #define unifying_SendRawCmd_size                 270
 #define unifying_SetNodeAddressCmd_size          7

@@ -208,6 +208,17 @@ std::vector<ExtAdvPdu>::iterator PeripheralMode::getExtPdusIterator()
 }
 
 /**
+ * @brief   Get advertisement type
+ *
+ * @retval  Advertisement type
+ */
+
+AdvType PeripheralMode::getAdvType()
+{
+    return m_type;
+}
+
+/**
  * @brief   Get the advertising data
  * 
  * @retval  Pointer to the advertising data buffer
@@ -230,6 +241,27 @@ unsigned int PeripheralMode::getAdvDataLength()
     return m_advDataLength;
 }
 
+/**
+ * @brief   Get advertising minimal interval
+ *
+ * @retval  Minimal advertising interval
+ */
+
+uint16_t PeripheralMode::getIntervalMin()
+{
+    return m_interMin;
+}
+
+/**
+ * @brief   Get advertising maximal interval
+ *
+ * @retval  Maximal advertising interval
+ */
+
+uint16_t PeripheralMode::getIntervalMax()
+{
+    return m_interMax;
+}
 
 /**
  * @brief   Get the scan response data

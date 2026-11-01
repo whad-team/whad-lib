@@ -20,6 +20,9 @@ namespace whad::ble {
                                AdvType type, ChannelMap channelMap, uint16_t interMin,
                                uint16_t interMax, Csa csa);
 
+            AdvType getAdvType();
+            uint16_t getIntervalMin();
+            uint16_t getIntervalMax();
             uint8_t *getAdvData();
             unsigned int getAdvDataLength();
             uint8_t *getScanRsp();

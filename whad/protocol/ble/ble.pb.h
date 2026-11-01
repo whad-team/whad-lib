@@ -261,24 +261,6 @@ typedef struct _ble_CentralModeCmd {
     char dummy_field;
 } ble_CentralModeCmd;
 
-/* BLE extended advertisement AuxPtr info.
-
- See Vol 6, Part B, Section 2.3.4.5 for more details.
-
- This message provides all the required values for
- successfully transmit the following extended advertising
- PDU on a secondary channel.
-
- Shall be used when the provided extended advertising PDU
- is malformed or impossible to parse without errors. */
-typedef struct _ble_AuxPtr { 
-    uint32_t channel;
-    uint32_t ca;
-    uint32_t offset_units;
-    uint32_t offset;
-    ble_BlePhy phy;
-} ble_AuxPtr;
-
 /* *
  ConnectToCmd
 
@@ -336,7 +318,6 @@ typedef PB_BYTES_ARRAY_T(300) ble_SendPDUCmd_pdu_t;
  `crc` can be provided. */
 typedef struct _ble_SendPDUCmd {
     ble_BleDirection direction;
-    ble_PduReceived_pdu_t pdu;
     uint32_t conn_handle;
     ble_SendPDUCmd_pdu_t pdu;
     bool encrypt;
@@ -390,6 +371,7 @@ typedef struct _ble_StopCmd {
 typedef struct _ble_HijackMasterCmd {
     uint32_t access_address;
 } ble_HijackMasterCmd;
+
 /* *
  HijackSlaveCmd
 
@@ -578,9 +560,9 @@ typedef struct _ble_RawPduReceived {
     bool has_rssi;
     int32_t rssi;
     bool has_timestamp;
-    uint32_t timestamp;
+    uint64_t timestamp;
     bool has_relative_timestamp;
-    uint32_t relative_timestamp;
+    uint64_t relative_timestamp;
     bool has_crc_validity;
     bool crc_validity;
     uint32_t access_address;
@@ -1365,7 +1347,7 @@ X(a, STATIC,   SINGULAR, UINT32,   id,                1)
 #define ble_AccessAddressDiscovered_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   access_address,    1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3)
+X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3)
 #define ble_AccessAddressDiscovered_CALLBACK NULL
 #define ble_AccessAddressDiscovered_DEFAULT NULL
 
@@ -1429,8 +1411,8 @@ X(a, STATIC,   SINGULAR, UINT32,   injection_attempts,   3)
 X(a, STATIC,   SINGULAR, UENUM,    direction,         1) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           2) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              3) \
-X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         4) \
-X(a, STATIC,   OPTIONAL, UINT32,   relative_timestamp,   5) \
+X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         4) \
+X(a, STATIC,   OPTIONAL, UINT64,   relative_timestamp,   5) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      6) \
 X(a, STATIC,   SINGULAR, UINT32,   access_address,    7) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               8) \

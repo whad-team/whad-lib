@@ -165,7 +165,7 @@ typedef struct _dot15d4_Jammed {
 
 typedef struct _dot15d4_EnergyDetectionSample {
     uint32_t sample;
-    uint32_t timestamp;
+    uint64_t timestamp;
 } dot15d4_EnergyDetectionSample;
 
 typedef PB_BYTES_ARRAY_T(255) dot15d4_RawPduReceived_pdu_t;
@@ -174,7 +174,7 @@ typedef struct _dot15d4_RawPduReceived {
     bool has_rssi;
     int32_t rssi;
     bool has_timestamp;
-    uint32_t timestamp;
+    uint64_t timestamp;
     bool has_fcs_validity;
     bool fcs_validity;
     dot15d4_RawPduReceived_pdu_t pdu;
@@ -232,33 +232,6 @@ typedef struct _dot15d4_SendInSlotCmd {
     dot15d4_SendInSlotCmd_pdu_t pdu;
 } dot15d4_SendInSlotCmd;
 
-typedef PB_BYTES_ARRAY_T(255) dot15d4_PduReceived_pdu_t;
-typedef struct _dot15d4_PduReceived {
-    uint32_t channel;
-    bool has_rssi;
-    int32_t rssi;
-    bool has_timestamp;
-    uint64_t timestamp;
-    bool has_fcs_validity;
-    bool fcs_validity;
-    dot15d4_PduReceived_pdu_t pdu;
-    bool has_lqi;
-    uint32_t lqi;
-    bool has_asn;
-    uint64_t asn;
-    bool has_start_of_slot_timestamp;
-    uint32_t start_of_slot_timestamp;
-    bool has_time_slot;
-    uint64_t time_slot;
-    bool has_base_channel_frequency;
-    uint32_t base_channel_frequency;
-    bool has_number_of_channels;
-    uint32_t number_of_channels;
-    bool has_channel_spacing;
-    uint32_t channel_spacing;
-} dot15d4_PduReceived;
-
-typedef PB_BYTES_ARRAY_T(255) dot15d4_SendInSlotCmd_pdu_t;
 /* *
  ConfigureTSCH
 
@@ -432,6 +405,7 @@ extern "C" {
 
 #define dot15d4_AddLinkCmd_options_ENUMTYPE dot15d4_LinkOptions
 #define dot15d4_AddLinkCmd_type_ENUMTYPE dot15d4_LinkType
+
 
 
 
@@ -648,20 +622,20 @@ X(a, STATIC,   SINGULAR, UENUM,    role,              1)
 #define dot15d4_ManInTheMiddleCmd_DEFAULT NULL
 
 #define dot15d4_Jammed_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp,         1)
+X(a, STATIC,   SINGULAR, UINT64,   timestamp,         1)
 #define dot15d4_Jammed_CALLBACK NULL
 #define dot15d4_Jammed_DEFAULT NULL
 
 #define dot15d4_EnergyDetectionSample_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   sample,            1) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp,         2)
+X(a, STATIC,   SINGULAR, UINT64,   timestamp,         2)
 #define dot15d4_EnergyDetectionSample_CALLBACK NULL
 #define dot15d4_EnergyDetectionSample_DEFAULT NULL
 
 #define dot15d4_RawPduReceived_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
+X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     fcs_validity,      4) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               5) \
 X(a, STATIC,   SINGULAR, UINT32,   fcs,               6) \
@@ -678,7 +652,7 @@ X(a, STATIC,   OPTIONAL, UINT32,   channel_spacing,  13)
 #define dot15d4_PduReceived_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
+X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     fcs_validity,      4) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               5) \
 X(a, STATIC,   OPTIONAL, UINT32,   lqi,               6) \
@@ -861,9 +835,9 @@ extern const pb_msgdesc_t dot15d4_Message_msg;
 #define dot15d4_DiscoveredCommunication_size     275
 #define dot15d4_EndDeviceCmd_size                6
 #define dot15d4_EnergyDetectionCmd_size          6
-#define dot15d4_EnergyDetectionSample_size       12
+#define dot15d4_EnergyDetectionSample_size       17
 #define dot15d4_JamCmd_size                      6
-#define dot15d4_Jammed_size                      6
+#define dot15d4_Jammed_size                      11
 #define dot15d4_ManInTheMiddleCmd_size           2
 #define dot15d4_Message_size                     344
 #define dot15d4_PduReceived_size                 340

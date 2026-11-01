@@ -69,7 +69,10 @@ AdvMode::AdvMode(AdvType advType, uint16_t interMin, uint16_t interMax, uint8_t 
     m_type = advType;
     m_interMin = interMin;
     m_interMax = interMax;
-    m_csa = Csa::Csa1;
+    m_csa = csa;
+
+    /* Save provided channel map. */
+    m_channelMap = channelMap;
 }
 
 /**

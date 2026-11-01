@@ -44,7 +44,9 @@ result_t test_set_advertising_data(void)
             scan_response, sizeof(scan_response));
 
     /* Check the raw payloads produced directly by the constructor. */
+    message.getRaw();
     Message *raw_message = message.getMessage();
+
     assert_eq(whad_ble_get_message_type(raw_message), WHAD_BLE_SET_ADV_DATA);
     assert_eq(raw_message->msg.ble.msg.set_adv_data.adv_data.size, sizeof(advertising_data));
     assert_buf_eq(raw_message->msg.ble.msg.set_adv_data.adv_data.bytes,
@@ -108,6 +110,7 @@ result_t test_advertisement_sniffing_messages(void)
     assert_eq(sniff_advertisements.getType(), SniffAdvMsg);
 
     /* Check the connection-request message produced by its constructor. */
+    sniff_requests.getRaw();
     assert_eq(whad_ble_get_message_type(sniff_requests.getMessage()), WHAD_BLE_SNIFF_CONN_REQ);
 
     /* Passed. */

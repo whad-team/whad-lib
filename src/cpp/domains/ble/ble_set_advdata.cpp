@@ -39,7 +39,13 @@ void SetAdvData::pack()
 
 void SetAdvData::unpack()
 {
-    /* TODO */
+    whad_ble_set_adv_data_parse(
+        this->getMessage(),
+        m_advData,
+        (int *)&m_advDataLength,
+        m_scanRsp,
+        (int *)&m_scanRspLength
+    );
 }
 
 uint8_t *SetAdvData::getAdvData()
