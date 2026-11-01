@@ -48,7 +48,14 @@ bool test_run(test_t *p_test_suite, int count)
             }
         }
     }
-    printf("Result: %d PASSED, %d FAILED, %d TOTAL\n", succeeded, failed, count);
+    if (failed > 0)
+    {
+        printf("\033[31mResult: %d PASSED, %d FAILED, %d TOTAL\n\033[0m", succeeded, failed, count);
+    }
+    else
+    {
+        printf("\033[32mResult: %d PASSED, %d FAILED, %d TOTAL\n\033[0m", succeeded, failed, count);
+    }
     return (failed != 0);
 }
 
